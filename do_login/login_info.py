@@ -55,10 +55,7 @@ def get_redirect(data, post_url, session):
     :param session:
     :return: 服务器返回的下一次需要请求的url
     """
-    user_agents = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 ' \
-                  'Safari/537.36'
-    headers = {'User_Agent': user_agents}
-    logining_page = session.post(post_url, data=data, headers=headers)
+    logining_page = session.post(post_url, data=data, headers=gl.headers)
     login_loop = logining_page.content.decode("GBK")
     pa = r'location\.replace\([\'"](.*?)[\'"]\)'
     return re.findall(pa, login_loop)[0]
@@ -73,9 +70,8 @@ def get_session():
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
     prelogin_url = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&' \
                    'su=' + su + '&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)'
-
     pre_obj = get_prelogin_info(prelogin_url, session)
-    sp = get_pass(gl.password, pre_obj, runntime)
+    sp = get_pass(gl.login_password, pre_obj, runntime)
 
     # 提交的数据可以根据抓包获得
     data = {
@@ -95,7 +91,7 @@ def get_session():
         'sp': sp,
         'sr': '1366*768',
         'encoding': 'UTF-8',
-        'prelt': '115',
+        'prelt': '98',
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
         'returntype': 'META',
     }
@@ -108,3 +104,4 @@ def get_session():
                         datefmt='%Y%m%d %H:%M:%S')
     logging.info('本次登陆账号为:{name}'.format(name=gl.login_name))
     return session
+

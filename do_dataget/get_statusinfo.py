@@ -2,6 +2,8 @@
 #  获取微博信息
 import time
 import random
+from do_dataget.basic import get_page
+from do_dataprocess.basic import is_404
 from do_dataprocess.do_statusprocess import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
 from weibo_entities.spread_other import SpreadOther
@@ -12,8 +14,9 @@ from weibo_entities.other_and_cache import SpreadOtherAndCache
 def get_status_info(url, session, user_id, name, headers):
     soc = SpreadOtherCache()
     print('当前转发微博url为:' + url)
-    try:
-        repost_cont = session.get(url, headers=headers, timeout=120).text
+    repost_cont = get_page(session, url, headers)
+
+    if not is_404(repost_cont):
         repost_user_id = status_parse.get_userid(repost_cont)
         repost_user_name = status_parse.get_username(repost_cont)
         soc.set_id(repost_user_id)
@@ -54,9 +57,6 @@ def get_status_info(url, session, user_id, name, headers):
         so.like_count = status_parse.get_likecounts(repost_cont)
         so.status_url = url
         return SpreadOtherAndCache(so, soc)
-    except Exception:
-        print('抓取当前页面出错')
+    else:
         return None
-
-
 

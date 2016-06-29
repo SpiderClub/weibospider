@@ -1,13 +1,12 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
 import logging
-import time
 from gl import login_name
 from weibo_entities.user import User
-from do_dataprocess.get_userprocess import get_publicinfo
-from do_dataprocess.get_userprocess import get_personalinfo
-from do_dataprocess.get_userprocess import get_enterpriseinfo
+from do_dataprocess.get_userprocess import get_enterpriseinfo, get_personalinfo, get_publicinfo
 from do_dataprocess.do_statusprocess import status_parse
+from do_dataprocess.basic import is_403, is_404
+from do_dataget.basic import get_page
 from db_operation.user_dao import save_user
 from weibo_decorator.decorators import timeout_decorator
 
@@ -27,14 +26,11 @@ def get_profile(user_id, session, headers):
     """
     user = User()
     url = 'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more'
-    try:
-        html = session.get(url, headers=headers, timeout=120).text
-        time.sleep(60)
-    except TimeoutError:
-        logging.info('抓取{url}超时'.format(url=url))
-    if status_parse.is_403(html):
+    html = get_page(session, url, headers)
+
+    if is_403(html):
         logging.info('{name}已经被冻结'.format(name=login_name))
-    if not status_parse.is_404(html):
+    if not is_404(html):
         domain = get_publicinfo.get_userdomain(html)
         if domain == '100505' or domain == '103505' or domain == '100306':
             user = get_personalinfo.get_detail(html)
@@ -53,7 +49,6 @@ def get_profile(user_id, session, headers):
         user.verify_type = get_publicinfo.get_verifytype(html)
         user.verify_info = get_publicinfo.get_verifyreason(html, user.verify_type)
         print('本次抓取的url为:' + url + '用户id为：' + user_id)
-        print(user)
     return user
 
 

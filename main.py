@@ -22,5 +22,7 @@ if __name__ == '__main__':
             print('-------------------------------------------')
             time.sleep(60)
         print('本次抓取结束,结束时间为{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
-        time.sleep(60*60*1)
+        logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
+            '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))
+
 
