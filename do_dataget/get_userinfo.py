@@ -4,7 +4,6 @@ import logging
 from gl import login_name
 from weibo_entities.user import User
 from do_dataprocess.get_userprocess import get_enterpriseinfo, get_personalinfo, get_publicinfo
-from do_dataprocess.do_statusprocess import status_parse
 from do_dataprocess.basic import is_403, is_404
 from do_dataget.basic import get_page
 from db_operation.user_dao import save_user
