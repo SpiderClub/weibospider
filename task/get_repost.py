@@ -22,8 +22,7 @@ ___`. .'  /--.--\  `. . __
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 佛祖保佑       永无BUG
 """
-import json
-import logging
+import json, logging
 from do_dataget.basic import get_page
 from do_dataprocess import basic
 from db_operation import spread_original_dao
@@ -79,7 +78,7 @@ def get_reposts(url, session, headers):
             page = 1
             ajax_url = base_url.format(mid=mid, currpage=page)
 
-            source = get_page(session, ajax_url, headers)
+            source = get_page(session, ajax_url, headers, user_verify=False)
             print('本次转发信息url为：' + ajax_url)
 
             repost_json = json.loads(source)

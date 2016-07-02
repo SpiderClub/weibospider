@@ -1,7 +1,6 @@
 # -*-coding:utf-8 -*-
 #  获取微博信息
-import time
-import random
+import logging
 from do_dataget.basic import get_page
 from do_dataprocess.basic import is_404
 from do_dataprocess.do_statusprocess import status_parse
@@ -26,37 +25,39 @@ def get_status_info(url, session, user_id, name, headers):
         so.id = repost_user_id
         so.screen_name = repost_user_name
         so.upper_user_name = status_parse.get_upperusername(repost_cont, name)
-        time.sleep(random.randint(2, 5))
-
         cur_user = get_userinfo.get_profile(repost_user_id, session, headers)
+        try:
+            so.province = cur_user.province
+            so.city = cur_user.city
+            so.location = cur_user.location
+            so.description = cur_user.description
+            so.domain_name = cur_user.domain_name
+            so.blog_url = cur_user.blog_url
+            so.gender = cur_user.gender
+            so.headimg_url = cur_user.headimg_url
+            so.followers_count = cur_user.followers_count
+            so.friends_count = cur_user.friends_count
+            so.status_count = cur_user.status_count
+            so.verify_type = cur_user.verify_type
+            so.verify_info = cur_user.verify_info
+            so.register_time = cur_user.register_time
 
-        so.province = cur_user.province
-        so.city = cur_user.city
-        so.location = cur_user.location
-        so.description = cur_user.description
-        so.domain_name = cur_user.domain_name
-        so.blog_url = cur_user.blog_url
-        so.gender = cur_user.gender
-        so.headimg_url = cur_user.headimg_url
-        so.followers_count = cur_user.followers_count
-        so.friends_count = cur_user.friends_count
-        so.status_count = cur_user.status_count
-        so.verify_type = cur_user.verify_type
-        so.verify_info = cur_user.verify_info
-        so.register_time = cur_user.register_time
+            if so.screen_name == name:
+                so.id = user_id
 
-        if so.screen_name == name:
-            so.id = user_id
-
-        so.mid = status_parse.get_mid(repost_cont)
-        so.status_post_time = status_parse.get_statustime(repost_cont)
-        so.device = status_parse.get_statussource(repost_cont)
-        so.original_status_id = status_parse.get_orignalmid(repost_cont)
-        so.comments_count = status_parse.get_commentcounts(repost_cont)
-        so.reposts_count = status_parse.get_repostcounts(repost_cont)
-        so.like_count = status_parse.get_likecounts(repost_cont)
-        so.status_url = url
-        return SpreadOtherAndCache(so, soc)
+            so.mid = status_parse.get_mid(repost_cont)
+            so.status_post_time = status_parse.get_statustime(repost_cont)
+            so.device = status_parse.get_statussource(repost_cont)
+            so.original_status_id = status_parse.get_orignalmid(repost_cont)
+            so.comments_count = status_parse.get_commentcounts(repost_cont)
+            so.reposts_count = status_parse.get_repostcounts(repost_cont)
+            so.like_count = status_parse.get_likecounts(repost_cont)
+            so.status_url = url
+        except AttributeError:
+            logging.info('解析{user_id}失败'.format(user_id=user_id))
+            return None
+        else:
+            return SpreadOtherAndCache(so, soc)
     else:
         return None
 
