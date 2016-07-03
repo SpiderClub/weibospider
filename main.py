@@ -11,9 +11,8 @@ if __name__ == '__main__':
 
     while True:
         session = login_info.get_session()
-        get_users_info(session, gl.headers)
         logging.info('本次抓取时间为:{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
-
+        get_users_info(session, gl.headers)
         print('本次抓取结束,结束时间为{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
         logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
             '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))

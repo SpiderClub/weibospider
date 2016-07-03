@@ -16,10 +16,9 @@ def get_page(session, url, headers, user_verify=True):
         print('抓取{url}超时'.format(url=url))
         return ''
     except requests.exceptions.ConnectionError:
-        logging.info('设置stream=False无效')
-        logging.info('新浪服务器拒绝连接')
-        time.sleep(60*10) # 休眠10分钟
+        logging.info('新浪服务器拒绝连接，程序休眠5分钟')
+        time.sleep(60*5) # 休眠5分钟
     else:
         gl.count += 1
-        time.sleep(60)
+        time.sleep(50)
         return page

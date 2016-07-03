@@ -14,7 +14,7 @@ headers = {
     'Accept-Language': 'zh-CN,zh;q=0.8',
     'Connection': 'keep-alive'
 }
-max_len = 8   # 批量插入的最大数
+max_len = 5   # 批量插入用户数据
 time_out = 200   # 设置抓取和存储一个用户资料超时时间
 limit = 3 # 批量插入的最大数据量
 count = 0 # 计数器，每次抓取一个url则进行一次计数
