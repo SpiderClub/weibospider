@@ -56,9 +56,10 @@ def get_redirect(data, post_url, session):
     :return: 服务器返回的下一次需要请求的url
     """
     logining_page = session.post(post_url, data=data, headers=gl.headers)
+    post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
     pa = r'location\.replace\([\'"](.*?)[\'"]\)'
-    return re.findall(pa, login_loop)[0]
+    return re.findall(pa, login_loop)[0], post_cookie
 
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
@@ -96,12 +97,20 @@ def get_session():
         'returntype': 'META',
     }
 
-    url = get_redirect(data, post_url, session)
-    login_info = session.get(url).text
+    rs_datas = get_redirect(data, post_url, session)
+    url = rs_datas[0]
+    post_cookies = rs_datas[1]
+    rs_cont = session.get(url)
+    cookies = requests.utils.dict_from_cookiejar(rs_cont.cookies)
+    last_cookies = requests.utils.add_dict_to_cookiejar(post_cookies, cookies)
+
+    # cookie = [item["name"] + "=" + item["value"] for item in sina_cookies]
+    # cookiestr = '; '.join(item for item in cookie)
+    login_info = rs_cont.text
     print("你当前使用的是rookiefly实现的微博登陆方式,登陆返回信息为:\n"+login_info)
     log_path = os.path.join(os.getcwd(), 'weibo.log')
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
     logging.info('本次登陆账号为:{name}'.format(name=gl.login_name))
-    return session
+    return {'session': session, 'cookie': dict(last_cookies)}
 
