@@ -1,6 +1,4 @@
-import redis
-import requests
-import json
+import redis, requests, json, time
 from gl import headers
 from do_login import login_info
 
@@ -17,8 +15,17 @@ def get_cookie():
     return json.loads(r.get('userinfo_cookie').decode('utf-8'))
 
 
+def get_session(q):
+    while True:
+        session = login_info.get_session()['session']
+        q.put(session)
+        # session24小时过期
+        time.sleep(23*60*60)
+
+
 if __name__ == '__main__':
     store_cookie()
     cookie = get_cookie()
     content = requests.get('http://weibo.com/p/1005051921017243/info?mod=pedit_more', cookies=cookie, headers=headers).text
     print(content)
+

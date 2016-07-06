@@ -1,21 +1,22 @@
 # -*-coding:utf-8 -*-
 import time
-import logging
-import gl
-from do_login import login_info
+from multiprocessing import Process, Queue
+from get_cookie import get_session
 from task.get_userinfo import get_users_info
 
 
-# todo 用装饰器设置定时功能
 if __name__ == '__main__':
-
     while True:
-        session = login_info.get_session()
-        logging.info('本次抓取时间为:{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
-        get_users_info(session, gl.headers)
-        print('本次抓取结束,结束时间为{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
-        logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
-            '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))
+        # 父进程创建Queue并传递给各个子进程
+        q = Queue()
+        pw = Process(target=get_session, args=(q,))
+        pr = Process(target=get_users_info, args=(q,))
+        pw.start()
+        pr.start()
+        # 等待pr结束
+        pr.join()
+        # 强制结束pw
+        pw.terminate()
         time.sleep(2*60*60)
 
 
