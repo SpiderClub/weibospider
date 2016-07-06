@@ -1,5 +1,5 @@
 # 保存全局变量
-login_name = '18708103033@163.com'
+login_name = '15708437303'
 login_password = 'rookiefly'
 
 host = '202.115.44.140'

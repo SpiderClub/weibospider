@@ -2,7 +2,7 @@
 import time
 from multiprocessing import Process, Queue
 from get_cookie import get_session
-from task.get_userinfo import get_users_info
+from task.get_repost import get_all
 
 
 if __name__ == '__main__':
@@ -10,7 +10,7 @@ if __name__ == '__main__':
         # 父进程创建Queue并传递给各个子进程
         q = Queue()
         pw = Process(target=get_session, args=(q,))
-        pr = Process(target=get_users_info, args=(q,))
+        pr = Process(target=get_all, args=(q,))
         pw.start()
         pr.start()
         # 等待pr结束

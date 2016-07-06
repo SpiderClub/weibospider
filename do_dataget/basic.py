@@ -4,6 +4,13 @@ from do_dataprocess.basic import is_403
 
 
 def get_page(session, url, headers, user_verify=True):
+    """
+    :param session:
+    :param url:
+    :param headers:
+    :param user_verify: 验证是否是抓取用户或者微博信息，否为抓取转发的ajax连接
+    :return:
+    """
     try:
         page = session.get(url, headers=headers, timeout=time_out, verify=False, stream=False).text
         if user_verify:

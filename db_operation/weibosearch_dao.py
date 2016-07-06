@@ -38,7 +38,6 @@ def get_seed_ids():
     select_sql = 'select dsu_id from weibo_sinausers_cache'
     con = db_connect.get_con()
     db_connect.db_dml(con, truncate_sql)
-    print(insert_sql)
     print('-----------临时表已清空--------------')
     db_connect.db_dml(con, insert_sql)
     print('-----------临时表数据插入完成--------------')

@@ -23,6 +23,7 @@ ___`. .'  /--.--\  `. . __
 佛祖保佑       永无BUG
 """
 import json, logging
+from gl import headers, count
 from do_dataget.basic import get_page
 from do_dataprocess import basic
 from db_operation import spread_original_dao
@@ -30,16 +31,14 @@ from do_dataprocess.do_statusprocess import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
 from do_dataget import get_statusinfo
 from do_dataget import get_userinfo
-from db_operation import spread_other_dao
-from db_operation import weibosearch_dao
+from db_operation import spread_other_dao, weibosearch_dao
 
 
-def get_reposts(url, session, headers):
+def _get_reposts(url, session):
     """
     抓取主程序
     解析源微博，并保存；得到转发微博信息
     注意判断404页面，同理个人资料抓取程序也需要做同样的判断
-    :param headers:
     :param url:
     :param session:
     :return:
@@ -133,7 +132,15 @@ def get_reposts(url, session, headers):
             spread_other_dao.save(spread_others)
             print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
             print('该条微博的转发信息已经采集完成')
-            logging.info('{url}这条微博一共抓取了{num}条转发信息，累计抓取了{num2}个页面'.format(url=root_url,
-                            num=len(spread_others), num2=(len(spread_others) * 2) + total_page + 2))
     else:
         logging.info('{url}为404页面'.format(url=url))
+
+
+def get_all(q):
+    session = q.get(True)
+    urls = weibosearch_dao.get_crawl_urls()
+    logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
+    for url in urls:
+        logging.info('正在抓取url为{url}的微博'.format(url=url))
+        _get_reposts(url, session)
+    logging.info('本次启动一共抓取了{count}个页面'.format(count=count))
