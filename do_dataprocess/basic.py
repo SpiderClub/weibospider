@@ -7,6 +7,9 @@ def is_404(html):
     try:
         if "http://weibo.com/sorry?pagenotfound" in html or soup.title.text == '404错误' or html == '':
             return True
+        # 处理转发微博的情况
+        elif '此微博已被作者删除' in html:
+            return True
         else:
             return False
     except AttributeError:

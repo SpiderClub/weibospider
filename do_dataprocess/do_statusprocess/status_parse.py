@@ -107,7 +107,7 @@ def get_commentcounts(html):
         comments = soup.find(attrs={'node-type': 'comment_btn_text'}).find('span').find('em').find_next_sibling().text
         counts = int(comments)
         return counts
-    except Exception:
+    except AttributeError:
         return 0
 
 
@@ -119,7 +119,7 @@ def get_likecounts(html):
             return int(soup.find(attrs={'node-type': 'like_status'}).text)
         else:
             return int(soup.find_all(attrs={'node-type': 'like_status'})[1].text)
-    except Exception:
+    except AttributeError:
         return 0
 
 
@@ -135,8 +135,14 @@ def get_rooturl(cururl, html):
         if cont == '':
             return ''
         soup = BeautifulSoup(cont, 'html.parser')
-        url = soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'S_txt2'})['href']
-        return url
+        try:
+            url = soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'S_txt2'})['href']
+            return url
+        except TypeError:
+            return ''
+        except AttributeError:
+            print('解析错误')
+            return ''
 
 
 def get_reposturls(repostinfo):
@@ -152,7 +158,7 @@ def get_reposturls(repostinfo):
         for content in contents:
             repost_urls.append(prestring+content['href'])
         return repost_urls
-    except Exception:
+    except AttributeError:
         return []
 
 
