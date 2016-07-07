@@ -6,14 +6,15 @@ def get_crawl_urls():
     """
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
     """
-    sql = 'select se_userid,se_sid from weibo_search_data where is_crawled = 0 and ' \
+    sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
           'se_sourcetype = \'新浪微博\''
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
     db_connect.db_close(con)
     urls = []
     for r in rs:
-        urls.append('http://weibo.com/' + r[0] + '/' + r[1])
+        data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
+        urls.append(data)
     return urls
 
 

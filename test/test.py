@@ -3,19 +3,19 @@ import os, time, random
 
 
 # 写数据进程执行的代码:
-def write(q):
+def write(que):
     while True:
         print('Process to write: %s' % os.getpid())
-        q.put(random.randint(0, 10))
-        time.sleep(5)
+        que.put(random.randint(0, 10))
+        time.sleep(2)
 
 
 # 读数据进程执行的代码:
-def read(q):
+def read(que):
     print('Process to read: %s' % os.getpid())
-    value = q.get(True)
+    value = que.get(True)
     print('Get %s from queue.' % value)
-    time.sleep(5)
+    time.sleep(10)
 
 
 if __name__ == '__main__':

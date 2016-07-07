@@ -1,4 +1,4 @@
-# -*-coding:utf-8 -*-
+# 获取转发信息# -*-coding:utf-8 -*-
 import time
 from multiprocessing import Process, Queue
 from get_cookie import get_session
@@ -17,6 +17,7 @@ if __name__ == '__main__':
         pr.join()
         # 强制结束pw
         pw.terminate()
+        print('本轮抓取已经结束')
         time.sleep(2*60*60)
 
 

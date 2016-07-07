@@ -169,7 +169,3 @@ def get_upperusername(html, defaultname):
         return defaultname
 
 
-if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/403.html', 'rb') as f:
-        source = f.read().decode('utf-8')
-        print(is_403(source))

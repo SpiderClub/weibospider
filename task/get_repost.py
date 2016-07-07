@@ -34,7 +34,7 @@ from do_dataget import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
 
 
-def _get_reposts(url, session):
+def _get_reposts(url, session, mid):
     """
     抓取主程序
     解析源微博，并保存；得到转发微博信息
@@ -56,8 +56,6 @@ def _get_reposts(url, session):
             root_url = status_parse.get_rooturl(url, html)
 
         html = get_page(session, root_url, headers)
-
-        mid = status_parse.get_orignalmid(html)
         user_id = status_parse.get_userid(html)
         user_name = status_parse.get_username(html)
         post_time = status_parse.get_statustime(html)
@@ -66,7 +64,6 @@ def _get_reposts(url, session):
         reposts_count = status_parse.get_repostcounts(html)
         root_user = get_userinfo.get_profile(user_id, session, headers)
         spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
-        weibosearch_dao.update_weibo_url(mid)
 
         if reposts_count > 0:
             base_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={mid}&page={currpage}'
@@ -134,6 +131,7 @@ def _get_reposts(url, session):
             print('该条微博的转发信息已经采集完成')
     else:
         logging.info('{url}为404页面'.format(url=url))
+    weibosearch_dao.update_weibo_url(mid)
 
 
 def get_all(q):
@@ -142,5 +140,5 @@ def get_all(q):
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
     for url in urls:
         logging.info('正在抓取url为{url}的微博'.format(url=url))
-        _get_reposts(url, session)
+        _get_reposts(url['url'], session, url['mid'])
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

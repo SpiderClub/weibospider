@@ -1,6 +1,6 @@
 import time, sys, logging, gl, requests
 from gl import time_out, login_name
-from do_dataprocess.basic import is_403
+from do_dataprocess.basic import is_403, is_404
 
 
 def get_page(session, url, headers, user_verify=True):
@@ -19,6 +19,9 @@ def get_page(session, url, headers, user_verify=True):
                 logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
                     '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))
                 sys.exit(-1)
+            if is_404(page):
+                print('url为{url}的连接不存在'.format(url=url))
+                return ''
     except TimeoutError:
         print('抓取{url}超时'.format(url=url))
         return ''

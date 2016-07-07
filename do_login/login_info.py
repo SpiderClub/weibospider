@@ -1,12 +1,7 @@
 # -*-coding:utf-8 -*-
 # 获取扩散信息
-import requests
-import re
-import json
-import execjs
-import os
-import logging
-import gl
+import requests, re, json, os, logging
+import execjs, gl
 
 
 def get_runntime(path):
