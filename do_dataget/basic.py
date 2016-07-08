@@ -11,8 +11,12 @@ def get_page(session, url, headers, user_verify=True):
     :param user_verify: 验证是否是抓取用户或者微博信息，否为抓取转发的ajax连接
     :return:
     """
+    print('本次抓取的url为{url}'.format(url=url))
     try:
-        page = session.get(url, headers=headers, timeout=time_out, verify=False, stream=False).text
+        page = session.get(url, headers=headers, timeout=time_out, verify=False, stream=False).text.\
+            encode('utf-8',  'ignore').decode('utf-8')
+        gl.count += 1
+        time.sleep(50)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))
@@ -29,6 +33,4 @@ def get_page(session, url, headers, user_verify=True):
         logging.info('新浪服务器拒绝连接，程序休眠5分钟')
         time.sleep(60*5) # 休眠5分钟
     else:
-        gl.count += 1
-        time.sleep(50)
         return page

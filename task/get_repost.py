@@ -22,7 +22,7 @@ ___`. .'  /--.--\  `. . __
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 佛祖保佑       永无BUG
 """
-import json, logging
+import json, logging, os
 from gl import headers, count
 from do_dataget.basic import get_page
 from do_dataprocess import basic
@@ -55,7 +55,7 @@ def _get_reposts(url, session, mid):
             print('该微博不是源微博，现在从源微博开始爬取')
             root_url = status_parse.get_rooturl(url, html)
 
-        if root_url != '':
+        if root_url != '' and root_url != url:
             html = get_page(session, root_url, headers)
             user_id = status_parse.get_userid(html)
             user_name = status_parse.get_username(html)
@@ -117,15 +117,19 @@ def _get_reposts(url, session, mid):
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
             else:
-                print('源微博已经被删除了')
+                print('该微博{url}的源微博已经被删除了'.format(url=url))
     else:
         logging.info('{url}为404页面'.format(url=url))
     weibosearch_dao.update_weibo_url(mid)
 
 
 def get_all(q):
+    log_path = os.path.join(os.getcwd(), 'getdata.log')
+    logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
+                        datefmt='%Y%m%d %H:%M:%S')
     session = q.get(True)
     urls = weibosearch_dao.get_crawl_urls()
+    print('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
     for url in urls:
         logging.info('正在抓取url为{url}的微博'.format(url=url))

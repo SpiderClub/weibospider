@@ -47,7 +47,6 @@ def get_profile(user_id, session, headers):
         user.headimg_url = get_publicinfo.get_headimg(html)
         user.verify_type = get_publicinfo.get_verifytype(html)
         user.verify_info = get_publicinfo.get_verifyreason(html, user.verify_type)
-        print('本次抓取的url为:' + url + '用户id为：' + user_id)
     return user
 
 

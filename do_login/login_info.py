@@ -103,7 +103,7 @@ def get_session():
     # cookiestr = '; '.join(item for item in cookie)
     login_info = rs_cont.text
     print("你当前使用的是rookiefly实现的微博登陆方式,登陆返回信息为:\n"+login_info)
-    log_path = os.path.join(os.getcwd(), 'weibo.log')
+    log_path = os.path.join(os.getcwd(), 'login.log')
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
     logging.info('本次登陆账号为:{name}'.format(name=gl.login_name))
