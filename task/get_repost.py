@@ -34,7 +34,8 @@ from do_dataget import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
 
 
-def _get_reposts(url, session, mid):
+# def _get_reposts(url, session, mid):
+def _get_reposts(url, session):
     """
     抓取主程序
     解析源微博，并保存；得到转发微博信息
@@ -55,8 +56,9 @@ def _get_reposts(url, session, mid):
             print('该微博不是源微博，现在从源微博开始爬取')
             root_url = status_parse.get_rooturl(url, html)
 
-        if root_url != '' and root_url != url:
+        if root_url != '':
             html = get_page(session, root_url, headers)
+            mid = status_parse.get_orignalmid(html)
             user_id = status_parse.get_userid(html)
             user_name = status_parse.get_username(html)
             post_time = status_parse.get_statustime(html)
@@ -65,6 +67,7 @@ def _get_reposts(url, session, mid):
             reposts_count = status_parse.get_repostcounts(html)
             root_user = get_userinfo.get_profile(user_id, session, headers)
             spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+            print('转发数为{counts}'.format(counts=reposts_count))
 
             if reposts_count > 0:
                 base_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={mid}&page={currpage}'
@@ -120,7 +123,7 @@ def _get_reposts(url, session, mid):
                 print('该微博{url}的源微博已经被删除了'.format(url=url))
     else:
         logging.info('{url}为404页面'.format(url=url))
-    weibosearch_dao.update_weibo_url(mid)
+    #weibosearch_dao.update_weibo_url(mid)
 
 
 def get_all(q):
@@ -128,10 +131,18 @@ def get_all(q):
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
     session = q.get(True)
-    urls = weibosearch_dao.get_crawl_urls()
+    # urls = weibosearch_dao.get_crawl_urls()
+    urls = ['http://weibo.com/3171044957/DDT1R5aao?refer_flag=1001030103_&type=comment#_rnd1468139987295',
+            'http://weibo.com/2827686890/DE3VUCIgx?refer_flag=1001030103_&type=comment#_rnd1468137872695',
+            'http://weibo.com/5726212305/DE7VUh4Jt?refer_flag=1001030103_&type=comment#_rnd1468137918172',
+            'http://weibo.com/1690076015/DE6v4zIf9?ref=page_102803_ctg1_1760_-_ctg1_1760_home&'
+            'rid=1_0_0_2667336662843252787&type=comment',
+            'http://weibo.com/1927564525/DE2NsiHcU?ref=page_102803_ctg1_1760_-_ctg1_1760_home&'
+            'rid=6_0_0_2667336662843252787&type=comment#_rnd1468138229898']
     print('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
     for url in urls:
         logging.info('正在抓取url为{url}的微博'.format(url=url))
-        _get_reposts(url['url'], session, url['mid'])
+        _get_reposts(url, session)
+        #_get_reposts(url['url'], session, url['mid'])
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

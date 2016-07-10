@@ -96,8 +96,6 @@ def get_repostcounts(html):
         return counts
     except ValueError:
         return 0
-    except AttributeError:
-        return 0
 
 
 def get_commentcounts(html):
@@ -107,8 +105,6 @@ def get_commentcounts(html):
         comments = soup.find(attrs={'node-type': 'comment_btn_text'}).find('span').find('em').find_next_sibling().text
         counts = int(comments)
         return counts
-    except AttributeError:
-        return 0
     except ValueError:
         return 0
 
@@ -121,8 +117,6 @@ def get_likecounts(html):
             return int(soup.find(attrs={'node-type': 'like_status'}).text)
         else:
             return int(soup.find_all(attrs={'node-type': 'like_status'})[1].text)
-    except AttributeError:
-        return 0
     except ValueError:
         return 0
 
@@ -182,4 +176,4 @@ def get_upperusername(html, defaultname):
 if __name__ == '__main__':
     with open('F:/360data/重要数据/桌面/2.html', 'rb') as f:
         source = f.read().decode('utf-8')
-    print(get_commentcounts(source))
+    print(get_repostcounts(source))

@@ -19,9 +19,12 @@ def is_404(html):
 
 def is_403(html):
     soup = BeautifulSoup(html, 'html.parser')
-    return True if '访问受限' in soup.title.text else False
+    if 'uid' not in html or '访问受限' in soup.title.text:
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/2.html', 'rb') as f:
+    with open('F:/360data/重要数据/桌面/1.html', 'rb') as f:
         source = f.read().decode('utf-8')
-    print(is_404(source))
+    print(is_403(source))

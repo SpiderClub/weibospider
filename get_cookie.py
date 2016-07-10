@@ -1,6 +1,9 @@
 import redis, requests, json, time
 from gl import headers
 from do_login import login_info
+from requests.exceptions import SSLError as rsle
+from requests.packages.urllib3.exceptions import SSLError as rpuese
+from ssl import SSLEOFError as sse
 
 
 def store_cookie():
@@ -17,10 +20,17 @@ def get_cookie():
 
 def get_session(q):
     while True:
-        session = login_info.get_session()['session']
-        q.put(session)
-        # session24小时过期
-        time.sleep(23*60*60)
+        try:
+            session = login_info.get_session()['session']
+        except (sse, rsle, rpuese):
+            # 预防因为网络问题导致的登陆不成功
+            print('本次登陆出现问题')
+            time.sleep(60)
+            session = login_info.get_session()['session']
+        finally:
+            q.put(session)
+            # session24小时过期
+            time.sleep(23*60*60)
 
 
 if __name__ == '__main__':
