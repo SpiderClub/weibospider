@@ -22,6 +22,10 @@ def get_session(q):
     while True:
         try:
             session = login_info.get_session()['session']
+            if session is None:
+                # todo: 邮件通知
+                time.sleep(60*5)
+                session = login_info.get_session()['session']
         except (sse, rsle, rpuese):
             # 预防因为网络问题导致的登陆不成功
             print('本次登陆出现问题')

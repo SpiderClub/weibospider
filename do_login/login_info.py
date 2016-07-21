@@ -53,12 +53,18 @@ def get_redirect(data, post_url, session):
     logining_page = session.post(post_url, data=data, headers=gl.headers)
     post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
-    pa = r'location\.replace\([\'"](.*?)[\'"]\)'
-    return re.findall(pa, login_loop)[0], post_cookie
+    if '正在登录' in login_loop:
+        pa = r'location\.replace\([\'"](.*?)[\'"]\)'
+        return re.findall(pa, login_loop)[0], post_cookie
+    else:
+        return '', post_cookie
 
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
 def get_session():
+    log_path = os.path.join(os.getcwd(), 'login.log')
+    logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
+                        datefmt='%Y%m%d %H:%M:%S')
     session = requests.session()
     js_path = os.path.join(os.getcwd(), 'do_login/sinalogin.js')
     runntime = get_runntime(js_path)
@@ -94,18 +100,31 @@ def get_session():
 
     rs_datas = get_redirect(data, post_url, session)
     url = rs_datas[0]
-    post_cookies = rs_datas[1]
-    rs_cont = session.get(url)
-    cookies = requests.utils.dict_from_cookiejar(rs_cont.cookies)
-    last_cookies = requests.utils.add_dict_to_cookiejar(post_cookies, cookies)
+    if url != '':
+        post_cookies = rs_datas[1]
+        rs_cont = session.get(url)
+        cookies = requests.utils.dict_from_cookiejar(rs_cont.cookies)
+        last_cookies = requests.utils.add_dict_to_cookiejar(post_cookies, cookies)
+        login_info = rs_cont.text
+        u_pattern = r'"uniqueid":"(.*)",'
+        m = re.search(u_pattern, login_info)
+        if m.group(1):
+            print("你当前使用的是rookiefly实现的微博登陆方式,你的微博id为" + m.group(1))
+            logging.info('本次登陆账号为:{name}'.format(name=gl.login_name))
+            return {'session': session, 'cookie': dict(last_cookies)}
+        else:
+            print('登陆失败')
+            logging.info('本次账号{name}登陆失败'.format(name=gl.login_name))
+            return None
+    else:
+        print('本次登陆失败')
+        logging.info('本次账号{name}登陆失败'.format(name=gl.login_name))
+        return None
 
-    # cookie = [item["name"] + "=" + item["value"] for item in sina_cookies]
-    # cookiestr = '; '.join(item for item in cookie)
-    login_info = rs_cont.text
-    print("你当前使用的是rookiefly实现的微博登陆方式,登陆返回信息为:\n"+login_info)
-    log_path = os.path.join(os.getcwd(), 'login.log')
-    logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
-                        datefmt='%Y%m%d %H:%M:%S')
-    logging.info('本次登陆账号为:{name}'.format(name=gl.login_name))
-    return {'session': session, 'cookie': dict(last_cookies)}
+
+
+
+
+
+
 
