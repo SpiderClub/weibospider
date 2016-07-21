@@ -7,11 +7,8 @@ from do_dataprocess.get_userprocess import get_enterpriseinfo, get_personalinfo,
 from do_dataprocess.basic import is_403, is_404
 from do_dataget.basic import get_page
 from db_operation.user_dao import save_user
-from weibo_decorator.decorators import timeout_decorator
 
 
-# todo 找出更多不同模板
-@timeout_decorator
 def get_profile(user_id, session, headers):
     """
     默认为个人用户，如果为作家，则需要再做一次抓取，而为企业用户，它会重定向到企业主页，直接解析即可

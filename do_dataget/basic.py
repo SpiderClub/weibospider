@@ -1,8 +1,10 @@
 import time, sys, logging, gl, requests
 from gl import time_out, login_name
-from do_dataprocess.basic import is_403, is_404
+from do_dataprocess.basic import is_403, is_404, is_complete
+from weibo_decorator.decorators import timeout_decorator
 
 
+@timeout_decorator
 def get_page(session, url, headers, user_verify=True):
     """
     :param session:
@@ -13,10 +15,10 @@ def get_page(session, url, headers, user_verify=True):
     """
     print('本次抓取的url为{url}'.format(url=url))
     try:
-        page = session.get(url, headers=headers, timeout=time_out, verify=False, stream=False).text.\
+        page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(40)
+        time.sleep(38)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))
@@ -26,14 +28,23 @@ def get_page(session, url, headers, user_verify=True):
                 sys.exit(-1)
             if is_404(page):
                 print('url为{url}的连接不存在'.format(url=url))
-                logging.info('url为{url}的连接不存在'.format(url=url))
-                logging.info('它的页面源码为{page}'.format(page=page))
+                logging.info('url为{url}的连接不存在, 它的源码为{page}'.format(url=url, page=page))
                 return ''
+            if not is_complete(page):
+                time.sleep(10)
+                page = session.get(url, headers=headers, timeout=time_out, verify=False).text. \
+                    encode('utf-8', 'ignore').decode('utf-8')
+    # todo:这个是不是和装饰器重复了
     except TimeoutError:
         print('抓取{url}超时'.format(url=url))
-        return ''
+        return None
+    except requests.exceptions.ReadTimeout:
+        logging.info('抓取{url}时连接目标服务器超时'.format(url=url))
+        time.sleep(60 * 5)  # 休眠5分钟
+        return None
     except requests.exceptions.ConnectionError:
-        logging.info('新浪服务器拒绝连接，程序休眠5分钟')
+        logging.info('目标服务器拒绝连接，程序休眠5分钟')
         time.sleep(60*5) # 休眠5分钟
+        return ''
     else:
         return page

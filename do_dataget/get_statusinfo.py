@@ -53,8 +53,10 @@ def get_status_info(url, session, user_id, name, headers):
             so.reposts_count = status_parse.get_repostcounts(repost_cont)
             so.like_count = status_parse.get_likecounts(repost_cont)
             so.status_url = url
-        except AttributeError:
-            logging.info('解析{user_id}失败'.format(user_id=user_id))
+        except AttributeError as e:
+            # todo:找出这里的问题
+            logging.info('解析{user_id}失败, 堆栈为{e}'.format(user_id=user_id, e=e))
+            logging.info(r'该转发页面的源代码为:\n{repost_cont}'.format(repost_cont=repost_cont))
             return None
         else:
             return SpreadOtherAndCache(so, soc)
