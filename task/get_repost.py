@@ -34,7 +34,6 @@ from do_dataget import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
 
 
-# def _get_reposts(url, session, mid):
 def _get_reposts(url, session):
     """
     抓取主程序
@@ -80,8 +79,7 @@ def _get_reposts(url, session):
                 spread_other_caches.append(soc)
                 page = 1
                 ajax_url = base_url.format(mid=mid, currpage=page)
-
-                source = get_page(session, ajax_url, headers, user_verify=False)
+                source = get_page(session, ajax_url, headers, False)
                 print('本次转发信息url为：' + ajax_url)
 
                 repost_json = json.loads(source)
@@ -110,15 +108,12 @@ def _get_reposts(url, session):
                     page_counter += 1
 
                 for so in spread_others:
-                    #  print('spreadother为:{so}'.format(so=so))
                     for i in spread_other_caches:
-                        #  print('\t\tspreadothercache为{i}:'.format(i=i))
                         if so.upper_user_name == i.get_name():
                             so.upper_user_id = i.get_id()
                             break
                         else:
                             so.upper_user_id = user_id
-                #  print('运行到这里了{id}'.format(id=user_id))
                 spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
@@ -126,7 +121,6 @@ def _get_reposts(url, session):
                 print('该微博{url}的源微博已经被删除了'.format(url=url))
     else:
         logging.info('{url}为404页面'.format(url=url))
-    #weibosearch_dao.update_weibo_url(mid)
 
 
 def get_all(q):
@@ -147,5 +141,4 @@ def get_all(q):
     for url in urls:
         logging.info('正在抓取url为{url}的微博'.format(url=url))
         _get_reposts(url, session)
-        #_get_reposts(url['url'], session, url['mid'])
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))
