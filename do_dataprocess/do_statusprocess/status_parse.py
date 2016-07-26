@@ -1,8 +1,8 @@
 # -*-coding:utf-8 -*-
 # 微博详情页
-import re
-import json
+import re, json, logging
 from bs4 import BeautifulSoup
+from weibo_decorator.decorators import parse_decorator
 
 
 def get_userid(html):
@@ -27,6 +27,7 @@ def get_userdomain(html):
     return m.group(1) if m else ''
 
 
+@parse_decorator(1)
 def _get_statushtml(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -40,9 +41,14 @@ def _get_statushtml(html):
                 cont = json.loads(all_info)['html']
         except TypeError:
             return ''
+        except Exception as e:
+            print('解析错误')
+            logging.info('__get__statushtml()错误,具体错误是'.format(e=e))
+            logging.info('网页代码为{page}'.format(page=html))
     return cont
 
 
+@parse_decorator(1)
 def get_mid(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, 'html.parser')
@@ -52,8 +58,11 @@ def get_mid(html):
         mid_pattern = r'mid=(\d+)'
         mid_matcher = re.search(mid_pattern, html)
         return mid_matcher.group(1) if mid_matcher else ''
+    except Exception as e:
+        logging.info('get_mid()发生异常,具体异常为{e}'.format(e=e))
 
 
+@parse_decorator(1)
 def get_orignalmid(html):
     """
     :return: 如果本来就是源微博，则返回微博id,否则返回源微博id
@@ -66,6 +75,7 @@ def get_orignalmid(html):
         return soup.find(attrs={'action-type': 'feed_list_item'})['omid']
 
 
+@parse_decorator(1)
 def get_statussource(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -78,6 +88,7 @@ def get_statussource(html):
             return ''
 
 
+@parse_decorator(1)
 def get_statustime(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -87,6 +98,7 @@ def get_statustime(html):
         return ''
 
 
+@parse_decorator(0)
 def get_repostcounts(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -98,6 +110,7 @@ def get_repostcounts(html):
         return 0
 
 
+@parse_decorator(0)
 def get_commentcounts(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -109,6 +122,7 @@ def get_commentcounts(html):
         return 0
 
 
+@parse_decorator(0)
 def get_likecounts(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -125,6 +139,7 @@ def is_root(html):
     return False if 'omid=' in html else True
 
 
+@parse_decorator(1)
 def get_rooturl(cururl, html):
     if is_root(html):
         return cururl
@@ -143,6 +158,7 @@ def get_rooturl(cururl, html):
             return ''
 
 
+@parse_decorator(2)
 def get_reposturls(repostinfo):
     """
     :param repostinfo: 转发信息
@@ -168,6 +184,9 @@ def get_upperusername(html, defaultname):
             content = soup.find(attrs={'node-type': 'feed_list_content'}).find(attrs={'render': 'ext', 'extra-data': 'type=atname'}).text
             return content[1:]
         except AttributeError:
+            return defaultname
+        except Exception as e:
+            print(e)
             return defaultname
     else:
         return defaultname

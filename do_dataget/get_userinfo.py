@@ -37,7 +37,7 @@ def get_profile(user_id, session, headers):
             user.followers_count = get_enterpriseinfo.get_fans(html)
             user.friends_count = get_enterpriseinfo.get_friends(html)
             user.status_count = get_enterpriseinfo.get_status(html)
-            user.description = get_enterpriseinfo.get_description(html)
+            user.description = get_enterpriseinfo.get_description(html).encode('gbk', 'ignore').decode('gbk')
 
         user.id = user_id
         user.screen_name = get_publicinfo.get_username(html)

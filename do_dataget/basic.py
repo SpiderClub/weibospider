@@ -31,17 +31,16 @@ def get_page(session, url, headers, user_verify=True):
                 logging.info('url为{url}的连接不存在, 它的源码为{page}'.format(url=url, page=page))
                 return ''
             if not is_complete(page):
-                time.sleep(10)
-                page = session.get(url, headers=headers, timeout=time_out, verify=False).text. \
-                    encode('utf-8', 'ignore').decode('utf-8')
-    # todo:这个是不是和装饰器重复了
-    except TimeoutError:
-        print('抓取{url}超时'.format(url=url))
-        return None
+                time.sleep(30)
+                try:
+                    page = session.get(url, headers=headers, timeout=time_out, verify=False).text. \
+                        encode('utf-8', 'ignore').decode('utf-8')
+                except Exception:
+                    return ''
     except requests.exceptions.ReadTimeout:
         logging.info('抓取{url}时连接目标服务器超时'.format(url=url))
         time.sleep(60 * 5)  # 休眠5分钟
-        return None
+        return ''
     except requests.exceptions.ConnectionError:
         logging.info('目标服务器拒绝连接，程序休眠5分钟')
         time.sleep(60*5) # 休眠5分钟

@@ -1,5 +1,5 @@
 # -*-coding:utf-8 -*-
-import logging
+import logging, traceback
 from functools import wraps
 from traceback import format_tb
 
@@ -23,9 +23,9 @@ def save_decorator(func):
 # 用于超时设置
 def timeout_decorator(func):
     @wraps(func)
-    def time_limit(session, url, headers, verify):
+    def time_limit(session, url, headers, **kwargs):
         try:
-            return func(session, url, headers, verify)
+            return func(session, url, headers, **kwargs)
         except Exception as e:
             print('抓取{url}超时'.format(url=url))
             logging.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
@@ -34,5 +34,28 @@ def timeout_decorator(func):
     return time_limit
 
 
-
-
+# 用于捕捉页面解析的异常, 2表示返回空列表，1表示返回空字符串，0表示返回数字0, 3表示返回True,4表示返回{},5返回None
+def parse_decorator(return_type):
+    def page_parse(func):
+        @wraps(func)
+        def handle_error(*keys):
+            try:
+                return func(*keys)
+            except Exception as e:
+                print(e)
+                with open('log.txt', 'a') as f:
+                    traceback.print_exc(file=f)
+                if return_type == 3:
+                    return True
+                elif return_type == 5:
+                    return None
+                elif return_type == 4:
+                    return {}
+                elif return_type == 2:
+                    return []
+                elif return_type == 1:
+                    return ''
+                else:
+                    return 0
+        return handle_error
+    return page_parse

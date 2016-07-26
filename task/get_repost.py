@@ -58,6 +58,9 @@ def _get_reposts(url, session):
 
         if root_url != '':
             html = get_page(session, root_url, headers)
+            if basic.is_404(html):
+                print('根微博已经找不到了')
+                return
             mid = status_parse.get_orignalmid(html)
             user_id = status_parse.get_userid(html)
             user_name = status_parse.get_username(html)
@@ -132,7 +135,7 @@ def get_all(q):
                         datefmt='%Y%m%d %H:%M:%S')
     session = q.get(True)
     # urls = weibosearch_dao.get_crawl_urls()
-    urls = ['http://weibo.com/3171044957/DDT1R5aao?refer_flag=1001030103_&type=comment#_rnd1468139987295',
+    urls = [
             'http://weibo.com/2827686890/DE3VUCIgx?refer_flag=1001030103_&type=comment#_rnd1468137872695',
             'http://weibo.com/5726212305/DE7VUh4Jt?refer_flag=1001030103_&type=comment#_rnd1468137918172',
             'http://weibo.com/1690076015/DE6v4zIf9?ref=page_102803_ctg1_1760_-_ctg1_1760_home&'

@@ -3,8 +3,10 @@
 from bs4 import BeautifulSoup
 from do_dataprocess.get_userprocess import get_publicinfo
 from weibo_entities.user import User
+from weibo_decorator.decorators import parse_decorator
 
 
+@parse_decorator(0)
 def get_friends(html):
     """
     :param html:
@@ -20,6 +22,7 @@ def get_friends(html):
         return 0
 
 
+@parse_decorator(0)
 def get_fans(html):
     """
     :param html:
@@ -35,6 +38,7 @@ def get_fans(html):
         return 0
 
 
+@parse_decorator(0)
 def get_status(html):
     """
     :param html:
@@ -50,6 +54,7 @@ def get_status(html):
         return 0
 
 
+@parse_decorator(5)
 # todo 补充所有信息
 def get_detail(html):
     user = User()

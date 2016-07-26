@@ -4,6 +4,7 @@ import re
 import json
 from bs4 import BeautifulSoup
 from do_dataprocess.do_statusprocess import status_parse
+from weibo_decorator.decorators import parse_decorator
 
 
 def get_userid(html):
@@ -18,6 +19,7 @@ def get_userdomain(html):
     return status_parse.get_userdomain(html)
 
 
+@parse_decorator(1)
 def _get_header(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -44,6 +46,7 @@ def get_verifytype(html):
         return 0
 
 
+@parse_decorator(1)
 def get_verifyreason(html, verify_type):
     if verify_type == 1 or verify_type == 2:
         soup = BeautifulSoup(_get_header(html), 'html.parser')
@@ -52,6 +55,7 @@ def get_verifyreason(html, verify_type):
         return ''
 
 
+@parse_decorator(1)
 def get_headimg(html):
     soup = BeautifulSoup(_get_header(html), 'html.parser')
     try:
@@ -61,6 +65,7 @@ def get_headimg(html):
     return headimg
 
 
+@parse_decorator(1)
 def get_left(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -86,6 +91,7 @@ def get_left(html):
     return cont
 
 
+@parse_decorator(1)
 def get_right(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')

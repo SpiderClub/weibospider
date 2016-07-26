@@ -4,8 +4,10 @@ import re
 import json
 from bs4 import BeautifulSoup
 from do_dataprocess.get_userprocess import get_publicinfo
+from weibo_decorator.decorators import parse_decorator
 
 
+@parse_decorator(4)
 def get_detail(html):
     """
     这个是从认证企业的个人资料页面解析数据,一般不用这个
@@ -29,7 +31,9 @@ def get_detail(html):
     return details
 
 
+# todo:这里返回空字符串，和解析微博页面返回的整数0不符合
 # 以下是通过认证企业主页进行解析
+@parse_decorator(1)
 def get_friends(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
@@ -37,18 +41,21 @@ def get_friends(html):
 #    return soup.find_all(attrs={'class': 'W_f14'})[0].get_text()
 
 
+@parse_decorator(1)
 def get_fans(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return soup.find_all('strong')[1].get_text()
 
 
+@parse_decorator(1)
 def get_status(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return soup.find_all('strong')[2].get_text()
 
 
+@parse_decorator(1)
 def get_description(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')

@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 from bs4 import BeautifulSoup
+from weibo_decorator.decorators import parse_decorator
 
 
+@parse_decorator(3)
 def is_404(html):
     soup = BeautifulSoup(html, 'html.parser')
     # 前一种情况是处理直接用js实现重定向的页面
@@ -17,6 +19,7 @@ def is_404(html):
         return True
 
 
+@parse_decorator(3)
 def is_403(html):
     soup = BeautifulSoup(html, 'html.parser')
     if '访问受限' in soup.title.text:
