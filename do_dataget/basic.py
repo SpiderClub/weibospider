@@ -5,7 +5,7 @@ from weibo_decorator.decorators import timeout_decorator
 
 
 @timeout_decorator
-def get_page(session, url, headers, user_verify=True):
+def get_page(url, session, headers, user_verify=True):
     """
     :param session:
     :param url:

@@ -22,7 +22,7 @@ def get_profile(user_id, session, headers):
     """
     user = User()
     url = 'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more'
-    html = get_page(session, url, headers)
+    html = get_page(url, session, headers)
 
     if is_403(html):
         logging.info('{name}已经被冻结'.format(name=login_name))

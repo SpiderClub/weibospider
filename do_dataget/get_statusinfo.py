@@ -13,7 +13,7 @@ from weibo_entities.other_and_cache import SpreadOtherAndCache
 def get_status_info(url, session, user_id, name, headers):
     soc = SpreadOtherCache()
     print('当前转发微博url为:' + url)
-    repost_cont = get_page(session, url, headers)
+    repost_cont = get_page(url, session, headers)
 
     if not is_404(repost_cont):
         repost_user_id = status_parse.get_userid(repost_cont)

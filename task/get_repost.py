@@ -47,16 +47,15 @@ def _get_reposts(url, session):
     spread_others = []
     spread_other_and_caches = []
 
-    html = get_page(session, url, headers=headers)
+    html = get_page(url, session, headers)
 
     if not basic.is_404(html):
         root_url = url
         if not status_parse.is_root(html):
             print('该微博不是源微博，现在从源微博开始爬取')
             root_url = status_parse.get_rooturl(url, html)
-
         if root_url != '':
-            html = get_page(session, root_url, headers)
+            html = get_page(root_url, session, headers)
             if basic.is_404(html):
                 print('根微博已经找不到了')
                 return
@@ -68,7 +67,8 @@ def _get_reposts(url, session):
             comments_count = status_parse.get_commentcounts(html)
             reposts_count = status_parse.get_repostcounts(html)
             root_user = get_userinfo.get_profile(user_id, session, headers)
-            spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+            #spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+            print('运行到保存的地方了')
             print('转发数为{counts}'.format(counts=reposts_count))
 
             if reposts_count > 0:
@@ -79,7 +79,7 @@ def _get_reposts(url, session):
                 spread_other_caches.append(soc)
                 page = 1
                 ajax_url = base_url.format(mid=mid, currpage=page)
-                source = get_page(session, ajax_url, headers, False)
+                source = get_page(ajax_url, session, headers, False)
                 print('本次转发信息url为：' + ajax_url)
 
                 repost_json = json.loads(source)
