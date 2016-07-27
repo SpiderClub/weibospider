@@ -18,7 +18,7 @@ def get_page(url, session, headers, user_verify=True):
         page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(38)
+        time.sleep(40)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))
@@ -41,8 +41,8 @@ def get_page(url, session, headers, user_verify=True):
         logging.info('抓取{url}时连接目标服务器超时'.format(url=url))
         time.sleep(60 * 5)  # 休眠5分钟
         return ''
-    except requests.exceptions.ConnectionError:
-        logging.info('目标服务器拒绝连接，程序休眠30分钟')
+    except requests.exceptions.ConnectionError as e:
+        logging.info('目标服务器拒绝连接，程序休眠30分钟,具体异常信息为:{e}'.format(e=e))
         time.sleep(60*30) # 休眠5分钟
         return ''
     else:
