@@ -42,8 +42,8 @@ def get_page(url, session, headers, user_verify=True):
         time.sleep(60 * 5)  # 休眠5分钟
         return ''
     except requests.exceptions.ConnectionError:
-        logging.info('目标服务器拒绝连接，程序休眠5分钟')
-        time.sleep(60*5) # 休眠5分钟
+        logging.info('目标服务器拒绝连接，程序休眠30分钟')
+        time.sleep(60*30) # 休眠5分钟
         return ''
     else:
         return page
