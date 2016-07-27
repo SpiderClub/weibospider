@@ -25,7 +25,8 @@ def get_profile(user_id, session, headers):
     html = get_page(url, session, headers)
 
     if is_403(html):
-        logging.info('{name}已经被冻结'.format(name=login_name))
+        logging.info('get_profile()中{name}已经被冻结'.format(name=login_name))
+        logging.info('页面信息为:{page}'.format(page=html))
     if not is_404(html):
         domain = get_publicinfo.get_userdomain(html)
         if domain == '100505' or domain == '103505' or domain == '100306':

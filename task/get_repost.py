@@ -114,7 +114,7 @@ def _get_reposts(url, session):
                             break
                         else:
                             so.upper_user_id = user_id
-                spread_other_dao.save(spread_others)
+                #spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
             else:
