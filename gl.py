@@ -1,12 +1,15 @@
 # 保存全局变量
-login_name = '18708103033'
-login_password = 'wang1204'
+login_name = '15708437303'
+login_password = 'rookiefly'
 
 host = '202.115.44.140'
 port = '1521'
 user = 'dangban'
 password = '85418825'
 dbname = 'ntci'
+redis_host = 'localhost'
+redis_port = 6379
+redis_db = 0
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 '
                   'Safari/537.36',

@@ -1,6 +1,5 @@
 # -*-coding:utf-8 -*-
-import cx_Oracle
-import gl
+import cx_Oracle, redis,gl
 
 
 def get_con():
@@ -48,9 +47,8 @@ def db_dml_many(con, sql, params_list):
     cursor.executemany(sql, params_list)
     con.commit()
     cursor.close()
-#
-# if __name__ == '__main__':
-#     log_path = os.path.join(os.getcwd(), 'repost_info.log')
-#     logging.basicConfig(filename=log_path, level=logging.DEBUG, format='[%(asctime)s %(levelname)s] %(message)s',
-#                         datefmt='%Y%m%d %H:%M:%S')
-#     logging.debug('本次抓取时间为:{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
+
+
+def get_redis_con(host, port, db):
+    return redis.Redis(host=host, port=port, db=db)
+

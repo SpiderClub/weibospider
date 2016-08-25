@@ -1,4 +1,4 @@
-import time, sys, logging, gl, requests
+import time, sys, logging, gl, requests, random
 from gl import time_out, login_name
 from do_dataprocess.basic import is_403, is_404, is_complete
 from weibo_decorator.decorators import timeout_decorator
@@ -18,7 +18,7 @@ def get_page(url, session, headers, user_verify=True):
         page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(40)
+        time.sleep(35)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))
