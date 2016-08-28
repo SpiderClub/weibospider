@@ -127,9 +127,9 @@ def get_all(q):
     datas = weibosearch_dao.get_crawl_urls()
     print('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
+    session = q.get(True)
     for data in datas:
         # 为防止抓取队列过长，所以每次都取session(防止过期)
-        session = q.get(True)
         print(data['url'])
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
         _get_reposts(data['url'], session)

@@ -45,5 +45,8 @@ def get_page(url, session, headers, user_verify=True):
         logging.info('目标服务器拒绝连接，程序休眠30分钟,具体异常信息为:{e}'.format(e=e))
         time.sleep(60*30) # 休眠5分钟
         return ''
+    except Exception as e:
+        logging.info('抓取URL出现其它异常,具体异常信息为:{e}'.format(e=e))
+        return ''
     else:
         return page
