@@ -6,6 +6,8 @@ from requests.packages.urllib3.exceptions import SSLError as rpuese
 from ssl import SSLEOFError as sse
 
 
+# 将cookie存入内存数据库中，每次都从内存数据库取cookie来进行请求
+# todo: 为什么某些时候请求不会成功
 def store_cookie():
     cookie_dict = login_info.get_session()['cookie']
     r = redis.Redis(host='localhost', port=6379, db=0)
@@ -34,8 +36,8 @@ def get_session(q):
             session = login_info.get_session()['session']
         finally:
             q.put(session)
-            # session24小时过期
-            time.sleep(10*60*60)
+            # session24小时过期，但是为了防止某次任务过长，所以周期时间设置比较短
+            time.sleep(15*60*60)
 
 
 if __name__ == '__main__':

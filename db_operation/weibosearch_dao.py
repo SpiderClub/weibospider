@@ -11,11 +11,12 @@ def get_crawl_urls():
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
     db_connect.db_close(con)
-    urls = []
+    datas = []
     for r in rs:
-        data = 'http://weibo.com/' + r[0] + '/' + r[1]
-        urls.append(data)
-    return urls
+        url = 'http://weibo.com/' + r[0] + '/' + r[1]
+        mid = r[2]
+        datas.append({'url': url, 'mid': mid})
+    return datas
 
 
 def update_weibo_url(mid):

@@ -10,7 +10,6 @@ def save_decorator(func):
     def save_process(*args):
         try:
             func(*args)
-            print('运行到数据库装饰器内部了')
         except Exception as e:
             for i in args:
                 logging.info('未成功插入的对象属性:{i}'.format(i=i))
