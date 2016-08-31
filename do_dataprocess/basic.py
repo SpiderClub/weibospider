@@ -16,15 +16,20 @@ def is_404(html):
         else:
             return False
     except AttributeError:
-        return True
+        return False
 
 
 @parse_decorator(3)
 def is_403(html):
     soup = BeautifulSoup(html, 'html.parser')
-    if '访问受限' in soup.title.text:
-        return True
+    if soup.title:
+        if '访问受限' in soup.title.text:
+            return True
+        else:
+            return False
     else:
+        print('检查是否存在soup.title和soup.title.text')
+        print(soup)
         return False
 
 

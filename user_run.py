@@ -18,4 +18,4 @@ if __name__ == '__main__':
         # 强制结束pw
         pw.terminate()
         print('本轮抓取结束')
-        time.sleep(2*60*60)+6
+        time.sleep(2*60*60)

@@ -11,11 +11,11 @@ def get_crawl_urls():
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
     db_connect.db_close(con)
-    urls = []
+    datas = []
     for r in rs:
         data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
-        urls.append(data)
-    return urls
+        datas.append(data)
+    return datas
 
 
 def update_weibo_url(mid):
@@ -32,8 +32,8 @@ def get_seed_ids():
     :return:
     """
     truncate_sql = 'truncate table weibo_sinausers_cache'
-    insert_sql = 'insert into weibo_sinausers_cache (select se_userid from weibo_search_data where ' \
-                 'is_new = 1 and se_sourcetype=\'新浪微博\' group by se_userid)'
+    insert_sql = 'insert into weibo_sinausers_cache (select se_userid from weibo_search_data where is_new = 1 ' \
+                 'and se_sourcetype=\'新浪微博\' group by se_userid)'
     delelte_sql = 'delete from weibo_sinausers_cache where dsu_id in (select su_id from weibo_sina_users)'
     update_sql = 'update weibo_search_data set is_new = 0 where is_new = 1 and se_sourcetype = \'新浪微博\''
     select_sql = 'select dsu_id from weibo_sinausers_cache'

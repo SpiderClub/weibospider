@@ -2,6 +2,8 @@
 # 操作用户信息
 from db_operation import db_connect
 from weibo_decorator.decorators import save_decorator
+from weibo_entities.user import User
+# todo：用orm改进
 
 
 @save_decorator
@@ -14,7 +16,9 @@ def save_user(user):
                ':su_friends_count, :su_followers_count,:su_status_count, :su_gender_prefer, :su_birthday, ' \
                ':su_blood_type, :su_contact_info, :su_work_info,:su_educate_info, :su_owntag_info, :su_register_time,' \
                ':su_verifytype, :su_verifyinfo)'
+
     con = db_connect.get_con()
+
     if user.id == '':
         pass
     user_info = {
@@ -55,7 +59,9 @@ def save_users(users):
                ':su_friends_count, :su_followers_count,:su_status_count, :su_gender_prefer, :su_birthday, ' \
                ':su_blood_type, :su_contact_info, :su_work_info,:su_educate_info, :su_owntag_info, :su_register_time,' \
                ':su_verifytype, :su_verifyinfo)'
+
     con = db_connect.get_con()
+
     datas = []
     for user in users:
         if user.id == '':
@@ -89,8 +95,40 @@ def save_users(users):
     db_connect.db_close(con)
 
 
+def get_user(uid):
+    select_sql = 'select su_screen_name,su_province,su_city,su_description,su_headimg_url,su_blog_url,su_domain_name,' \
+                 'su_gender, su_followers_count,su_friends_count,su_statuses_count,su_birthday,su_verifytype,' \
+                 'su_verifyinfo,su_register_time from weibo_sina_users where su_id = :suid'
+
+    con = db_connect.get_con()
+    rs = db_connect.db_queryone_params(con, select_sql, {'suid': uid})
+
+    return rs
+
+
 if __name__ == '__main__':
-    sql =  "select su_id,su_screen_name,su_description from weibo_sina_users where su_id = '2267899602'"
-    conn = db_connect.get_con()
-    r = db_connect.db_queryone(conn, sql)
-    print(r[2].decode('utf-8'))
+    user_id = '3008798700'
+    r = get_user(user_id)
+    iuser = User()
+    iuser.id = user_id
+    iuser.screen_name = r[0]
+    iuser.province = r[1]
+    iuser.city = r[2]
+    iuser.location = '{province} {city}'.format(province=r[1], city=r[2])
+    try:
+        iuser.description = r[3].read()
+    except AttributeError:
+        iuser.description = ''
+    iuser.headimg_url = r[4]
+    iuser.blog_url = r[5]
+    iuser.domain_name = r[6]
+    iuser.gender = r[7]
+    iuser.followers_count = r[8]
+    iuser.friends_count = r[9]
+    iuser.status_count = r[10]
+    iuser.birthday = r[11]
+    iuser.verify_type = r[12]
+    iuser.verify_info = r[13]
+    iuser.register_time = r[14]
+
+    print(iuser)

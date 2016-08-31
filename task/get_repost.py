@@ -67,8 +67,8 @@ def _get_reposts(url, session):
             comments_count = status_parse.get_commentcounts(html)
             reposts_count = status_parse.get_repostcounts(html)
             root_user = get_userinfo.get_profile(user_id, session, headers)
-            #spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
-            print('运行到保存的地方了')
+            spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+
             print('转发数为{counts}'.format(counts=reposts_count))
 
             if reposts_count > 0:
@@ -114,7 +114,7 @@ def _get_reposts(url, session):
                             break
                         else:
                             so.upper_user_id = user_id
-                #spread_other_dao.save(spread_others)
+                spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
             else:
@@ -128,17 +128,11 @@ def get_all(q):
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
     session = q.get(True)
-    # urls = weibosearch_dao.get_crawl_urls()
-    urls = [
-            'http://weibo.com/2827686890/DE3VUCIgx?refer_flag=1001030103_&type=comment#_rnd1468137872695',
-            'http://weibo.com/5726212305/DE7VUh4Jt?refer_flag=1001030103_&type=comment#_rnd1468137918172',
-            'http://weibo.com/1690076015/DE6v4zIf9?ref=page_102803_ctg1_1760_-_ctg1_1760_home&'
-            'rid=1_0_0_2667336662843252787&type=comment',
-            'http://weibo.com/1927564525/DE2NsiHcU?ref=page_102803_ctg1_1760_-_ctg1_1760_home&'
-            'rid=6_0_0_2667336662843252787&type=comment#_rnd1468138229898']
-    print('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
-    logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(urls)))
-    for url in urls:
-        logging.info('正在抓取url为{url}的微博'.format(url=url))
-        _get_reposts(url, session)
+    datas = weibosearch_dao.get_crawl_urls()
+    print('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
+    logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
+    for data in datas:
+        logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
+        _get_reposts(data['url'], session)
+        weibosearch_dao.update_weibo_url(data['mid'])
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

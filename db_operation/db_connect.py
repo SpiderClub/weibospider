@@ -1,6 +1,9 @@
 # -*-coding:utf-8 -*-
-import cx_Oracle
-import gl
+# 这两行用于指定在linux下面的数据库连接符编码方式
+import os
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+
+import cx_Oracle, redis, gl
 
 
 def get_con():
@@ -29,6 +32,22 @@ def db_queryone(conn, sql):
     return result
 
 
+def db_queryone_params(con, sql, params):
+    cursor = con.cursor()
+    cursor.execute(sql, params)
+    result = cursor.fetchone()
+    cursor.close()
+    return result
+
+
+def db_queryall_params(con, sql, params):
+    cursor = con.cursor()
+    cursor.execute(sql, params)
+    result = cursor.fetchall()
+    cursor.close()
+    return result
+
+
 def db_dml(con, sql):
     cursor = con.cursor()
     cursor.execute(sql)
@@ -48,9 +67,8 @@ def db_dml_many(con, sql, params_list):
     cursor.executemany(sql, params_list)
     con.commit()
     cursor.close()
-#
-# if __name__ == '__main__':
-#     log_path = os.path.join(os.getcwd(), 'repost_info.log')
-#     logging.basicConfig(filename=log_path, level=logging.DEBUG, format='[%(asctime)s %(levelname)s] %(message)s',
-#                         datefmt='%Y%m%d %H:%M:%S')
-#     logging.debug('本次抓取时间为:{curtime}'.format(curtime=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())))
+
+
+def get_redis_con(host, port, db):
+    return redis.Redis(host=host, port=port, db=db)
+
