@@ -17,7 +17,7 @@ def get_friends(html):
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
     try:
-        return soup.find_all('strong')[0].get_text()
+        return int(soup.find_all('strong')[0].get_text())
     except Exception:
         return 0
 
@@ -33,7 +33,7 @@ def get_fans(html):
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
     try:
-        return soup.find_all('strong')[1].get_text()
+        return int(soup.find_all('strong')[1].get_text())
     except Exception:
         return 0
 
@@ -49,7 +49,7 @@ def get_status(html):
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
     try:
-        return soup.find_all('strong')[2].get_text()
+        return int(soup.find_all('strong')[2].get_text())
     except Exception:
         return 0
 

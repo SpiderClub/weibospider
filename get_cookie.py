@@ -21,27 +21,24 @@ def get_cookie():
 
 
 def get_session(q):
-    while True:
-        try:
+    session = None
+    try:
+        session = login_info.get_session()['session']
+        if session is None:
+            # todo: 邮件通知
+            time.sleep(60*5)
             session = login_info.get_session()['session']
-            if session is None:
-                # todo: 邮件通知
-                time.sleep(60*5)
-                session = login_info.get_session()['session']
-        except (sse, rsle, rpuese):
-            # 预防因为网络问题导致的登陆不成功
-            print('本次登陆出现问题')
-            time.sleep(60)
-            session = login_info.get_session()['session']
-        finally:
-            q.put(session)
-            # session24小时过期，但是为了防止某次任务过长，所以周期时间设置比较短
-            time.sleep(15*60*60)
+    except (sse, rsle, rpuese):
+        # 预防因为网络问题导致的登陆不成功
+        print('本次登陆出现问题')
+        time.sleep(60)
+        session = login_info.get_session()['session']
+    finally:
+        q.put(session)
 
 
 if __name__ == '__main__':
     store_cookie()
-    #time.sleep(10)
     cookie = get_cookie()
     cookie = json.loads(cookie)
     content = requests.get('http://weibo.com/p/1005051921017243/info?mod=pedit_more', headers=headers, cookies=cookie).text

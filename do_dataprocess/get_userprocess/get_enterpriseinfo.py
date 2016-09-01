@@ -37,7 +37,7 @@ def get_detail(html):
 def get_friends(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
-    return soup.find_all('strong')[0].get_text()
+    return int(soup.find_all('strong')[0].get_text())
 #    return soup.find_all(attrs={'class': 'W_f14'})[0].get_text()
 
 
@@ -45,14 +45,14 @@ def get_friends(html):
 def get_fans(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
-    return soup.find_all('strong')[1].get_text()
+    return int(soup.find_all('strong')[1].get_text())
 
 
 @parse_decorator(0)
 def get_status(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
-    return soup.find_all('strong')[2].get_text()
+    return int(soup.find_all('strong')[2].get_text())
 
 
 @parse_decorator(1)

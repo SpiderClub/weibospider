@@ -1,5 +1,7 @@
 # -*-coding:utf-8 -*-
 # 该类用于过滤获取spreadother的upperuserid
+
+
 class SpreadOtherCache(object):
     def __init__(self):
         self.user_id = ''

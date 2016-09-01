@@ -16,7 +16,6 @@ def save_decorator(func):
             print(format_tb(e.__traceback__)[0])
             logging.error('插入失败，具体错误信息为{e},堆栈为{stack}'.format(e=e, stack=format_tb(e.__traceback__)[0]))
             print('插入失败')
-            pass
     return save_process
 
 

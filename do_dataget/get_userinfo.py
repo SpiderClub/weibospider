@@ -43,6 +43,12 @@ def get_profile(user_id, session, headers):
         user.verify_type = r[12]
         user.verify_info = r[13]
         user.register_time = r[14]
+
+        # 防止在插入数据库的时候encode()出问题
+        for key in user.__dict__:
+            if user.__dict__[key] is None:
+                setattr(user, key, '')
+
         print('该用户信息已经存在于数据库中')
     else:
         url = 'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more'
@@ -62,8 +68,11 @@ def get_profile(user_id, session, headers):
             else:
                 # 为了尽可能少抓取url,所以这里不适配所有服务号
                 if domain == '100106':
-                    url = 'http://weibo.com/p'+domain+user_id+'/home'
+                    url = 'http://weibo.com/p/'+domain+user_id+'/home'
                     html = get_page(url, session, headers)
+                    if html == '':
+                        return user
+
                 user.followers_count = get_enterpriseinfo.get_fans(html)
                 user.friends_count = get_enterpriseinfo.get_friends(html)
                 user.status_count = get_enterpriseinfo.get_status(html)

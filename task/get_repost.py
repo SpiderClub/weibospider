@@ -23,7 +23,7 @@ ___`. .'  /--.--\  `. . __
 佛祖保佑       永无BUG
 """
 import json, logging, os
-from gl import headers, count
+from gl import headers, count, page_max
 from do_dataget.basic import get_page
 from do_dataprocess import basic
 from db_operation import spread_original_dao
@@ -86,7 +86,7 @@ def _get_reposts(url, session):
                 total_page = int(repost_json['data']['page']['totalpage'])
                 page = total_page
                 page_counter = 0
-                while page > 0:
+                while page > 0 and page_counter < page_max:
                     ajax_url = base_url.format(mid=mid, currpage=page)
                     repost_info = session.get(ajax_url).text
                     repost_json = json.loads(repost_info)
