@@ -20,21 +20,22 @@ def get_cookie():
     return r.get('userinfo_cookie').decode('utf-8')
 
 
-def get_session(q):
-    session = None
-    try:
-        session = login_info.get_session()['session']
-        if session is None:
-            # todo: 邮件通知
-            time.sleep(60*5)
-            session = login_info.get_session()['session']
-    except (sse, rsle, rpuese):
-        # 预防因为网络问题导致的登陆不成功
-        print('本次登陆出现问题')
-        time.sleep(60)
-        session = login_info.get_session()['session']
-    finally:
-        q.put(session)
+def get_session(d):
+    while True:
+        d['session'] = None
+        try:
+            d['session'] = login_info.get_session()['session']
+            if d['session'] is None:
+                # todo: 邮件通知
+                time.sleep(60*5)
+                d['session'] = login_info.get_session()['session']
+        except (sse, rsle, rpuese):
+            # 预防因为网络问题导致的登陆不成功
+            print('本次登陆出现问题')
+            time.sleep(60)
+            d['session'] = login_info.get_session()['session']
+        else:
+            time.sleep(20*60*60)
 
 
 if __name__ == '__main__':

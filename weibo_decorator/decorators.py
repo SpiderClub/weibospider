@@ -11,11 +11,10 @@ def save_decorator(func):
         try:
             func(*args)
         except Exception as e:
-            for i in args:
-                logging.info('未成功插入的对象属性:{i}'.format(i=i))
-            print(format_tb(e.__traceback__)[0])
-            logging.error('插入失败，具体错误信息为{e},堆栈为{stack}'.format(e=e, stack=format_tb(e.__traceback__)[0]))
             print('插入失败')
+            for i in args:
+                logging.info('未成功插入的对象属性:{i}'.format(i=i.__dict__))
+            logging.error('插入失败，具体错误信息为{e},堆栈为{stack}'.format(e=e, stack=format_tb(e.__traceback__)[0]))
     return save_process
 
 

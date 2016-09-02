@@ -128,15 +128,16 @@ def _get_reposts(url, session):
         print('该微博{url}的源微博已经被删除了'.format(url=url))
 
 
-def get_all(q):
+def get_all(d):
     log_path = os.path.join(os.getcwd(), 'getdata.log')
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
-    session = q.get(True)
     datas = weibosearch_dao.get_crawl_urls()
     print('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     for data in datas:
+        # session放在里面是为了防止某个抓取队列太长或者转发微博太多
+        session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
         _get_reposts(data['url'], session)
         weibosearch_dao.update_weibo_url(data['mid'])

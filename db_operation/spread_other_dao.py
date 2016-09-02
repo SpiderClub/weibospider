@@ -44,9 +44,11 @@ def save(sos):
                 'status_url': item.status_url,
             }
             db_connect.db_dml_parms(conn, insert_sql, args)
-            ins_count += 1
         except Exception as why:
+            print(item.__dict__)
             print(why)
+        else:
+            ins_count += 1
     print('一共插入了{ins}条数据'.format(ins=ins_count))
     db_connect.db_close(conn)
 

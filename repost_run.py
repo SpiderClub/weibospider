@@ -1,5 +1,5 @@
 # 获取转发信息# -*-coding:utf-8 -*-
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Manager
 from get_cookie import get_session
 from task.get_repost import get_all
 from time import sleep
@@ -11,17 +11,15 @@ def time_task():
 
 if __name__ == '__main__':
     while True:
-        q = Queue()
-        pw = Process(target=get_session, args=(q,))
-        pr = Process(target=get_all, args=(q,))
-        pt = Process(target=time_task)
+        mgr = Manager()
+        d = mgr.dict()
+        pw = Process(target=get_session, args=(d,))
+        pr = Process(target=get_all, args=(d,))
         pw.start()
+        # 防止pr先执行
+        sleep(60)
         pr.start()
-        pt.start()
-        # 等待pt结束(pt作为定时器)
-        pt.join()
-        # 强制结束pw
-        pr.terminate()
+        pr.join()
         pw.terminate()
         print('本轮抓取已经结束')
         sleep(60*60*2)
