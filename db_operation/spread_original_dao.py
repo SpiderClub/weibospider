@@ -5,13 +5,27 @@ from weibo_decorator.decorators import save_decorator
 
 @save_decorator
 def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
+    """
+    :param user: 用户对象
+    :param mid: 微博id
+    :param post_time: 发表时间
+    :param source: 网页源码
+    :param reposts_count: 转发数
+    :param comments_count: 评论数
+    :param root_url: 源微博URL
+    :return: 返回的结果用于判断是否需要进行微博扩散的抓取
+    """
     conn = db_connect.get_con()
-    select_sql = "select * from weibo_spread_original where status_mid = '"+str(mid)+"'"
+    select_sql = "select * from weibo_spread_original where status_mid = '" + str(mid) + "'"
+    child_sql = "select count(*) from weibo_spread_other where original_status_id = '" + str(mid) + "'"
     r = db_connect.db_queryall(conn, select_sql)
-    if len(r) > 0:
-        print('已经存在了')
+    rc = db_connect.db_queryall(conn, child_sql)
+
+    # 如果数据库存在源微博和它的一些转发信息，我们就认为它不必抓取了
+    if len(r) > 0 and rc[0][0] > 0:
         db_connect.db_close(conn)
-        return
+        return False
+
     insert_sql = 'insert into weibo_spread_original (user_id,user_screenname,user_province,user_city,user_location,' \
                  'user_description,user_url,user_profileimageurl,user_gender,user_followerscount,user_friendscount,' \
                  'user_statusescount,user_createdat,user_verifiedtype,user_verifiedreason,status_createdat,' \
@@ -45,4 +59,5 @@ def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
     }
     db_connect.db_dml_parms(conn, insert_sql, args)
     db_connect.db_close(conn)
+    return True
 

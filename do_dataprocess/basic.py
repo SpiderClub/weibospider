@@ -8,7 +8,11 @@ def is_404(html):
     soup = BeautifulSoup(html, 'html.parser')
     # 前一种情况是处理直接用js实现重定向的页面
     try:
-        if "http://weibo.com/sorry?pagenotfound" in html or soup.title.text == '404错误' or html == '':
+        if "http://weibo.com/sorry?pagenotfound" in html:
+            return True
+        elif soup.title.text == '404错误':
+            return True
+        elif html == '':
             return True
         # 处理转发微博的情况
         elif '抱歉，此微博已被作者删除' in html:

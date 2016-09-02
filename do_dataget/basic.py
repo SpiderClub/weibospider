@@ -26,8 +26,7 @@ def get_page(url, session, headers, user_verify=True):
                 logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
                     '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))
             if is_404(page):
-                print('url为{url}的连接不存在'.format(url=url))
-                logging.info('url为{url}的连接不存在, 它的源码为{page}'.format(url=url, page=page))
+                logging.info('url为{url}的连接不存在'.format(url=url))
                 return ''
             if not is_complete(page):
                 time.sleep(30)

@@ -67,7 +67,12 @@ def _get_reposts(url, session):
             comments_count = status_parse.get_commentcounts(html)
             reposts_count = status_parse.get_repostcounts(html)
             root_user = get_userinfo.get_profile(user_id, session, headers)
-            spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+
+            rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+
+            if rs is False:
+                print('源微博的扩散信息已经获取过了')
+                return
 
             print('转发数为{counts}'.format(counts=reposts_count))
 
@@ -117,10 +122,10 @@ def _get_reposts(url, session):
                 spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
-            else:
-                print('该微博{url}的源微博已经被删除了'.format(url=url))
+
     else:
         logging.info('{url}为404页面'.format(url=url))
+        print('该微博{url}的源微博已经被删除了'.format(url=url))
 
 
 def get_all(q):
