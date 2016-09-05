@@ -32,7 +32,7 @@ def timeout_decorator(func):
     return time_limit
 
 
-# 用于捕捉页面解析的异常, 2表示返回空列表，1表示返回空字符串，0表示返回数字0, 3表示返回True,4表示返回{},5返回None
+# 用于捕捉页面解析的异常, 2表示返回[]，1表示返回空字符串，0表示返回数字0, 3表示返回True,4表示返回{},5返回None
 def parse_decorator(return_type):
     def page_parse(func):
         @wraps(func)

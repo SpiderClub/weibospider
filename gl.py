@@ -1,6 +1,6 @@
 # 保存全局变量
-login_name = '15708437303'
-login_password = 'rookiefly'
+login_name = '18708103033'
+login_password = 'wang1204'
 
 host = '202.115.44.140'
 port = '1521'
