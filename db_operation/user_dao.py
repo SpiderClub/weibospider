@@ -1,7 +1,7 @@
 # -*-coding:utf-8 -*-
 # 操作用户信息
 from db_operation import db_connect
-from weibo_decorator.decorators import save_decorator
+from weibo_decorator.decorators import save_decorator, dbtimeout_decorator
 from weibo_entities.user import User
 # todo：用orm改进
 
@@ -95,6 +95,7 @@ def save_users(users):
     db_connect.db_close(con)
 
 
+@dbtimeout_decorator(1)
 def get_user(uid):
     select_sql = 'select su_screen_name,su_province,su_city,su_description,su_headimg_url,su_blog_url,su_domain_name,' \
                  'su_gender, su_followers_count,su_friends_count,su_statuses_count,su_birthday,su_verifytype,' \

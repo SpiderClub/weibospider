@@ -57,3 +57,24 @@ def parse_decorator(return_type):
                     return 0
         return handle_error
     return page_parse
+
+
+# 用于捕捉数据库操作时的异常
+def dbtimeout_decorator(return_type):
+    def connect_process(func):
+        @wraps(func)
+        def handle_error(*keys):
+            try:
+                return func(*keys)
+            except Exception as e:
+                print(e)
+                with open('log.txt', 'a') as f:
+                    traceback.print_exc(file=f)
+                if return_type == 2:
+                    return []
+                elif return_type == 1:
+                    return None
+                else:
+                    return False
+        return handle_error
+    return connect_process

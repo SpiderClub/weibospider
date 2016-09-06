@@ -23,6 +23,7 @@ def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
 
     # 如果数据库存在源微博和它的一些转发信息，我们就认为它不必抓取了
     if len(r) > 0 and rc[0][0] > 0:
+        print('关于此条微博的扩散信息已经存于数据库中')
         db_connect.db_close(conn)
         return False
 

@@ -1,7 +1,9 @@
 # -*-coding:utf-8 -*-
 from db_operation import db_connect
+from weibo_decorator.decorators import dbtimeout_decorator
 
 
+@dbtimeout_decorator(2)
 def get_crawl_urls():
     """
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
@@ -18,6 +20,7 @@ def get_crawl_urls():
     return datas
 
 
+@dbtimeout_decorator(1)
 def update_weibo_url(mid):
     sql = "update weibo_search_data set is_crawled = 1 where se_mid = :mid"
     args = {'mid': str(mid)}
@@ -26,6 +29,7 @@ def update_weibo_url(mid):
     db_connect.db_close(con)
 
 
+@dbtimeout_decorator(0)
 def update_weibo_repost(mid, reposts_count):
     sql = 'select se_repost_count from weibo_search_data where se_mid = :mid'
     args = {'mid': str(mid)}
@@ -66,9 +70,3 @@ def get_seed_ids():
         ids.append(r[0])
     return ids
 
-if __name__ == '__main__':
-    sql = 'select se_repost_count from weibo_search_data where se_mid = :mid'
-    args = {'mid': str(3791583814072719)}
-    con = db_connect.get_con()
-    rs = db_connect.db_queryone_params(con, sql, args)
-    print(rs[0])
