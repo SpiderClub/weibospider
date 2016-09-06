@@ -18,7 +18,7 @@ def get_page(url, session, headers, user_verify=True):
         page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(32)
+        time.sleep(28)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))

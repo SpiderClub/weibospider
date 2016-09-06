@@ -19,6 +19,8 @@ def get_profile(user_id, session, headers):
     :param user_id:
     :return:
     """
+    if user_id == '':
+        return User()
     user = User()
     r = get_user(user_id)
 

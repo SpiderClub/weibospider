@@ -34,7 +34,7 @@ from do_dataget import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
 
 
-def _get_reposts(url, session):
+def _get_reposts(url, session, weibo_mid):
     """
     抓取主程序
     解析源微博，并保存；得到转发微博信息
@@ -48,6 +48,8 @@ def _get_reposts(url, session):
     spread_other_and_caches = []
 
     html = get_page(url, session, headers)
+    reposts_count = status_parse.get_repostcounts(html)
+    weibosearch_dao.update_weibo_repost(weibo_mid, reposts_count)
 
     if not basic.is_404(html):
         root_url = url
@@ -117,8 +119,14 @@ def _get_reposts(url, session):
                         if so.upper_user_name == i.get_name():
                             so.upper_user_id = i.get_id()
                             break
+                        if so.verify_type == '':
+                            so.verify_type = 0
                         else:
                             so.upper_user_id = user_id
+
+                # todo 找出数据重复的原因
+                spread_others = list(set(spread_others))
+
                 spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
@@ -139,6 +147,6 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
-        _get_reposts(data['url'], session)
+        _get_reposts(data['url'], session, data['mid'])
         weibosearch_dao.update_weibo_url(data['mid'])
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

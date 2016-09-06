@@ -7,7 +7,7 @@ def get_crawl_urls():
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
     """
     sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
-          'se_sourcetype = \'新浪微博\''
+          'se_sourcetype = \'新浪微博\' order by se_createtime desc'
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
     db_connect.db_close(con)
@@ -23,6 +23,18 @@ def update_weibo_url(mid):
     args = {'mid': str(mid)}
     con = db_connect.get_con()
     db_connect.db_dml_parms(con, sql, args)
+    db_connect.db_close(con)
+
+
+def update_weibo_repost(mid, reposts_count):
+    sql = 'select se_repost_count from weibo_search_data where se_mid = :mid'
+    args = {'mid': str(mid)}
+    con = db_connect.get_con()
+    rs = db_connect.db_queryone_params(con, sql, args)
+    if reposts_count != rs[0]:
+        update_sql = 'update weibo_search_data set se_repost_count = :reposts_count where se_mid = :mid'
+        update_args = {'mid': mid, 'reposts_count': reposts_count}
+        db_connect.db_dml_parms(con, update_sql, update_args)
     db_connect.db_close(con)
 
 
@@ -55,5 +67,8 @@ def get_seed_ids():
     return ids
 
 if __name__ == '__main__':
-    rs2 = get_seed_ids()
-    print(rs2)
+    sql = 'select se_repost_count from weibo_search_data where se_mid = :mid'
+    args = {'mid': str(3791583814072719)}
+    con = db_connect.get_con()
+    rs = db_connect.db_queryone_params(con, sql, args)
+    print(rs[0])
