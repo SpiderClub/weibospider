@@ -1,6 +1,6 @@
 # -*-coding:utf-8 -*-
 from db_operation import db_connect
-from weibo_decorator.decorators import dbtimeout_decorator
+from weibo_decorator.decorators import dbtimeout_decorator, save_decorator
 
 
 @dbtimeout_decorator(2)
@@ -42,6 +42,36 @@ def update_weibo_repost(mid, reposts_count):
     db_connect.db_close(con)
 
 
+@save_decorator
+def add_search_cont(search_list):
+    save_sql = 'insert into weibo_search (mk_primary,mid,murl,create_time,praise_count,repost_count,comment_count,' \
+               'content,device,user_id,username,uheadimage,user_home,keyword) values(:mk_primary, :mid, ' \
+               ':murl, :create_time, :praise_count,:repost_count, :comment_count, :content, :device, ' \
+               ':user_id, :username,:uheadimage, :user_home, :keyword)'
+    datas = []
+    con = db_connect.get_con()
+    for search_cont in search_list:
+        search_info = {
+            'mk_primary': search_cont.mk_primary,
+            'mid': search_cont.mid,
+            'murl': search_cont.murl,
+            'create_time': search_cont.create_time,
+            'praise_count': search_cont.praise_count,
+            'repost_count': search_cont.repost_count,
+            'comment_count': search_cont.comment_count,
+            'content': search_cont.cotent,
+            'device': search_cont.device,
+            'user_id': search_cont.user_id,
+            'username': search_cont.username,
+            'uheadimage': search_cont.uheadimage,
+            'user_home': search_cont.user_home,
+            'keyword': search_cont.keyword
+        }
+        datas.append(search_info)
+    db_connect.db_dml_many(con, save_sql, datas)
+    db_connect.db_close(con)
+
+
 def get_seed_ids():
     """
     操作weibo_search_data表，获取待爬取用户id队列
@@ -69,4 +99,5 @@ def get_seed_ids():
     for r in rs:
         ids.append(r[0])
     return ids
+
 
