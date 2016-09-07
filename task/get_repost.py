@@ -208,12 +208,13 @@ def _get_current_reposts(url, session, weibo_mid):
                 page_counter += 1
 
             for so in spread_others:
+                if so.verify_type == '':
+                    so.verify_type = 0
+
                 for i in spread_other_caches:
                     if so.upper_user_name == i.get_name():
                         so.upper_user_id = i.get_id()
                         break
-                    if so.verify_type == '':
-                        so.verify_type = 0
                     else:
                         so.upper_user_id = user_id
 

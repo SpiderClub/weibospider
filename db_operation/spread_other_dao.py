@@ -17,6 +17,8 @@ def save(sos):
                  ":status_createdat,:status_mid,:status_source,:status_repostscount,:status_commentscount," \
                  ":upper_user_id,:original_status_id,:status_url)"
     for item in sos:
+        if item.verify_type == '':
+            item.verify_type = 0
         try:
             args = {
                 'user_id': item.id,
@@ -35,7 +37,7 @@ def save(sos):
                 'user_statusescount': int(item.status_count),
                 'status_repostscount': int(item.reposts_count),
                 'status_commentscount': int(item.comments_count),
-                'user_verifiedtype': int(item.verify_type),
+                'user_verifiedtype': item.verify_type,
                 'user_createdat': item.register_time,
                 'status_createdat': item.status_post_time,
                 'status_mid': item.mid,
