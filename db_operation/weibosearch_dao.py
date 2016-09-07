@@ -48,8 +48,9 @@ def add_search_cont(search_list):
                'content,device,user_id,username,uheadimage,user_home,keyword) values(:mk_primary, :mid, ' \
                ':murl, :create_time, :praise_count,:repost_count, :comment_count, :content, :device, ' \
                ':user_id, :username,:uheadimage, :user_home, :keyword)'
-    datas = []
+
     con = db_connect.get_con()
+
     for search_cont in search_list:
         search_info = {
             'mk_primary': search_cont.mk_primary,
@@ -59,7 +60,7 @@ def add_search_cont(search_list):
             'praise_count': search_cont.praise_count,
             'repost_count': search_cont.repost_count,
             'comment_count': search_cont.comment_count,
-            'content': search_cont.cotent,
+            'content': search_cont.content,
             'device': search_cont.device,
             'user_id': search_cont.user_id,
             'username': search_cont.username,
@@ -67,8 +68,11 @@ def add_search_cont(search_list):
             'user_home': search_cont.user_home,
             'keyword': search_cont.keyword
         }
-        datas.append(search_info)
-    db_connect.db_dml_many(con, save_sql, datas)
+        try:
+            db_connect.db_dml_parms(con, save_sql, search_info)
+        except Exception as why:
+            print('插入出错,具体原因为:{why}'.format(why=why))
+            print(search_info.__dict__)
     db_connect.db_close(con)
 
 

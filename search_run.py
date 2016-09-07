@@ -18,7 +18,7 @@ if __name__ == '__main__':
         pr.join()
         pw.terminate()
         print('本轮抓取已经结束')
-        sleep(60*60*2)
+        sleep(60)
 
 
 
