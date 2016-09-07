@@ -29,4 +29,16 @@
 
 
 ## 本项目目前的一些数据可视化展示(使用的[echarts](http://echarts.baidu.com)):
-对某条指定微博进行分析
+对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
+
+微博扩散情况
+![微博扩散](./img/kuosan.png)
+
+转发该微博的用户性别比例
+![用户性别比例](./img/sex.png)
+
+转发该微博的时间
+![转发曲线](./img/reposttime.png)
+
+转发该微博的地域分析
+![转发地域](./img/diyu.png)
