@@ -22,5 +22,9 @@ class WeiboSearch(object):
 
         # 某次抓取相关信息
         self.keyword = ''
-        self.fetch_time = ''
-        self.is_crawled = 0  # 是否抓取过详细信息
+
+    def __str__(self):
+        return 'mid:{mid},murl:{murl},create_time:{create_time},repost_count:{repost_count},user_id:{user_id},' \
+               'username:{username}'.format(mid=self.mid, murl=self.murl, user_id=self.user_id,
+                                            create_time=self.create_time, repost_count=self.repost_count, username=self.
+                                            username)

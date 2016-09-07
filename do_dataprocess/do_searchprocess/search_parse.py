@@ -7,7 +7,7 @@ from weibo_decorator.decorators import parse_decorator
 
 
 @parse_decorator(1)
-def search_page_parse(html):
+def _search_page_parse(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
     pattern = re.compile(r'view\((.*)\)')
@@ -26,7 +26,8 @@ def search_page_parse(html):
 
 @parse_decorator(5)
 def get_search_info(html):
-    soup = BeautifulSoup(html.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
+    content = _search_page_parse(html)
+    soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     user_pattern = r'id=(\d+)&u'
     search_list = []
@@ -88,8 +89,7 @@ def get_search_info(html):
 if __name__ == '__main__':
     with open('g:/360data/重要数据/桌面/search.html', 'r', encoding='utf-8') as f:
         my_str = f.read()
-    cont = search_page_parse(my_str)
-    l = get_search_info(cont)
-    from pprint import pprint
-    pprint(len(l))
+    l = get_search_info(my_str)
+    for i in l:
+        print(i)
 
