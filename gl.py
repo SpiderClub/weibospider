@@ -2,6 +2,7 @@
 login_name = 'yourname'
 login_password = 'yourpassword'
 
+# db_type:oracle
 host = 'dbip'
 port = 'dbport'
 user = 'dbuser'
