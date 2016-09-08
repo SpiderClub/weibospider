@@ -8,7 +8,11 @@ def get_crawl_urls():
     """
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
     """
-    sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
+    # 以下代码是为了测试反爬虫机制注释掉的
+    # sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
+    #       'se_sourcetype = \'新浪微博\' order by se_createtime desc'
+
+    sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_new = 1 and ' \
           'se_sourcetype = \'新浪微博\' order by se_createtime desc'
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)

@@ -70,11 +70,12 @@ def _get_reposts(url, session, weibo_mid):
             reposts_count = status_parse.get_repostcounts(html)
             root_user = get_userinfo.get_profile(user_id, session, headers)
 
-            rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
-
-            if rs is False:
-                print('源微博的扩散信息已经获取过了')
-                return
+            # 以下代码是因为测试反爬虫机制注释掉的
+            # rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+            #
+            # if rs is False:
+            #     print('源微博的扩散信息已经获取过了')
+            #     return
 
             print('转发数为{counts}'.format(counts=reposts_count))
 
@@ -126,8 +127,8 @@ def _get_reposts(url, session, weibo_mid):
 
                 # todo 找出数据重复的原因
                 spread_others = list(set(spread_others))
-
-                spread_other_dao.save(spread_others)
+                # 以下代码是研究反爬虫机制而注释掉的
+                #  spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
 
@@ -240,6 +241,9 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
-        _get_current_reposts(data['url'], session, data['mid'])
-        weibosearch_dao.update_weibo_url(data['mid'])
+        _get_reposts(data['url'], session, data['mid'])
+
+        #  以下代码是为了测试反爬虫机制注释掉的
+        #weibosearch_dao.update_weibo_url(data['mid'])
+
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

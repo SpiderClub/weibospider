@@ -1,12 +1,12 @@
 # 保存全局变量
-login_name = '18708103033'
-login_password = 'wang1204'
+login_name = 'yourname'
+login_password = 'yourpassword'
 
-host = '202.115.44.140'
-port = '1521'
-user = 'dangban'
-password = '85418825'
-dbname = 'ntci'
+host = 'dbip'
+port = 'dbport'
+user = 'dbuser'
+password = 'dbpassword'
+dbname = 'dbname'
 redis_host = 'localhost'
 redis_port = 6379
 redis_db = 0
