@@ -1,11 +1,12 @@
 # 保存全局变量
-login_name = 'acounts'
-login_password = 'password'
+login_name = 'yourname'
+login_password = 'yourpassword'
 
-host = 'dbaddress'
-port = 'port'
+# db_type:oracle
+host = 'dbip'
+port = 'dbport'
 user = 'dbuser'
-password = 'dbpass'
+password = 'dbpassword'
 dbname = 'dbname'
 redis_host = 'localhost'
 redis_port = 6379
