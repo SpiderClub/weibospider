@@ -1,11 +1,11 @@
 # 保存全局变量
-login_name = 'yourname'
-login_password = 'yourpassword'
+login_name = 'acounts'
+login_password = 'password'
 
-host = 'dbip'
-port = 'dbport'
+host = 'dbaddress'
+port = 'port'
 user = 'dbuser'
-password = 'dbpassword'
+password = 'dbpass'
 dbname = 'dbname'
 redis_host = 'localhost'
 redis_port = 6379

@@ -41,7 +41,7 @@ def parse_decorator(return_type):
                 return func(*keys)
             except Exception as e:
                 print(e)
-                with open('log.txt', 'a') as f:
+                with open('parse_error.log', 'a') as f:
                     traceback.print_exc(file=f)
                 if return_type == 5:
                     return None
