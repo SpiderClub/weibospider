@@ -1,16 +1,4 @@
 # 保存全局变量
-login_name = 'yourname'
-login_password = 'yourpassword'
-
-# db_type:oracle
-host = 'dbip'
-port = 'dbport'
-user = 'dbuser'
-password = 'dbpassword'
-dbname = 'dbname'
-redis_host = 'localhost'
-redis_port = 6379
-redis_db = 0
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 '
                   'Safari/537.36',

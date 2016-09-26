@@ -77,6 +77,6 @@ def get_description(html):
 
 
 if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/luce.html', 'rb') as f:
+    with open('G:\\360data\\重要数据\\桌面\\search.html', 'rb') as f:
         source = f.read().decode('utf-8')
     print(get_fans(source))

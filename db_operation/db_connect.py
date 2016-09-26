@@ -1,14 +1,15 @@
 # -*-coding:utf-8 -*-
 # 这两行用于指定在linux下面的数据库连接符编码方式
 import os
+import cx_Oracle, redis
+from config.get_config import get_oracle_args, get_redis_args
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
-
-import cx_Oracle, redis, gl
 
 
 def get_con():
-    dsn = cx_Oracle.makedsn(gl.host, gl.port, gl.dbname)
-    conn = cx_Oracle.connect(gl.user, gl.password, dsn)
+    args = get_oracle_args()
+    dsn = cx_Oracle.makedsn(args['host'], args['port'], args['db'])
+    conn = cx_Oracle.connect(args['user'], args['password'], dsn)
     return conn
 
 
@@ -69,6 +70,7 @@ def db_dml_many(con, sql, params_list):
     cursor.close()
 
 
-def get_redis_con(host, port, db):
-    return redis.Redis(host=host, port=port, db=db)
+def get_redis_con():
+    args = get_redis_args()
+    return redis.Redis(host=args['host'], port=args['port'], db=args['db'])
 

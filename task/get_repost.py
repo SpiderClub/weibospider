@@ -248,9 +248,9 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
-        _get_reposts(data['url'], session, data['mid'])
+        _get_current_reposts(data['url'], session, data['mid'])
 
         #  以下代码是为了测试反爬虫机制注释掉的
-        # weibosearch_dao.update_weibo_url(data['mid'])
+        weibosearch_dao.update_weibo_url(data['mid'])
 
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

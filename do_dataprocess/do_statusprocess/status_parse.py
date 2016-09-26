@@ -110,8 +110,6 @@ def get_repostcounts(html):
         return counts
     except (ValueError, AttributeError) as e:
         print(e)
-        print('soup的源码为{html}'.format(html=html))
-        logging.info('获取微博转发数出错，网页代码为{page}'.format(page=html))
         return 0
 
 
@@ -145,8 +143,6 @@ def get_likecounts(html):
             return int(likes)
     except (ValueError, AttributeError) as e:
         print(e)
-        print('soup的源码为{html}'.format(html=html))
-        logging.info('获取微博喜欢数出错，网页代码为{page}'.format(page=html))
         return 0
 
 
