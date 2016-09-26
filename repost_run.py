@@ -5,10 +5,6 @@ from task.get_repost import get_all
 from time import sleep
 
 
-def time_task():
-    sleep(22*60*60)
-
-
 if __name__ == '__main__':
     while True:
         

@@ -104,9 +104,14 @@ def get_repostcounts(html):
     soup = BeautifulSoup(cont, "html.parser")
     try:
         reposts = soup.find(attrs={'node-type': 'forward_btn_text'}).find('span').find('em').find_next_sibling().text
+        if reposts == '转发':
+            return 0
         counts = int(reposts)
         return counts
-    except ValueError:
+    except (ValueError, AttributeError) as e:
+        print(e)
+        print('soup的源码为{html}'.format(html=html))
+        logging.info('获取微博转发数出错，网页代码为{page}'.format(page=html))
         return 0
 
 
@@ -116,9 +121,12 @@ def get_commentcounts(html):
     soup = BeautifulSoup(cont, "html.parser")
     try:
         comments = soup.find(attrs={'node-type': 'comment_btn_text'}).find('span').find('em').find_next_sibling().text
+        if comments == '评论':
+            return 0
         counts = int(comments)
         return counts
-    except ValueError:
+    except (ValueError, AttributeError) as e:
+        print(e)
         return 0
 
 
@@ -128,10 +136,17 @@ def get_likecounts(html):
     soup = BeautifulSoup(cont, "html.parser")
     try:
         if is_root(html):
-            return int(soup.find(attrs={'node-type': 'like_status'}).text)
+            likes = soup.find(attrs={'node-type': 'like_status'}).find_all('em')[1].text
         else:
-            return int(soup.find_all(attrs={'node-type': 'like_status'})[1].text)
-    except ValueError:
+            likes = soup.find_all(attrs={'node-type': 'like_status'})[1].find_all('em')[1].text
+        if likes == '赞':
+            return 0
+        else:
+            return int(likes)
+    except (ValueError, AttributeError) as e:
+        print(e)
+        print('soup的源码为{html}'.format(html=html))
+        logging.info('获取微博喜欢数出错，网页代码为{page}'.format(page=html))
         return 0
 
 
@@ -149,13 +164,16 @@ def get_rooturl(cururl, html):
             return ''
         soup = BeautifulSoup(cont, 'html.parser')
         try:
-            url = soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'S_txt2'})['href']
-            return url
+            url = 'http://weibo.com'+soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'WB_from'}).find(attrs={'class': 'S_txt2'})['href']
         except TypeError:
             return ''
         except AttributeError:
             print('解析错误')
             return ''
+        except KeyError:
+            return ''
+        else:
+            return url
 
 
 @parse_decorator(2)
@@ -193,6 +211,6 @@ def get_upperusername(html, defaultname):
 
 
 if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/2.html', 'rb') as f:
+    with open('/home/wpm/桌面/error.html', 'rb') as f:
         source = f.read().decode('utf-8')
-    print(get_repostcounts(source))
+    print(get_likecounts(source))

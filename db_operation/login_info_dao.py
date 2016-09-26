@@ -11,4 +11,3 @@ def get_login_info():
     login_name = r[2]
     pass_word = r[3]
     return login_name, pass_word
-

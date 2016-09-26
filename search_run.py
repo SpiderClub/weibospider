@@ -1,12 +1,8 @@
 # 根据某个关键词搜索微博
 from multiprocessing import Process, Manager
 from get_cookie import get_session
-from task.get_repost import get_all
+from task.get_searchinfo import search_all
 from time import sleep
-
-
-def time_task():
-    sleep(22*60*60)
 
 
 if __name__ == '__main__':
@@ -14,7 +10,7 @@ if __name__ == '__main__':
         mgr = Manager()
         d = mgr.dict()
         pw = Process(target=get_session, args=(d,))
-        pr = Process(target=get_all, args=(d,))
+        pr = Process(target=search_all, args=(d,))
         pw.start()
         # 防止pr先执行
         sleep(60)
@@ -22,7 +18,7 @@ if __name__ == '__main__':
         pr.join()
         pw.terminate()
         print('本轮抓取已经结束')
-        sleep(60*60*2)
+        sleep(60)
 
 
 

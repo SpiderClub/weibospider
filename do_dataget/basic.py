@@ -10,7 +10,7 @@ def get_page(url, session, headers, user_verify=True):
     :param session:
     :param url:
     :param headers:
-    :param user_verify: 验证是否是抓取用户或者微博信息，否为抓取转发的ajax连接
+    :param user_verify: 是否为可能出现验证码的页面(搜索页面的403还没解析)，否为抓取转发的ajax连接
     :return:
     """
     print('本次抓取的url为{url}'.format(url=url))
@@ -18,7 +18,7 @@ def get_page(url, session, headers, user_verify=True):
         page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(28)
+        time.sleep(24)
         if user_verify:
             if is_403(page):
                 logging.info('账号{username}已经被冻结'.format(username=login_name))
@@ -33,7 +33,8 @@ def get_page(url, session, headers, user_verify=True):
                 try:
                     page = session.get(url, headers=headers, timeout=time_out, verify=False).text. \
                         encode('utf-8', 'ignore').decode('utf-8')
-                except Exception:
+                except Exception as why:
+                    print(why)
                     return ''
     except requests.exceptions.ReadTimeout:
         logging.info('抓取{url}时连接目标服务器超时'.format(url=url))

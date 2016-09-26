@@ -10,7 +10,7 @@ from do_dataget import get_userinfo
 from weibo_entities.other_and_cache import SpreadOtherAndCache
 
 
-def get_status_info(url, session, user_id, name, headers):
+def get_status_info(url, session, user_id, name, headers, mid=''):
     soc = SpreadOtherCache()
     print('当前转发微博url为:' + url)
     repost_cont = get_page(url, session, headers)
@@ -48,7 +48,10 @@ def get_status_info(url, session, user_id, name, headers):
             so.mid = status_parse.get_mid(repost_cont)
             so.status_post_time = status_parse.get_statustime(repost_cont)
             so.device = status_parse.get_statussource(repost_cont)
-            so.original_status_id = status_parse.get_orignalmid(repost_cont)
+            if mid:
+                so.original_status_id = mid
+            else:
+                so.original_status_id = status_parse.get_orignalmid(repost_cont)
             so.comments_count = status_parse.get_commentcounts(repost_cont)
             so.reposts_count = status_parse.get_repostcounts(repost_cont)
             so.like_count = status_parse.get_likecounts(repost_cont)
