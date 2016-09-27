@@ -102,8 +102,8 @@ def _get_reposts(url, session, weibo_mid):
                         page_counter = 0
                         while page > 0 and page_counter < page_max:
                             ajax_url = base_url.format(mid=mid, currpage=page)
+                            repost_info = get_page(ajax_url, session, headers, False)
                             try:
-                                repost_info = session.get(ajax_url).text
                                 repost_json = json.loads(repost_info)
                                 repost_html = repost_json['data']['html']
                             except Exception as why:
@@ -206,8 +206,8 @@ def _get_current_reposts(url, session, weibo_mid):
                 page_counter = 0
                 while page > 0 and page_counter < page_max:
                     ajax_url = base_url.format(mid=mid, currpage=page)
+                    repost_info = get_page(ajax_url, session, headers, False)
                     try:
-                        repost_info = session.get(ajax_url).text
                         repost_json = json.loads(repost_info)
                         repost_html = repost_json['data']['html']
                     except Exception as why:
@@ -263,7 +263,7 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
-        _get_current_reposts(data['url'], session, data['mid'])
+        _get_reposts(data['url'], session, data['mid'])
 
         #  以下代码是为了测试反爬虫机制注释掉的
         #weibosearch_dao.update_weibo_url(data['mid'])

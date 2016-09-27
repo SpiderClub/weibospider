@@ -31,11 +31,11 @@ def get_session(d):
                 d['session'] = login_info.get_session()['session']
         except (sse, rsle, rpuese):
             # 预防因为网络问题导致的登陆不成功
-            print('本次登陆出现问题')
+            print('本次登陆出现问题,sleep 60s')
             time.sleep(60)
             d['session'] = login_info.get_session()['session']
         else:
-            time.sleep(20*60*60)
+            time.sleep(60*60*10)
 
 
 if __name__ == '__main__':

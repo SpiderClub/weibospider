@@ -16,14 +16,14 @@ if __name__ == '__main__':
 
         pw.start()
         # 防止pr先执行
-        sleep(60)
+        sleep(90)
         pr.start()
         pr.join()
+
         pw.terminate()
         print('本轮抓取已经结束,结束时间为{endtime}'.format(endtime=ctime()))
         pw.join() # 使其可以更新状态
 
-        print('本轮抓取已经结束')
         sleep(60*60)
 
 

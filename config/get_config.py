@@ -1,7 +1,7 @@
 import configparser
 
 cf = configparser.ConfigParser()
-cf.read_file(open('f:/config/spider.conf'))
+cf.read_file(open('/home/wpm/project/config/spider.conf'))
 
 
 def get_oracle_args():
