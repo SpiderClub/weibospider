@@ -102,25 +102,31 @@ def _get_reposts(url, session, weibo_mid):
                         page_counter = 0
                         while page > 0 and page_counter < page_max:
                             ajax_url = base_url.format(mid=mid, currpage=page)
-                            repost_info = session.get(ajax_url).text
-                            repost_json = json.loads(repost_info)
-                            repost_html = repost_json['data']['html']
-                            repost_urls = status_parse.get_reposturls(repost_html)
+                            try:
+                                repost_info = session.get(ajax_url).text
+                                repost_json = json.loads(repost_info)
+                                repost_html = repost_json['data']['html']
+                            except Exception as why:
+                                print('使用json解析转发信息出现异常，具体信息为:{why}'.format(why=why))
+                                print('本次返回的转发信息为{info}'.format(info=source))
+                            else:
+                                repost_urls = status_parse.get_reposturls(repost_html)
 
-                            for repost_url in repost_urls:
-                                repost_cont = get_statusinfo.get_status_info(repost_url, session, user_id, user_name,
-                                                                             headers)
+                                for repost_url in repost_urls:
+                                    repost_cont = get_statusinfo.get_status_info(repost_url, session, user_id, user_name,
+                                                                                 headers)
 
-                                if repost_cont is not None:
-                                    spread_other_and_caches.append(repost_cont)
+                                    if repost_cont is not None:
+                                        spread_other_and_caches.append(repost_cont)
 
-                            for soac in spread_other_and_caches:
-                                if soac.get_so().id != '':
-                                    spread_others.append(soac.get_so())
-                                    spread_other_caches.append(soac.get_soc())
-                            print('当前位于第{currpage}页'.format(currpage=page))
-                            page -= 1
-                            page_counter += 1
+                                for soac in spread_other_and_caches:
+                                    if soac.get_so().id != '':
+                                        spread_others.append(soac.get_so())
+                                        spread_other_caches.append(soac.get_soc())
+                            finally:
+                                print('当前位于第{currpage}页'.format(currpage=page))
+                                page -= 1
+                                page_counter += 1
 
                         for so in spread_others:
                             for i in spread_other_caches:
@@ -132,7 +138,6 @@ def _get_reposts(url, session, weibo_mid):
                                 else:
                                     so.upper_user_id = user_id
 
-                        # todo 找出数据重复的原因
                         spread_others = list(set(spread_others))
                         # 以下代码是研究反爬虫机制而注释掉的
                         #  spread_other_dao.save(spread_others)
@@ -171,11 +176,11 @@ def _get_current_reposts(url, session, weibo_mid):
         reposts_count = status_parse.get_repostcounts(html)
         root_user = get_userinfo.get_profile(user_id, session, headers)
 
-        rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+        # rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
 
-        if rs is False:
-            print('源微博的扩散信息已经获取过了')
-            return
+        # if rs is False:
+        #     print('源微博的扩散信息已经获取过了')
+        #     return
 
         print('转发数为{counts}'.format(counts=reposts_count))
 
@@ -190,48 +195,58 @@ def _get_current_reposts(url, session, weibo_mid):
             source = get_page(ajax_url, session, headers, False)
             print('本次转发信息url为：' + ajax_url)
 
-            repost_json = json.loads(source)
-            total_page = int(repost_json['data']['page']['totalpage'])
-            page = total_page
-            page_counter = 0
-            while page > 0 and page_counter < page_max:
-                ajax_url = base_url.format(mid=mid, currpage=page)
-                repost_info = session.get(ajax_url).text
-                repost_json = json.loads(repost_info)
-                repost_html = repost_json['data']['html']
-                repost_urls = status_parse.get_reposturls(repost_html)
-
-                for repost_url in repost_urls:
-                    repost_cont = get_statusinfo.get_status_info(repost_url, session, user_id, user_name, headers, mid)
-
-                    if repost_cont is not None:
-                        spread_other_and_caches.append(repost_cont)
-
-                for soac in spread_other_and_caches:
-                    if soac.get_so().id != '':
-                        spread_others.append(soac.get_so())
-                        spread_other_caches.append(soac.get_soc())
-                print('当前位于第{currpage}页'.format(currpage=page))
-                page -= 1
-                page_counter += 1
-
-            for so in spread_others:
-                if so.verify_type == '':
-                    so.verify_type = 0
-
-                for i in spread_other_caches:
-                    if so.upper_user_name == i.get_name():
-                        so.upper_user_id = i.get_id()
-                        break
+            try:
+                repost_json = json.loads(source)
+                total_page = int(repost_json['data']['page']['totalpage'])
+            except Exception as why:
+                print('使用json解析转发信息出现异常，具体信息为:{why}'.format(why=why))
+                print('本次返回的转发信息为{info}'.format(info=source))
+            else:
+                page = total_page
+                page_counter = 0
+                while page > 0 and page_counter < page_max:
+                    ajax_url = base_url.format(mid=mid, currpage=page)
+                    try:
+                        repost_info = session.get(ajax_url).text
+                        repost_json = json.loads(repost_info)
+                        repost_html = repost_json['data']['html']
+                    except Exception as why:
+                        print('使用json解析转发信息出现异常，具体信息为:{why}'.format(why=why))
+                        print('本次返回的转发信息为{info}'.format(info=source))
                     else:
-                        so.upper_user_id = user_id
+                        repost_urls = status_parse.get_reposturls(repost_html)
 
-            # todo 找出数据重复的原因
-            spread_others = list(set(spread_others))
+                        for repost_url in repost_urls:
+                            repost_cont = get_statusinfo.get_status_info(repost_url, session, user_id, user_name, headers, mid)
 
-            spread_other_dao.save(spread_others)
-            print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
-            print('该条微博的转发信息已经采集完成')
+                            if repost_cont is not None:
+                                spread_other_and_caches.append(repost_cont)
+
+                        for soac in spread_other_and_caches:
+                            if soac.get_so().id != '':
+                                spread_others.append(soac.get_so())
+                                spread_other_caches.append(soac.get_soc())
+                    finally:
+                        print('当前位于第{currpage}页'.format(currpage=page))
+                        page -= 1
+                        page_counter += 1
+
+                for so in spread_others:
+                    if so.verify_type == '':
+                        so.verify_type = 0
+
+                    for i in spread_other_caches:
+                        if so.upper_user_name == i.get_name():
+                            so.upper_user_id = i.get_id()
+                            break
+                        else:
+                            so.upper_user_id = user_id
+
+                spread_others = list(set(spread_others))
+
+                #spread_other_dao.save(spread_others)
+                print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
+                print('该条微博的转发信息已经采集完成')
     else:
         logging.info('{url}为404页面'.format(url=url))
         print('该微博{url}已经被删除了'.format(url=url))
@@ -251,6 +266,6 @@ def get_all(d):
         _get_current_reposts(data['url'], session, data['mid'])
 
         #  以下代码是为了测试反爬虫机制注释掉的
-        weibosearch_dao.update_weibo_url(data['mid'])
+        #weibosearch_dao.update_weibo_url(data['mid'])
 
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

@@ -2,6 +2,7 @@
 import logging, traceback
 from functools import wraps
 from traceback import format_tb
+from utils.util_cls import Timeout, KThread
 
 
 # 用于捕捉插入数据时的异常
@@ -78,3 +79,40 @@ def dbtimeout_decorator(return_type):
                     return False
         return handle_error
     return connect_process
+
+
+# 即使在抓取的时候设置了超时函数，抓取函数还是可能会超时，这是对get_page超时的完善
+def timeout(seconds):
+    def crwal_decorator(func):
+        def _new_func(oldfunc, result, oldfunc_args, oldfunc_kwargs):
+            result.append(oldfunc(*oldfunc_args, **oldfunc_kwargs))
+
+        def _(*args, **kwargs):
+            result = []
+            new_kwargs = {  # create new args for _new_func, because we want to get the func return val to result list
+                'oldfunc': func,
+                'result': result,
+                'oldfunc_args': args,
+                'oldfunc_kwargs': kwargs
+            }
+
+            thd = KThread(target=_new_func, args=(), kwargs=new_kwargs)
+            thd.start()
+            thd.join(seconds)
+            alive = thd.isAlive()
+            thd.kill()  # kill the child thread
+
+            if alive:
+                try:
+                    raise Timeout('抓取函数运行超时')
+                finally:
+                    return ''
+            else:
+                return result[0]
+
+        _.__name__ = func.__name__
+
+        _.__doc__ = func.__doc__
+        return _
+
+    return crwal_decorator

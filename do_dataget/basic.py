@@ -1,9 +1,10 @@
 import time, logging, gl, requests
 from gl import time_out
 from do_dataprocess.basic import is_403, is_404, is_complete
-from weibo_decorator.decorators import timeout_decorator
+from weibo_decorator.decorators import timeout_decorator, timeout
 
 
+@timeout(200)
 @timeout_decorator
 def get_page(url, session, headers, user_verify=True):
     """
@@ -18,7 +19,7 @@ def get_page(url, session, headers, user_verify=True):
         page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
             encode('utf-8',  'ignore').decode('utf-8')
         gl.count += 1
-        time.sleep(7)
+        time.sleep(20)
         if user_verify:
             if is_403(page):
                 logging.info('本账号已经被冻结')
@@ -41,7 +42,7 @@ def get_page(url, session, headers, user_verify=True):
     except requests.exceptions.ReadTimeout:
         logging.info('抓取{url}时连接目标服务器超时'.format(url=url))
         print('抓取{url}时连接目标服务器超时'.format(url=url))
-        time.sleep(60 * 5)  # 休眠5分钟
+        time.sleep(60)  # 休眠5分钟
         return ''
     except requests.exceptions.ConnectionError as e:
         logging.info('目标服务器拒绝连接，程序休眠1分钟,具体异常信息为:{e}'.format(e=e))
@@ -50,3 +51,4 @@ def get_page(url, session, headers, user_verify=True):
         return ''
     else:
         return page
+

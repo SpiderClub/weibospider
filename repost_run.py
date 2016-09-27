@@ -10,6 +10,7 @@ if __name__ == '__main__':
         mgr = Manager()
         d = mgr.dict()
         pw = Process(target=get_session, args=(d,))
+        pw.daemon = True
         pr = Process(target=get_all, args=(d,))
         print('本轮抓取开始,开始时间为{endtime}'.format(endtime=ctime()))
 
