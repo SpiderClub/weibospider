@@ -9,7 +9,7 @@ def get_engine():
     port = get_oracle_args()['port']
     db = get_oracle_args()['db']
     dsn = db_type + "://" + name + ':' + password + '@' + host + ':' + port + '/' + db
-    return create_engine(dsn, encoding='utf-8')
+    return create_engine(dsn, encoding='utf-8', echo=True)
 
 
 def get_conn():

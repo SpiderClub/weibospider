@@ -27,9 +27,22 @@ class WeiboSinaUsers(Base):
     su_register_time = Column(String(100))
     su_update_time = Column(String(100))
 
+    @staticmethod
+    @dbtimeout_decorator(1)
+    def get_user(uid):
+        session = get_dbsession()
+        rs = session.query(WeiboSinaUsers).filter(WeiboSinaUsers.su_id == uid).one()
+        return rs
+
+    @staticmethod
+    @save_decorator
+    @dbtimeout_decorator(0)
+    def save_user(user):
+        session = get_dbsession()
+        session.add(user)
+        session.commit()
+
 if __name__ == '__main__':
-    session = get_dbsession()
-    t = session.query(WeiboSinaUsers).filter(WeiboSinaUsers.su_id == '3858873234').one()
-    session_close(session)
-    # clob字段为空的话取出来是None,因为clob在python中也是一个对象
-    print(t.su_work_info)
+    u = WeiboSinaUsers()
+    u.su_id = 'sda'
+    WeiboSinaUsers.save_user(u)

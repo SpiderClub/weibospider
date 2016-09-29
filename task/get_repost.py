@@ -1,37 +1,17 @@
 # -*-coding:utf-8 -*-
 # 获取扩散信息
-"""
-    _ooOoo_
-   o8888888o
-   88" . "88
-   (| -_- |)
-   O\  =  /O
-____/`---'\____
-.'  \\|     |//  `.
-/  \\|||  :  |||//  \
-/  _||||| -:- |||||-  \
-|   | \\\  -  /// |   |
-| \_|  ''\---/''  |   |
-\  .-\__  `-`  ___/-. /
-___`. .'  /--.--\  `. . __
-."" '<  `.___\_<|>_/___.'  >'"".
-| | :  `- \`.;`\ _ /`;.`/ - ` : | |
-\  \ `-.   \_ __\ /__ _/   .-` /  /
-======`-.____`-.___\_____/___.-`____.-'======
-    `=---='
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-佛祖保佑       永无BUG
-"""
+
 import json, logging, os
 from gl import headers, count, page_max
 from do_dataget.basic import get_page
 from do_dataprocess import basic
-from db_operation import spread_original_dao
+from db_operation import spread_other_dao
 from do_dataprocess.do_statusprocess import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
 from do_dataget import get_statusinfo
 from do_dataget import get_userinfo
-from db_operation import spread_other_dao, weibosearch_dao
+from orm_entities.WeiboSpreadOrignal import WeiboSpreadOrignal
+from orm_entities.WeiboSearchData import WeiboSearchData
 
 
 def _get_reposts(url, session, weibo_mid):
@@ -49,7 +29,7 @@ def _get_reposts(url, session, weibo_mid):
 
     html = get_page(url, session, headers)
     reposts_count = status_parse.get_repostcounts(html)
-    weibosearch_dao.update_weibo_repost(weibo_mid, reposts_count)
+    WeiboSearchData.update_weibo_repost(weibo_mid, reposts_count)
 
     if not basic.is_404(html):
         root_url = url
@@ -163,7 +143,7 @@ def _get_current_reposts(url, session, weibo_mid):
     html = get_page(url, session, headers)
     reposts_count = status_parse.get_repostcounts(html)
     # 更新weibo_search_data表中的转发数、评论数
-    weibosearch_dao.update_weibo_repost(weibo_mid, reposts_count)
+    WeiboSearchData.update_weibo_repost(weibo_mid, reposts_count)
 
     if not basic.is_404(html):
         root_url = url
@@ -176,11 +156,18 @@ def _get_current_reposts(url, session, weibo_mid):
         reposts_count = status_parse.get_repostcounts(html)
         root_user = get_userinfo.get_profile(user_id, session, headers)
 
-        # rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
-
-        # if rs is False:
-        #     print('源微博的扩散信息已经获取过了')
-        #     return
+        wso = WeiboSpreadOrignal(
+            user_id=root_user.su_id, user_name=root_user.su_screen_name, user_province=root_user.su_province,
+            user_city=root_user.su_city, user_location='{p} {c}'.format(p=root_user.su_province, c=root_user.su_city),
+            user_description=root_user.su_description, user_url=root_user.su_blog_url,
+            user_profileimageurl=root_user.su_headimg_url, user_gender=root_user.su_gender,
+            user_followerscount=root_user.su_followers_count, user_friendscount=root_user.su_friends_count,
+            user_statusescount=root_user.su_statuses_count,user_createdat=root_user.su_register_time,
+            user_verifiedtype=root_user.su_verifytype, user_verifiedreason=root_user.su_verifyinfo,
+            status_createdat=post_time, status_mid=mid, status_source=device, status_repostscount=reposts_count,
+            status_commentscount=comments_count, status_url=root_url
+        )
+        WeiboSpreadOrignal.save(wso)
 
         print('转发数为{counts}'.format(counts=reposts_count))
 
@@ -243,8 +230,8 @@ def _get_current_reposts(url, session, weibo_mid):
                             so.upper_user_id = user_id
 
                 spread_others = list(set(spread_others))
+                spread_other_dao.save(spread_others)
 
-                #spread_other_dao.save(spread_others)
                 print('一共获取了{num}条转发信息'.format(num=len(spread_others)))
                 print('该条微博的转发信息已经采集完成')
     else:
@@ -256,7 +243,7 @@ def get_all(d):
     log_path = os.path.join(os.getcwd(), 'getdata.log')
     logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%Y%m%d %H:%M:%S')
-    datas = weibosearch_dao.get_crawl_urls()
+    datas = WeiboSearchData.get_crawl_urls()
     print('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     for data in datas:
@@ -266,6 +253,10 @@ def get_all(d):
         _get_current_reposts(data['url'], session, data['mid'])
 
         #  以下代码是为了测试反爬虫机制注释掉的
-        #weibosearch_dao.update_weibo_url(data['mid'])
+        WeiboSearchData.update_weibo_url(data['mid'])
 
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))
+
+
+if __name__ == '__main__':
+    pass
