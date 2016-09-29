@@ -5,18 +5,21 @@ from bs4 import BeautifulSoup
 from weibo_decorator.decorators import parse_decorator
 
 
+@parse_decorator(1)
 def get_userid(html):
     pattern = re.compile(r'\$CONFIG\[\'oid\'\]=\'(.*)\';')
     m = pattern.search(html)
     return m.group(1) if m else ''
 
 
+@parse_decorator(1)
 def get_username(html):
     pattern = re.compile(r'\$CONFIG\[\'onick\'\]=\'(.*)\';')
     m = pattern.search(html)
     return m.group(1) if m else ''
 
 
+@parse_decorator(1)
 def get_userdomain(html):
     """
     :param html:
@@ -147,7 +150,10 @@ def get_likecounts(html):
 
 
 def is_root(html):
-    return False if 'omid=' in html else True
+    try:
+        return False if 'omid=' in html else True
+    except TypeError:
+        return True
 
 
 @parse_decorator(1)

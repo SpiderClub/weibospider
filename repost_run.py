@@ -1,8 +1,9 @@
 # 获取转发信息# -*-coding:utf-8 -*-
 from multiprocessing import Process, Manager
+from time import sleep, ctime
 from get_cookie import get_session
 from task.get_repost import get_all
-from time import sleep, ctime
+from utils.util_mtd import display_count
 
 
 if __name__ == '__main__':
@@ -16,14 +17,14 @@ if __name__ == '__main__':
 
         pw.start()
         # 防止pr先执行
-        sleep(60)
+        sleep(90)
         pr.start()
         pr.join()
+
         pw.terminate()
         print('本轮抓取已经结束,结束时间为{endtime}'.format(endtime=ctime()))
         pw.join() # 使其可以更新状态
 
-        print('本轮抓取已经结束')
         sleep(60*60)
 
 
