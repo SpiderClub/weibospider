@@ -12,7 +12,7 @@ def get_crawl_urls():
     # sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
     #       'se_sourcetype = \'新浪微博\' order by se_createtime desc'
 
-    sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_new = 1 and ' \
+    sql = 'select se_userid,se_sid, se_mid, se_content from weibo_search_data where is_new = 1 and ' \
           'se_sourcetype = \'新浪微博\' order by se_createtime desc'
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
@@ -24,7 +24,7 @@ def get_crawl_urls():
     return datas
 
 
-@dbtimeout_decorator(1)
+@dbtimeout_decorator(0)
 def update_weibo_url(mid):
     sql = "update weibo_search_data set is_crawled = 1 where se_mid = :mid"
     args = {'mid': str(mid)}
@@ -80,4 +80,16 @@ def add_search_cont(search_list):
     db_connect.db_close(con)
 
 
+
+if __name__ == '__main__':
+    '''
+    解决调用 fetchmany()发生LOB variable no longer valid after subsequent fetch 错误的方法
+    '''
+    sql = 'select se_userid,se_sid, se_mid, se_content from weibo_search_data where is_new = 1 and ' \
+          'se_sourcetype = \'新浪微博\' order by se_createtime desc'
+    con = db_connect.get_con()
+    curs = con.cursor()
+    curs.execute(sql)
+    for rows in curs:
+        print(rows[3])
 

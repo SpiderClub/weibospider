@@ -11,3 +11,5 @@ time_out = 200   # 设置抓取和存储一个用户资料超时时间
 limit = 3  # 批量插入的最大数据量
 count = 0  # 计数器，每次抓取一个url则进行一次计数
 page_max = 30  # 转发信息最多抓取多少页
+
+base_url = 'http://weibo.com/'
