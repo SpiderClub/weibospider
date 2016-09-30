@@ -80,32 +80,4 @@ def add_search_cont(search_list):
     db_connect.db_close(con)
 
 
-def get_seed_ids():
-    """
-    操作weibo_search_data表，获取待爬取用户id队列
-    :return:
-    """
-    truncate_sql = 'truncate table weibo_sinausers_cache'
-    insert_sql = 'insert into weibo_sinausers_cache (select se_userid from weibo_search_data where is_new = 1 ' \
-                 'and se_sourcetype=\'新浪微博\' group by se_userid)'
-    delelte_sql = 'delete from weibo_sinausers_cache where dsu_id in (select su_id from weibo_sina_users)'
-    update_sql = 'update weibo_search_data set is_new = 0 where is_new = 1 and se_sourcetype = \'新浪微博\''
-    select_sql = 'select dsu_id from weibo_sinausers_cache'
-    con = db_connect.get_con()
-    db_connect.db_dml(con, truncate_sql)
-    print('-----------临时表已清空--------------')
-    db_connect.db_dml(con, insert_sql)
-    print('-----------临时表数据插入完成--------------')
-    db_connect.db_dml(con, delelte_sql)
-    print('-----------临时表已去重--------------')
-    db_connect.db_dml(con, update_sql)
-    print('-----------search表已更新--------------')
-    rs = db_connect.db_queryall(con, select_sql)
-    print('获取到{num}条需要爬取的id'.format(num=len(rs)))
-    db_connect.db_close(con)
-    ids = []
-    for r in rs:
-        ids.append(r[0])
-    return ids
-
 
