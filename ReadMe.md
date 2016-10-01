@@ -39,9 +39,13 @@
 
 - 安装**[phantomjs](http://phantomjs.org/)**并且设置相关环境变量
 - 打开[配置文件](./config/get_config.py)修改数据库和微博账号相关配置
+- 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
 - 入口文件 
  - [repost_run.py](./repost_run.py):微博扩散程序
  - [search_run.py](./search_run.py):微博搜索程序
+
+## 其它说明
+- [sql表](./config/sql/spider.sql)中关于weibo_sina_users和weibo_search_data有一些没有sql注释的列，是老项目使用API获取的，目前已无法获取，所以可根据自身需要删除或修改
 
 ## 本项目目前的一些数据可视化展示(使用的**d3.js**):
 对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
