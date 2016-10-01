@@ -29,13 +29,13 @@
 ## 配置和使用
 - 安装相关依赖,包括**requests**,**bs4**,**cx_Oracle**,**[pyexecjs](https://github.com/doloopwhile/PyExecJS)**
 
-> pip install requests
+ - > pip install requests
 
-> pip install bs4
+ - > pip install bs4
 
-> cx_Oracle安装请查看我的博客:[ubuntu安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/79)和[windows安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/69)
+ - > cx_Oracle安装请查看我的博客:[ubuntu安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/79)和[windows安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/69)
 
-> pip install PyExecJS
+ - > pip install PyExecJS
 
 - 安装**[phantomjs](http://phantomjs.org/)**并且设置相关环境变量
 - 打开[配置文件](./config/get_config.py)修改数据库和微博账号相关配置
