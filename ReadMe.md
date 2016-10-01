@@ -28,6 +28,7 @@
 
 ## 配置和使用
 - 安装相关依赖,包括**requests**,**bs4**,**cx_Oracle**,**[pyexecjs](https://github.com/doloopwhile/PyExecJS)**
+
 > pip install requests
 
 > pip install bs4
