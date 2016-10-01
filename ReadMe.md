@@ -26,6 +26,20 @@
 - 修复某些时候抓取失败的问题
 - 改成分布式爬虫
 
+## 配置和使用
+- 安装相关依赖,包括**requests**,**bs4**,**cx_Oracle**,**[pyexecjs](https://github.com/doloopwhile/PyExecJS)**
+> pip install requests
+> pip install bs4
+> cx_Oracle安装请查看我的博客:[ubuntu安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/79)和[windows安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/69)
+> pip install PyExecJS
+
+- 安装**[phantomjs](http://phantomjs.org/)**并且设置相关环境变量
+- 打开[配置文件](./config/get_config.py)修改数据库和微博账号相关配置
+- 入口文件 
+|文件名|作用|
+|---------|------|
+|[repost_run.py](./repost_run.py)|微博扩散程序|
+|[search_run.py](./search_run.py)|微博搜索程序|
 
 ## 本项目目前的一些数据可视化展示(使用的**d3.js**):
 对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
