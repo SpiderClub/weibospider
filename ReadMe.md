@@ -22,7 +22,7 @@
 - ~~采用布隆过滤器去重网页~~
 - 测试单机单账号访问阈值
 - 测试单机多账号访问效果
-- 优化代码，让程序运行更加快速和稳定
+- 优化代码，让程序运行更加快速~~和稳定~~
 - 修复某些时候抓取失败的问题
 - 改成分布式爬虫
 
@@ -36,10 +36,8 @@
 - 安装**[phantomjs](http://phantomjs.org/)**并且设置相关环境变量
 - 打开[配置文件](./config/get_config.py)修改数据库和微博账号相关配置
 - 入口文件 
-|文件名|作用|
-|---------|------|
-|[repost_run.py](./repost_run.py)|微博扩散程序|
-|[search_run.py](./search_run.py)|微博搜索程序|
+ - [repost_run.py](./repost_run.py):微博扩散程序
+ - [search_run.py](./search_run.py):微博搜索程序
 
 ## 本项目目前的一些数据可视化展示(使用的**d3.js**):
 对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
