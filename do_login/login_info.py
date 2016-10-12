@@ -69,6 +69,8 @@ def get_session():
     session = requests.session()
     js_path = os.path.join(os.getcwd(), 'do_login/sinalogin.js')
     runntime = get_runntime(js_path)
+    #print(get_weibo_args()['login_name'])
+    #print(get_weibo_args()['login_password'])
     su = get_encodename(get_weibo_args()['login_name'], runntime)
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
     prelogin_url = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&' \
