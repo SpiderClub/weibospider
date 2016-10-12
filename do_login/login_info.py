@@ -69,14 +69,13 @@ def get_session():
     session = requests.session()
     js_path = os.path.join(os.getcwd(), 'do_login/sinalogin.js')
     runntime = get_runntime(js_path)
-    #print(get_weibo_args()['login_name'])
-    #print(get_weibo_args()['login_password'])
-    su = get_encodename(get_weibo_args()['login_name'], runntime)
+
+    su = get_encodename(get_weibo_args()['name'], runntime)
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
     prelogin_url = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&' \
                    'su=' + su + '&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)'
     pre_obj = get_prelogin_info(prelogin_url, session)
-    sp = get_pass(get_weibo_args()['login_password'], pre_obj, runntime)
+    sp = get_pass(get_weibo_args()['password'], pre_obj, runntime)
 
     # 提交的数据可以根据抓包获得
     data = {
@@ -102,6 +101,7 @@ def get_session():
     }
 
     rs_datas = get_redirect(data, post_url, session)
+
     url = rs_datas[0]
     if url != '':
         post_cookies = rs_datas[1]
@@ -113,15 +113,15 @@ def get_session():
         m = re.search(u_pattern, login_info)
         if m.group(1):
             print("你当前使用的是rookiefly实现的微博登陆方式,你的微博id为" + m.group(1))
-            logging.info('本次登陆账号为:{name}'.format(name=get_weibo_args()['login_name']))
+            logging.info('本次登陆账号为:{name}'.format(name=get_weibo_args()['name']))
             return {'session': session, 'cookie': dict(last_cookies)}
         else:
             print('登陆失败')
-            logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['login_name']))
+            logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
             return None
     else:
         print('本次登陆失败')
-        logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['login_name']))
+        logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
         return None
 
 
