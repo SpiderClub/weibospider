@@ -7,7 +7,6 @@ from ssl import SSLEOFError as sse
 
 
 # 将cookie存入内存数据库中，每次都从内存数据库取cookie来进行请求
-# todo: 为什么某些时候请求不会成功
 def store_cookie():
     cookie_dict = login_info.get_session()['cookie']
     r = redis.Redis(host='localhost', port=6379, db=0)

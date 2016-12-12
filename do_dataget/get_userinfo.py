@@ -19,8 +19,11 @@ def get_profile(user_id, session, headers):
     :param user_id:
     :return:
     """
+<<<<<<< Updated upstream
     if user_id == '':
         return User()
+=======
+>>>>>>> Stashed changes
     user = User()
     r = get_user(user_id)
 
