@@ -1,4 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
 test.py
 login.log
-*.xml
+.idea
