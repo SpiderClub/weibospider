@@ -1,19 +1,25 @@
-import configparser
+import os, random
+from yaml import load
 
-cf = configparser.ConfigParser()
-cf.read_file(open('/home/wpm/project/config/spider.conf'))
+config_path = os.path.join(os.getcwd(), 'config/spider.yaml')
+
+with open(config_path, encoding='utf-8') as f:
+    cont = f.read()
+
+cf = load(cont)
 
 
-def get_oracle_args():
-    return dict(cf.items('oracle_db'))
+def get_db_args():
+    return cf.get('db')
 
 
 def get_redis_args():
-    return dict(cf.items('redis_db'))
+    return cf.get('redis_db')
 
 
 def get_weibo_args():
-    return dict(cf.items('weibo_account'))
+    acounts_info = cf.get('weibo_account')
+    return random.choice(acounts_info).get('account')
 
 if __name__ == '__main__':
-    print(dict(get_weibo_args()))
+    print(get_weibo_args())

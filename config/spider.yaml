@@ -1,0 +1,24 @@
+db:
+    host: 1.23.4.5
+    port: 1521
+    user: dbs
+    password: 12345678
+    db_name: adb
+    db_type: oracle
+
+redis_db:
+    host: 127.0.0.1
+    port: 6379
+    db_name: 0
+
+# 如果微博账号比较多，也可以考虑使用数据库进行读取和修改(比如标记账号的有效性)
+weibo_account:
+    - account:
+        name: acount1
+        password: password1
+    - account:
+        name: acount2
+        password: password2
+    - account:
+        name: acount3
+        password: password3

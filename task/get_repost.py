@@ -48,7 +48,7 @@ def _get_reposts(url, session, weibo_mid):
         root_user = get_userinfo.get_profile(user_id, session, headers)
 
         # 以下代码是因为测试反爬虫机制注释掉的
-        # rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
+        rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
         #
         # if rs is False:
         #     print('源微博的扩散信息已经获取过了')
@@ -152,12 +152,7 @@ def _get_current_reposts(url, session, weibo_mid):
         reposts_count = status_parse.get_repostcounts(html)
         root_user = get_userinfo.get_profile(user_id, session, headers)
 
-        # rs = spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
-
-        # if rs is False:
-        #     print('源微博的扩散信息已经获取过了')
-        #     return
-
+        spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
         print('转发数为{counts}'.format(counts=reposts_count))
 
         if reposts_count > 0:
@@ -239,9 +234,9 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
-        _get_reposts(data['url'], session, data['mid'])
+        _get_current_reposts(data['url'], session, data['mid'])
 
         #  以下代码是为了测试反爬虫机制注释掉的
-        #weibosearch_dao.update_weibo_url(data['mid'])
+        weibosearch_dao.update_weibo_url(data['mid'])
 
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

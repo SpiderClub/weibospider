@@ -3,7 +3,6 @@
 from db_operation import db_connect
 from weibo_decorator.decorators import save_decorator, dbtimeout_decorator
 from weibo_entities.user import User
-# todo：用orm改进
 
 
 @save_decorator

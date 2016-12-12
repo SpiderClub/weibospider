@@ -1,9 +1,9 @@
 # -*-coding:utf-8 -*-
 # 个人用户个人资料页
 from bs4 import BeautifulSoup
-from orm_entities.WeiboSinaUsers import WeiboSinaUsers
 from do_dataprocess.get_userprocess import get_publicinfo
 from weibo_decorator.decorators import parse_decorator
+from weibo_entities.user import User
 
 
 @parse_decorator(0)
@@ -57,7 +57,7 @@ def get_status(html):
 @parse_decorator(5)
 # todo 补充所有信息
 def get_detail(html):
-    user = WeiboSinaUsers()
+    user = User()
     cont = get_publicinfo.get_right(html)
     if cont == '':
         return user
