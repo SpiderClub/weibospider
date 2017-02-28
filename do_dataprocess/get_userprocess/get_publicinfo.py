@@ -119,8 +119,4 @@ def get_right(html):
                     return ''
     return cont
 
-if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/luce.html', 'rb') as f:
-        source = f.read().decode('utf-8')
-    print(get_username(source))
 

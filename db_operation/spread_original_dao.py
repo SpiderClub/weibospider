@@ -27,14 +27,17 @@ def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
         db_connect.db_close(conn)
         return False
 
-    insert_sql = 'insert into weibo_spread_original (user_id,user_screenname,user_province,user_city,user_location,' \
-                 'user_description,user_url,user_profileimageurl,user_gender,user_followerscount,user_friendscount,' \
-                 'user_statusescount,user_createdat,user_verifiedtype,user_verifiedreason,status_createdat,' \
-                 'status_mid,status_source,status_repostscount,status_commentscount,status_url) ' + " values (" \
-                 ":user_id,:user_screenname,:user_province,:user_city,:user_location,:user_description,:user_url," \
-                 ":user_profileimageurl,:user_gender,:user_followerscount,:user_friendscount,:user_statusescount," \
-                 ":user_createdat,:user_verifiedtype,:user_verifiedreason,:status_createdat,:status_mid," \
-                 ":status_source,:status_repostscount,:status_commentscount,:status_url)"
+    insert_sql = (
+                    'insert into weibo_spread_original (user_id,user_screenname,user_province,user_city,user_location,'
+                    'user_description,user_url,user_profileimageurl,user_gender,user_followerscount,user_friendscount,'
+                    'user_statusescount,user_createdat,user_verifiedtype,user_verifiedreason,status_createdat,'
+                    'status_mid,status_source,status_repostscount,status_commentscount,status_url) ' + " values ("
+                    ":user_id,:user_screenname,:user_province,:user_city,:user_location,:user_description,:user_url,"
+                    ":user_profileimageurl,:user_gender,:user_followerscount,:user_friendscount,:user_statusescount,"
+                    ":user_createdat,:user_verifiedtype,:user_verifiedreason,:status_createdat,:status_mid,"
+                    ":status_source,:status_repostscount,:status_commentscount,:status_url)"
+    )
+
     args = {
         'user_id': user.id,
         'user_screenname': user.screen_name,

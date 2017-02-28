@@ -3,6 +3,7 @@ import logging, traceback
 from functools import wraps
 from traceback import format_tb
 from utils.util_cls import Timeout, KThread
+from logger.log import storage, parser, crawler
 
 
 # 用于捕捉插入数据时的异常
@@ -12,10 +13,9 @@ def save_decorator(func):
         try:
             func(*args)
         except Exception as e:
-            print('插入失败')
             for i in args:
-                logging.info('未成功插入的对象属性:{i}'.format(i=i.__dict__))
-            logging.error('插入失败，具体错误信息为{e},堆栈为{stack}'.format(e=e, stack=format_tb(e.__traceback__)[0]))
+                storage.error('未成功插入的对象属性:{i}'.format(i=i.__dict__))
+            storage.error('插入失败，具体错误信息为{e},堆栈为{stack}'.format(e=e, stack=format_tb(e.__traceback__)[0]))
     return save_process
 
 
@@ -26,8 +26,7 @@ def timeout_decorator(func):
         try:
             return func(url, session, *k)
         except Exception as e:
-            print('抓取{url}超时'.format(url=url))
-            logging.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
+            crawler.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
                                                                    stack=format_tb(e.__traceback__)[0]))
             return None
     return time_limit
@@ -41,9 +40,8 @@ def parse_decorator(return_type):
             try:
                 return func(*keys)
             except Exception as e:
-                print(e)
-                with open('parse_error.log', 'a') as f:
-                    traceback.print_exc(file=f)
+                parser.error(e)
+
                 if return_type == 5:
                     return None
                 elif return_type == 4:
@@ -68,9 +66,7 @@ def dbtimeout_decorator(return_type):
             try:
                 return func(*keys)
             except Exception as e:
-                print(e)
-                with open('log.txt', 'a') as f:
-                    traceback.print_exc(file=f)
+                storage.error(e)
                 if return_type == 2:
                     return []
                 elif return_type == 1:

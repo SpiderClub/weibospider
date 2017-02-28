@@ -154,9 +154,3 @@ def get_detail(html):
         finally:
             return user
 
-
-if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/luce.html', 'rb') as f:
-        source = f.read().decode('utf-8')
-    u = get_detail(source)
-    print(u.description.encode('utf-8').decode('utf-8'))

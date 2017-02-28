@@ -1,8 +1,9 @@
 # -*-coding:utf-8 -*-
 # 微博详情页
-import re, json, logging
+import re, json
 from bs4 import BeautifulSoup
 from weibo_decorator.decorators import parse_decorator
+from logger.log import parser
 
 
 @parse_decorator(1)
@@ -45,9 +46,8 @@ def _get_statushtml(html):
         except TypeError:
             return ''
         except Exception as e:
-            print('解析错误')
-            logging.info('__get__statushtml()错误,具体错误是'.format(e=e))
-            logging.info('网页代码为{page}'.format(page=html))
+            parser.error('__get__statushtml()错误,具体错误是'.format(e=e))
+            parser.error('网页代码为{page}'.format(page=html))
     return cont
 
 
@@ -62,7 +62,7 @@ def get_mid(html):
         mid_matcher = re.search(mid_pattern, html)
         return mid_matcher.group(1) if mid_matcher else ''
     except Exception as e:
-        logging.info('get_mid()发生异常,具体异常为{e}'.format(e=e))
+        parser.error('get_mid()发生异常,具体异常为{e}'.format(e=e))
 
 
 @parse_decorator(1)
@@ -112,7 +112,7 @@ def get_repostcounts(html):
         counts = int(reposts)
         return counts
     except (ValueError, AttributeError) as e:
-        print(e)
+        parser.error(e)
         return 0
 
 
@@ -127,7 +127,7 @@ def get_commentcounts(html):
         counts = int(comments)
         return counts
     except (ValueError, AttributeError) as e:
-        print(e)
+        parser.error(e)
         return 0
 
 
@@ -145,7 +145,7 @@ def get_likecounts(html):
         else:
             return int(likes)
     except (ValueError, AttributeError) as e:
-        print(e)
+        parser.error(e)
         return 0
 
 
@@ -206,13 +206,7 @@ def get_upperusername(html, defaultname):
         except AttributeError:
             return defaultname
         except Exception as e:
-            print(e)
+            parser.error(e)
             return defaultname
     else:
         return defaultname
-
-
-if __name__ == '__main__':
-    with open('/home/wpm/桌面/error.html', 'rb') as f:
-        source = f.read().decode('utf-8')
-    print(get_likecounts(source))

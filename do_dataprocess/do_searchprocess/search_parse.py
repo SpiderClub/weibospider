@@ -86,10 +86,5 @@ def get_search_info(html):
     return search_list
 
 
-if __name__ == '__main__':
-    with open('g:/360data/重要数据/桌面/search.html', 'r', encoding='utf-8') as f:
-        my_str = f.read()
-    l = get_search_info(my_str)
-    for i in l:
-        print(i)
+
 

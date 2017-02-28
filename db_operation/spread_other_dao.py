@@ -1,21 +1,25 @@
 # -*-coding:utf-8 -*-
 from db_operation import db_connect
 from weibo_decorator.decorators import save_decorator
+from logger.log import storage
 
 
 @save_decorator
 def save(sos):
     ins_count = 0
     conn = db_connect.get_con()
-    insert_sql = 'insert into weibo_spread_other (user_id,user_screenname,user_province,user_city,user_location,' \
-                 'user_description,user_url,user_profileimageurl,user_gender,user_followerscount,user_friendscount,' \
-                 'user_statusescount,user_createdat,user_verifiedtype,user_verifiedreason,status_createdat,' \
-                 'status_mid,status_source,status_repostscount,status_commentscount,upper_user_id,original_status_id,' \
-                 'status_url) ' + " values (:user_id,:user_screenname,:user_province,:user_city,:user_location," \
-                 ":user_description,:user_url,:user_profileimageurl,:user_gender,:user_followerscount," \
-                 ":user_friendscount,:user_statusescount,:user_createdat,:user_verifiedtype,:user_verifiedreason," \
-                 ":status_createdat,:status_mid,:status_source,:status_repostscount,:status_commentscount," \
-                 ":upper_user_id,:original_status_id,:status_url)"
+    insert_sql = (
+                    'insert into weibo_spread_other (user_id,user_screenname,user_province,user_city,user_location,'
+                    'user_description,user_url,user_profileimageurl,user_gender,user_followerscount,user_friendscount,'
+                    'user_statusescount,user_createdat,user_verifiedtype,user_verifiedreason,status_createdat,'
+                    'status_mid,status_source,status_repostscount,status_commentscount,upper_user_id,'
+                    'original_status_id,status_url) '
+                    " values (:user_id,:user_screenname,:user_province,:user_city,:user_location,"
+                    ":user_description,:user_url,:user_profileimageurl,:user_gender,:user_followerscount,"
+                    ":user_friendscount,:user_statusescount,:user_createdat,:user_verifiedtype,:user_verifiedreason,"
+                    ":status_createdat,:status_mid,:status_source,:status_repostscount,:status_commentscount,"
+                    ":upper_user_id,:original_status_id,:status_url)"
+    )
     for item in sos:
         if item.verify_type == '':
             item.verify_type = 0
@@ -47,11 +51,11 @@ def save(sos):
             }
             db_connect.db_dml_parms(conn, insert_sql, args)
         except Exception as why:
-            print(item.__dict__)
-            print(why)
+            storage.error(item.__dict__)
+            storage.error(why)
         else:
             ins_count += 1
-    print('一共插入了{ins}条数据'.format(ins=ins_count))
+    storage.info('一共插入了{ins}条数据'.format(ins=ins_count))
     db_connect.db_close(conn)
 
 

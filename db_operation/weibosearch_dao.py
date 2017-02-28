@@ -1,5 +1,6 @@
 # -*-coding:utf-8 -*-
 from db_operation import db_connect
+from logger.log import parser
 from weibo_decorator.decorators import dbtimeout_decorator, save_decorator
 
 
@@ -8,16 +9,13 @@ def get_crawl_urls():
     """
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
     """
-    # 以下代码是为了测试反爬虫机制注释掉的
-    sql = 'select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and ' \
-           'se_sourcetype = \'新浪微博\' order by se_createtime desc'
+    sql = ('select se_userid,se_sid, se_mid from weibo_search_data where is_crawled = 0 and '
+           'se_sourcetype = \'新浪微博\' order by se_createtime desc')
 
-    # sql = 'select se_userid,se_sid, se_mid, se_content from weibo_search_data where is_new = 1 and ' \
-    #       'se_sourcetype = \'新浪微博\' order by se_createtime desc'
     con = db_connect.get_con()
     rs = db_connect.db_queryall(con, sql)
     db_connect.db_close(con)
-    datas = []
+    datas = list()
     for r in rs:
         data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
         datas.append(data)
@@ -75,21 +73,9 @@ def add_search_cont(search_list):
         try:
             db_connect.db_dml_parms(con, save_sql, search_info)
         except Exception as why:
-            print('插入出错,具体原因为:{why}'.format(why=why))
-            print(search_info.__dict__)
+            parser.error('插入出错,具体原因为:{why}, 插入数据是{info}'.format(why=why, info=search_info.__dict__))
     db_connect.db_close(con)
 
 
 
-if __name__ == '__main__':
-    '''
-    解决调用 fetchmany()发生LOB variable no longer valid after subsequent fetch 错误的方法
-    '''
-    sql = 'select se_userid,se_sid, se_mid, se_content from weibo_search_data where is_new = 1 and ' \
-          'se_sourcetype = \'新浪微博\' order by se_createtime desc'
-    con = db_connect.get_con()
-    curs = con.cursor()
-    curs.execute(sql)
-    for rows in curs:
-        print(rows[3])
 
