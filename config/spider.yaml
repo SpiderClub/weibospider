@@ -1,9 +1,9 @@
 db:
-    host: 1.23.4.5
+    host: 202.115.44.140
     port: 1521
-    user: dbs
-    password: 12345678
-    db_name: adb
+    user: dangban
+    password: 85418825
+    db_name: ntci
     db_type: oracle
 
 redis_db:
@@ -14,11 +14,14 @@ redis_db:
 # 如果微博账号比较多，也可以考虑使用数据库进行读取和修改(比如标记账号的有效性)
 weibo_account:
     - account:
-        name: acount1
-        password: password1
+        name: w796246076@sina.com
+        password: rookiefly
     - account:
-        name: acount2
-        password: password2
+        name: 15708437303
+        password: rookiefly
     - account:
-        name: acount3
-        password: password3
+        name: 18708103033@163.com
+        password: rookiefly
+    - account:
+        name: rookiefly@aliyun.com
+        password: rookiefly

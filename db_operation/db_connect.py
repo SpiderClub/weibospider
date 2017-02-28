@@ -9,7 +9,7 @@ os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 def get_con():
     args = get_db_args()
     dsn = cx_Oracle.makedsn(args['host'], args['port'], args['db_name'])
-    conn = cx_Oracle.connect(args['user'], args['password'], dsn)
+    conn = cx_Oracle.connect(args['user'], str(args['password']), dsn)
     return conn
 
 

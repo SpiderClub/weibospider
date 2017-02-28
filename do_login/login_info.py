@@ -1,8 +1,9 @@
 # -*-coding:utf-8 -*-
 # 获取扩散信息
-import requests, re, json, os, logging
+import requests, re, json, os
 import execjs, gl
 from config.get_config import get_weibo_args
+from logger.log import other
 
 
 def get_runntime(path):
@@ -63,9 +64,6 @@ def get_redirect(data, post_url, session):
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
 def get_session():
-    log_path = os.path.join(os.getcwd(), 'login.log')
-    logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
-                        datefmt='%Y%m%d %H:%M:%S')
     session = requests.session()
     js_path = os.path.join(os.getcwd(), 'do_login/sinalogin.js')
     runntime = get_runntime(js_path)
@@ -112,16 +110,13 @@ def get_session():
         u_pattern = r'"uniqueid":"(.*)",'
         m = re.search(u_pattern, login_info)
         if m.group(1):
-            print("你当前使用的是rookiefly实现的微博登陆方式,你的微博id为" + m.group(1))
-            logging.info('本次登陆账号为:{name}'.format(name=get_weibo_args()['name']))
+            other.info('本次登陆账号为:{name}'.format(name=get_weibo_args()['name']))
             return {'session': session, 'cookie': dict(last_cookies)}
         else:
-            print('登陆失败')
-            logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
+            other.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
             return None
     else:
-        print('本次登陆失败')
-        logging.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
+        other.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
         return None
 
 

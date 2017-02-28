@@ -9,6 +9,7 @@ from weibo_entities.spread_other_cache import SpreadOtherCache
 from do_dataget import get_statusinfo
 from do_dataget import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
+from logger.log import other
 
 
 def _get_reposts(url, session, weibo_mid):
@@ -224,19 +225,14 @@ def _get_current_reposts(url, session, weibo_mid):
 
 
 def get_all(d):
-    log_path = os.path.join(os.getcwd(), 'getdata.log')
-    logging.basicConfig(filename=log_path, level=logging.INFO, format='[%(asctime)s %(levelname)s] %(message)s',
-                        datefmt='%Y%m%d %H:%M:%S')
     datas = weibosearch_dao.get_crawl_urls()
-    print('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
-    logging.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
+    other.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
     for data in datas:
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d['session']
         logging.info('正在抓取url为{url}的微博'.format(url=data['url']))
         _get_current_reposts(data['url'], session, data['mid'])
-
-        #  以下代码是为了测试反爬虫机制注释掉的
+        # 这样处理会导致某些微博给漏掉
         weibosearch_dao.update_weibo_url(data['mid'])
 
     logging.info('本次启动一共抓取了{count}个页面'.format(count=count))

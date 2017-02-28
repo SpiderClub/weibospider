@@ -19,7 +19,8 @@ def get_redis_args():
 
 def get_weibo_args():
     acounts_info = cf.get('weibo_account')
-    return random.choice(acounts_info).get('account')
+    #return random.choice(acounts_info).get('account')
+    return dict(name='18708103033', password='pmaixq3344')
 
 if __name__ == '__main__':
     print(get_weibo_args())
