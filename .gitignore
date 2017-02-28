@@ -2,3 +2,9 @@
 test.py
 login.log
 .idea/*.xml
+将删除 .idea/WeiboSpiderO.iml
+将删除 do_dataprocess/do_searchprocess/__pycache__/
+将删除 logs/
+将删除 requirements.txt
+将删除 task/__pycache__/get_searchinfo.cpython-35.pyc
+将删除 weibo_entities/__pycache__/weibo_search_data.cpython-35.pyc
