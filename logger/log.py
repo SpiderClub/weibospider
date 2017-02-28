@@ -2,7 +2,7 @@ import logging
 import logging.config as log_conf
 
 log_config = {
-    'version': 1.1,
+    'version': 1.0,
     'formatters': {
         'detail': {
             'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -20,7 +20,7 @@ log_config = {
         },
         'file': {
             'class': 'logging.handlers.WatchedFileHandler',
-            'filename': 'log/log.txt',
+            'filename': 'logs/log.txt',
             'level': 'INFO',
             'formatter': 'detail',
             'encoding': 'utf-8',

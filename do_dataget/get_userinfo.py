@@ -19,11 +19,9 @@ def get_profile(user_id, session, headers):
     :param user_id:
     :return:
     """
-<<<<<<< Updated upstream
     if user_id == '':
         return User()
-=======
->>>>>>> Stashed changes
+
     user = User()
     r = get_user(user_id)
 
@@ -93,14 +91,3 @@ def get_profile(user_id, session, headers):
 
     return user
 
-
-if __name__ == '__main__':
-    with open('F:/360data/重要数据/桌面/luce.html', 'rb') as f:
-        source = f.read().decode('utf-8')
-    u = User()
-    u.id = get_publicinfo.get_userid(source)
-    print(u.id)
-    u.screen_name = get_publicinfo.get_username(source)
-    u.description = get_personalinfo.get_detail(source).description.encode('gbk', 'ignore').decode('gbk')
-    print(u.description)
-    save_user(u)

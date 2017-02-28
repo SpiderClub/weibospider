@@ -10,3 +10,9 @@ config/spider.yaml
 将删除 task/__pycache__/get_searchinfo.cpython-35.pyc
 将删除 weibo_entities/__pycache__/weibo_search_data.cpython-35.pyc
 将删除 .idea/
+将删除 db_operation/__pycache__/
+将删除 do_dataget/__pycache__/
+将删除 do_dataprocess/__pycache__/
+将删除 task/__pycache__/
+将删除 weibo_decorator/__pycache__/
+将删除 weibo_entities/__pycache__/
