@@ -1,7 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 test.py
-login.log
 .idea/*.xml
+__pycache__/*.pyc
 将删除 .idea/WeiboSpiderO.iml
 将删除 do_dataprocess/do_searchprocess/__pycache__/
 将删除 logs/
