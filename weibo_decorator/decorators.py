@@ -1,5 +1,4 @@
 # -*-coding:utf-8 -*-
-import logging, traceback
 from functools import wraps
 from traceback import format_tb
 from utils.util_cls import Timeout, KThread

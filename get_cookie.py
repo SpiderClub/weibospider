@@ -1,46 +1,27 @@
-import redis, requests, json, time
-from gl import headers
-from do_login import login_info
-from requests.exceptions import SSLError as rsle
-from requests.packages.urllib3.exceptions import SSLError as rpuese
-from ssl import SSLEOFError as sse
-
-
-# 将cookie存入内存数据库中，每次都从内存数据库取cookie来进行请求
-def store_cookie():
-    cookie_dict = login_info.get_session()['cookie']
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    cookiestr = json.dumps(cookie_dict)
-    r.set('userinfo_cookie', cookiestr)
-
-
-def get_cookie():
-    r = redis.Redis(host='localhost', port=6379, db=0)
-    return r.get('userinfo_cookie').decode('utf-8')
+import time
+from requests.exceptions import SSLError as ResE
+from requests.packages.urllib3.exceptions import SSLError as SslE
+from ssl import SSLEOFError as SsE
+from weibo_login import login_info
+from logger.log import other
 
 
 def get_session(d):
     while True:
-        d['session'] = None
         try:
-            d['session'] = login_info.get_session()['session']
+            d.setdefault('session', login_info.get_session()['session'])
             if d['session'] is None:
-                # todo: 邮件通知
                 time.sleep(60*5)
+                other.log('本次登录失败，账号是{}')
                 d['session'] = login_info.get_session()['session']
-        except (sse, rsle, rpuese):
+        except (SsE, ResE, SslE):
             # 预防因为网络问题导致的登陆不成功
-            print('本次登陆出现问题,sleep 60s')
+            print('本次登陆出现问题,一分钟后重试')
             time.sleep(60)
             d['session'] = login_info.get_session()['session']
         else:
             time.sleep(60*60*10)
 
 
-if __name__ == '__main__':
-    store_cookie()
-    cookie = get_cookie()
-    cookie = json.loads(cookie)
-    content = requests.get('http://weibo.com/p/1005051921017243/info?mod=pedit_more', headers=headers, cookies=cookie).text
-    print(content)
+
 

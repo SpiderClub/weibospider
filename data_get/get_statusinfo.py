@@ -1,12 +1,12 @@
 # -*-coding:utf-8 -*-
 #  获取微博信息
 import logging
-from do_dataget.basic import get_page
-from do_dataprocess.basic import is_404
-from do_dataprocess.do_statusprocess import status_parse
+from data_get.basic import get_page
+from data_process.basic import is_404
+from data_process.do_statusprocess import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
 from weibo_entities.spread_other import SpreadOther
-from do_dataget import get_userinfo
+from data_get import get_userinfo
 from weibo_entities.other_and_cache import SpreadOtherAndCache
 
 

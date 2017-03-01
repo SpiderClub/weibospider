@@ -19,7 +19,7 @@ log_config = {
             'formatter': 'detail'
         },
         'file': {
-            'class': 'logging.handlers.WatchedFileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': 'logs/log.txt',
             'level': 'INFO',
             'formatter': 'detail',

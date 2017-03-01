@@ -2,8 +2,11 @@
 # 获取扩散信息
 import requests, re, json, os
 import execjs, gl
-from config.get_config import get_weibo_args
 from logger.log import other
+from config.get_config import get_weibo_args
+
+
+name_password = get_weibo_args()
 
 
 def get_runntime(path):
@@ -65,15 +68,15 @@ def get_redirect(data, post_url, session):
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
 def get_session():
     session = requests.session()
-    js_path = os.path.join(os.getcwd(), 'do_login/sinalogin.js')
+    js_path = os.path.join(os.getcwd(), 'weibo_login/sinalogin.js')
     runntime = get_runntime(js_path)
 
-    su = get_encodename(get_weibo_args()['name'], runntime)
+    su = get_encodename(name_password['name'], runntime)
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
     prelogin_url = 'http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&' \
                    'su=' + su + '&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)'
     pre_obj = get_prelogin_info(prelogin_url, session)
-    sp = get_pass(get_weibo_args()['password'], pre_obj, runntime)
+    sp = get_pass(name_password['password'], pre_obj, runntime)
 
     # 提交的数据可以根据抓包获得
     data = {
@@ -109,14 +112,17 @@ def get_session():
         login_info = rs_cont.text
         u_pattern = r'"uniqueid":"(.*)",'
         m = re.search(u_pattern, login_info)
-        if m.group(1):
-            other.info('本次登陆账号为:{name}'.format(name=get_weibo_args()['name']))
-            return {'session': session, 'cookie': dict(last_cookies)}
+        if m:
+            if m.group(1):
+                other.info('本次登陆账号为:{name}'.format(name=name_password['name']))
+                return {'session': session, 'cookie': dict(last_cookies)}
+            else:
+                other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
+                return None
         else:
-            other.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
-            return None
+            other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
     else:
-        other.info('本次账号{name}登陆失败'.format(name=get_weibo_args()['name']))
+        other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
         return None
 
 

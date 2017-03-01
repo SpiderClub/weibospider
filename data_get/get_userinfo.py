@@ -1,9 +1,9 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
 from weibo_entities.user import User
-from do_dataprocess.get_userprocess import get_enterpriseinfo, get_personalinfo, get_publicinfo
-from do_dataprocess.basic import is_404
-from do_dataget.basic import get_page
+from data_process.get_userprocess import get_enterpriseinfo, get_personalinfo, get_publicinfo
+from data_process.basic import is_404
+from data_get.basic import get_page
 from db_operation.user_dao import save_user, get_user
 
 

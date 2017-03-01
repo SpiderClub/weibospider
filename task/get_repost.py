@@ -1,13 +1,13 @@
 # -*-coding:utf-8 -*-
 import json
 from gl import headers, page_max
-from do_dataget.basic import get_page
-from do_dataprocess import basic
+from data_get.basic import get_page
+from data_process import basic
 from db_operation import spread_original_dao
-from do_dataprocess.do_statusprocess import status_parse
+from data_process.do_statusprocess import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
-from do_dataget import get_statusinfo
-from do_dataget import get_userinfo
+from data_get import get_statusinfo
+from data_get import get_userinfo
 from db_operation import spread_other_dao, weibosearch_dao
 from logger.log import crawler, parser
 
@@ -15,18 +15,17 @@ from logger.log import crawler, parser
 def _get_current_reposts(url, session, weibo_mid):
     """
     修改过后的抓取主程序，由于微博频率限制比较严格，目前只抓取当前微博及其子微博，不抓取源微博
-    :param url:
-    :param session:
-    :return:
     """
     spread_other_caches = list()
     spread_others = list()
     spread_other_and_caches = list()
 
     html = get_page(url, session, headers)
-    reposts_count = status_parse.get_repostcounts(html)
+    reposts = status_parse.get_repostcounts(html)
+    comments = status_parse.get_commentcounts(html)
+
     # 更新weibo_search_data表中的转发数、评论数
-    weibosearch_dao.update_weibo_repost(weibo_mid, reposts_count)
+    weibosearch_dao.update_repost_comment(mid=weibo_mid, reposts=reposts, comments=comments)
 
     if not basic.is_404(html):
         root_url = url
@@ -113,12 +112,17 @@ def _get_current_reposts(url, session, weibo_mid):
 def get_all(d):
     datas = weibosearch_dao.get_crawl_urls()
     crawler.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
+
     for data in datas:
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
-        session = d['session']
+        session = d.get('session')
+
+        if session is None:
+            crawler.error('当前登录错误')
+            exit(-1)
+
         crawler.info('正在抓取url为{url}的微博'.format(url=data['url']))
         _get_current_reposts(data['url'], session, data['mid'])
-        # 这样处理会导致某些微博给漏掉
         weibosearch_dao.update_weibo_url(data['mid'])
 
     crawler.info('本次抓取结束')

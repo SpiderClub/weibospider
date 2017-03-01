@@ -19,29 +19,18 @@
 ## todo
 -[x] 添加搜索接口，可以对某个指定话题进行搜索
 -[x] 可视化展示
--[ ] 不用重复抓取已经获取过的转发微博和其源微博
--[ ] 采用布隆过滤器去重网页~~
+-[ ] 采用布隆过滤器去重网页
 -[ ] 测试单机单账号访问阈值
 -[ ] 测试单机多账号访问效果
 -[ ] 优化代码，让程序运行更加快速~~和稳定~~
--[ ] 修复某些时候抓取失败的问题
+-[x] 修复某些时候抓取失败的问题
 -[ ] 改成分布式爬虫
 
 ## 配置和使用
-- 安装相关依赖,包括**requests**,**bs4**,**cx_Oracle**,**[pyexecjs](https://github.com/doloopwhile/PyExecJS)**
-
- - > pip install requests
-
- - > pip install bs4
-
- - > cx_Oracle安装请查看我的博客:[ubuntu安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/79)和[windows安装cx_Oracle踩过的那些坑](http://www.rookiefly.cn/detail/69)
-
- - > pip install PyExecJS
- 
- -> pip install pyyaml
+- 安装相关依赖```pip install -r requirements.txt```,cx_Oracle的安装可能会出问题，windows平台请看[这里](http://rookiefly.cn/detail/69)，linux平台请看[这里](http://rookiefly.cn/detail/79)
 
 - 安装**[phantomjs](http://phantomjs.org/)**并且设置相关环境变量
-- 打开[配置文件](./config/get_config.py)修改数据库和微博账号相关配置
+- 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
 - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
 - 入口文件 
  - [repost_run.py](./repost_run.py):微博扩散程序

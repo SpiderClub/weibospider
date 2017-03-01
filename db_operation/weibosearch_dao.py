@@ -1,7 +1,19 @@
 # -*-coding:utf-8 -*-
+from contextlib import contextmanager
 from db_operation import db_connect
 from logger.log import parser
 from weibo_decorator.decorators import dbtimeout_decorator, save_decorator
+
+
+@contextmanager
+def db_execute():
+    con = None
+    try:
+        con = db_connect.get_con()
+        yield con
+    finally:
+        if con:
+            db_connect.db_close(con)
 
 
 @dbtimeout_decorator(2)
@@ -32,24 +44,30 @@ def update_weibo_url(mid):
 
 
 @dbtimeout_decorator(0)
-def update_weibo_repost(mid, reposts_count):
-    sql = 'select se_repost_count from weibo_search_data where se_mid = :mid'
-    args = {'mid': str(mid)}
+def update_repost_comment(**kwargs):
+    mid = kwargs.get('mid')
+    reposts = kwargs.get('reposts')
+    comments = kwargs.get('comments')
+    sql = 'select se_repost_count, se_comment_count from weibo_search_data where se_mid = :mid'
+    args = dict(mid=mid)
     con = db_connect.get_con()
     rs = db_connect.db_queryone_params(con, sql, args)
-    if reposts_count != rs[0]:
-        update_sql = 'update weibo_search_data set se_repost_count = :reposts_count where se_mid = :mid'
-        update_args = {'mid': mid, 'reposts_count': reposts_count}
+    if reposts != rs[0] or comments != rs[1]:
+        update_sql = ('update weibo_search_data set se_repost_count = :reposts, se_comment_count = :comments '
+                      'where se_mid = :mid')
+        update_args = dict(mid=mid, reposts=reposts, comments=comments)
         db_connect.db_dml_parms(con, update_sql, update_args)
     db_connect.db_close(con)
 
 
 @save_decorator
 def add_search_cont(search_list):
-    save_sql = 'insert into weibo_search (mk_primary,mid,murl,create_time,praise_count,repost_count,comment_count,' \
-               'content,device,user_id,username,uheadimage,user_home,keyword) values(:mk_primary, :mid, ' \
-               ':murl, :create_time, :praise_count,:repost_count, :comment_count, :content, :device, ' \
-               ':user_id, :username,:uheadimage, :user_home, :keyword)'
+    save_sql = (
+                'insert into weibo_search (mk_primary,mid,murl,create_time,praise_count,repost_count,comment_count,'
+                'content,device,user_id,username,uheadimage,user_home,keyword) values(:mk_primary, :mid, '
+                ':murl, :create_time, :praise_count,:repost_count, :comment_count, :content, :device, '
+                ':user_id, :username,:uheadimage, :user_home, :keyword)'
+                )
 
     con = db_connect.get_con()
 

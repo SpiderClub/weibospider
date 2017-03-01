@@ -23,7 +23,8 @@ if __name__ == '__main__':
 
         pw.terminate()
         other.info('本轮抓取已经结束,结束时间为{endtime}'.format(endtime=ctime()))
-        pw.join() # 使其可以更新状态
+        # 使其可以更新状态
+        pw.join()
 
         sleep(2*60*60)
 

@@ -3,7 +3,7 @@
 # 后台获取用户信息
 import logging, time
 from db_operation import weibosearch_dao
-from do_dataget import get_userinfo
+from data_get import get_userinfo
 from db_operation import user_dao
 from gl import max_len, headers, count
 

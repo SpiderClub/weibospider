@@ -3,6 +3,8 @@ test.py
 *.xml
 *.pyc
 config/spider.yaml
+logs
+tests
 将删除 .idea/WeiboSpiderO.iml
 将删除 do_dataprocess/do_searchprocess/__pycache__/
 将删除 logs/
@@ -16,3 +18,8 @@ config/spider.yaml
 将删除 task/__pycache__/
 将删除 weibo_decorator/__pycache__/
 将删除 weibo_entities/__pycache__/
+将删除 __pycache__/
+将删除 config/__pycache__/
+将删除 do_login/__pycache__/
+将删除 logger/__pycache__/
+将删除 tests/

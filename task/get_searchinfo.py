@@ -1,8 +1,8 @@
 # coding:utf-8
 # 搜索页面获取
 from gl import headers
-from do_dataget.basic import get_page
-from do_dataprocess.do_searchprocess import search_parse
+from data_get.basic import get_page
+from data_process.do_searchprocess import search_parse
 from db_operation.weibosearch_dao import add_search_cont
 
 

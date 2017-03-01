@@ -1,6 +1,6 @@
 import time, logging, gl, requests
 from gl import time_out
-from do_dataprocess.basic import is_403, is_404, is_complete
+from data_process.basic import is_403, is_404, is_complete
 from weibo_decorator.decorators import timeout_decorator, timeout
 
 
@@ -8,11 +8,7 @@ from weibo_decorator.decorators import timeout_decorator, timeout
 @timeout_decorator
 def get_page(url, session, headers, user_verify=True):
     """
-    :param session:
-    :param url:
-    :param headers:
     :param user_verify: 是否为可能出现验证码的页面(搜索页面的403还没解析)，否为抓取转发的ajax连接
-    :return:
     """
     print('本次抓取的url为{url}'.format(url=url))
     try:
