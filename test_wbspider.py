@@ -27,10 +27,14 @@ class TestWeiboSpider(unittest.TestCase):
             self.assertEqual(repost_count, 9)
 
     def test_update_repost_comment(self):
-        from db_operation.weibosearch_dao import update_repost_comment
+        from db_operation.weibosearch_dao import update_repost_comment, get_repost_comment
         mid = '3791583457149221'
         reposts = 42
         comments = 9
+        rs = get_repost_comment(mid)
+        print(rs)
+        self.assertNotEqual(rs, (reposts, comments))
         update_repost_comment(mid=mid, reposts=reposts, comments=comments)
-
+        rs = get_repost_comment(mid)
+        self.assertEqual(rs, (reposts, comments))
 
