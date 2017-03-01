@@ -2,7 +2,7 @@
 # 这两行用于指定在linux下面的数据库连接符编码方式
 import os
 import cx_Oracle
-from config.get_config import get_db_args, get_redis_args
+from config.get_config import get_db_args
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 
 

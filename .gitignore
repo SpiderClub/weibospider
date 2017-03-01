@@ -23,3 +23,9 @@ tests
 将删除 do_login/__pycache__/
 将删除 logger/__pycache__/
 将删除 tests/
+将删除 data_get/__pycache__/
+将删除 data_process/__pycache__/
+将删除 data_process/do_searchprocess/__pycache__/
+将删除 data_process/do_statusprocess/__pycache__/
+将删除 data_process/get_userprocess/__pycache__/
+将删除 weibo_login/__pycache__/

@@ -14,10 +14,6 @@ def get_db_args():
     return cf.get('db')
 
 
-def get_redis_args():
-    return cf.get('redis_db')
-
-
 def get_weibo_args():
     acounts_info = cf.get('weibo_account')
     #return random.choice(acounts_info).get('account')

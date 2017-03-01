@@ -19,7 +19,9 @@ log_config = {
             'formatter': 'detail'
         },
         'file': {
-            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'class': 'logging.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 10,
             'filename': 'logs/log.txt',
             'level': 'INFO',
             'formatter': 'detail',
