@@ -3,7 +3,7 @@ test.py
 *.xml
 *.pyc
 config/spider.yaml
-logs
+logs/*.txt
 tests
 将删除 .idea/WeiboSpiderO.iml
 将删除 do_dataprocess/do_searchprocess/__pycache__/

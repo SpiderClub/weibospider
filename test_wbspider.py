@@ -32,9 +32,13 @@ class TestWeiboSpider(unittest.TestCase):
         reposts = 42
         comments = 9
         rs = get_repost_comment(mid)
-        print(rs)
         self.assertNotEqual(rs, (reposts, comments))
         update_repost_comment(mid=mid, reposts=reposts, comments=comments)
         rs = get_repost_comment(mid)
         self.assertEqual(rs, (reposts, comments))
+
+    def test_get_user(self):
+        from db_operation.user_dao import get_user
+        user = get_user('3858873234')
+        self.assertEqual(user.get('name'), '景区宝')
 

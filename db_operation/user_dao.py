@@ -97,8 +97,33 @@ def get_user(uid):
                   'su_gender, su_followers_count,su_friends_count,su_statuses_count,su_birthday,su_verifytype,'
                   'su_verifyinfo,su_register_time from weibo_sina_users where su_id = :suid'
                   )
-
+    # 由于连接关闭所有不能直接返回带状态的rs，不然description读取会异常
+    info = dict()
     with db_connect.db_execute() as conn:
         rs = db_connect.db_queryone_params(conn, select_sql, {'suid': uid})
+        info.update(
+            name=rs[0],
+            province=rs[1],
+            city=rs[2],
+            location='{province} {city}'.format(province=rs[1], city=rs[2]),
+            headimg_url=rs[4],
+            blog_url=rs[5],
+            domain_name=rs[6],
+            gender=rs[7],
+            followers_count=rs[8],
+            friends_count=rs[9],
+            status_count=rs[10],
+            birthday=rs[11],
+            verify_type=rs[12],
+            verify_info=rs[13],
+            register_time=rs[14]
+        )
 
-    return rs
+        try:
+            description = rs[3].read()
+        except AttributeError:
+            description = ''
+
+        info.update(description=description)
+
+    return info

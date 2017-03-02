@@ -6,21 +6,29 @@ from weibo_login import login_info
 from logger.log import other
 
 
+def _get_session(d):
+    is_success = 0
+    try:
+        session_cookie = login_info.get_session()
+    except (SsE, ResE, SslE):
+        return is_success
+
+    if session_cookie:
+        d.setdefault('session', session_cookie.get('session'))
+        is_success = 1
+
+    return is_success
+
+
 def get_session(d):
     while True:
-        try:
-            d.setdefault('session', login_info.get_session()['session'])
-            if d['session'] is None:
-                time.sleep(60*5)
-                other.log('本次登录失败，账号是{}')
-                d['session'] = login_info.get_session()['session']
-        except (SsE, ResE, SslE):
-            # 预防因为网络问题导致的登陆不成功
-            print('本次登陆出现问题,一分钟后重试')
-            time.sleep(60)
-            d['session'] = login_info.get_session()['session']
+        is_sucess = _get_session(d)
+        if is_sucess:
+            time.sleep(10*60*60)
         else:
-            time.sleep(60*60*10)
+            other.info('一分钟后重试模拟登录')
+            time.sleep(60)
+
 
 
 

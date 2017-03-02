@@ -7,6 +7,7 @@ from logger.log import other
 
 
 if __name__ == '__main__':
+    is_sleep = 1
     while True:
         mgr = Manager()
         d = mgr.dict()
@@ -15,10 +16,14 @@ if __name__ == '__main__':
         pr = Process(target=get_all, args=(d,))
         other.info('本轮抓取开始,开始时间为{endtime}'.format(endtime=ctime()))
 
-        pw.start()
-        # 防止pr先执行
-        sleep(60)
-        pr.start()
+        try:
+            pw.start()
+            # 防止pr先执行
+            pr.start()
+        except Exception as e:
+            other.error(e)
+            is_sleep = 0
+
         pr.join()
 
         pw.terminate()
@@ -26,7 +31,8 @@ if __name__ == '__main__':
         # 使其可以更新状态
         pw.join()
 
-        sleep(2*60*60)
+        if is_sleep:
+            sleep(2*60*60)
 
 
 

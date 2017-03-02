@@ -1,5 +1,5 @@
 # -*-coding:utf-8 -*-
-import json
+import json, time
 from gl import headers, page_max
 from data_get.basic import get_page
 from data_process import basic
@@ -110,6 +110,10 @@ def _get_current_reposts(url, session, weibo_mid):
 
 
 def get_all(d):
+    while not d:
+        crawler.info('现在还未得到有效的session')
+        time.sleep(60)
+
     datas = weibosearch_dao.get_crawl_urls()
     crawler.info('一共获取到{len}条需要抓取的微博'.format(len=len(datas)))
 

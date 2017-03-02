@@ -13,10 +13,10 @@ def get_crawl_urls():
     datas = list()
     with db_connect.db_execute() as conn:
         rs = db_connect.db_queryall(conn, sql)
+        for r in rs:
+            data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
+            datas.append(data)
 
-    for r in rs:
-        data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
-        datas.append(data)
     return datas
 
 

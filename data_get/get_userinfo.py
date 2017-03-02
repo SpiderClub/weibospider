@@ -5,6 +5,7 @@ from data_process.get_userprocess import get_enterpriseinfo, get_personalinfo, g
 from data_process.basic import is_404
 from data_get.basic import get_page
 from db_operation.user_dao import save_user, get_user
+from logger.log import storage
 
 
 # 进行用户个人资料抓取的时候，查询是否已存在于数据库，如果没有，那么就保存，有就直接从里面取出来
@@ -14,45 +15,39 @@ def get_profile(user_id, session, headers):
     登陆后可以根据http://weibo.com/u/userId来进行确定用户主页，不知道稳定不，todo 测试这个路径
     好像'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more' 这个路径可以解决大部分路径问题，只是非普通用户
     会被重定向到主页，有的并不行，比如domain=100106
-    :param headers:
-    :param session:
-    :param user_id:
-    :return:
     """
     if user_id == '':
         return User()
 
     user = User()
-    r = get_user(user_id)
+    info = get_user(user_id)
 
-    if r:
+    if info:
         user.id = user_id
-        user.screen_name = r[0]
-        user.province = r[1]
-        user.city = r[2]
-        user.location = '{province} {city}'.format(province=r[1], city=r[2])
-        try:
-            user.description = r[3].read()
-        except AttributeError:
-            user.description = ''
-        user.headimg_url = r[4]
-        user.blog_url = r[5]
-        user.domain_name = r[6]
-        user.gender = r[7]
-        user.followers_count = r[8]
-        user.friends_count = r[9]
-        user.status_count = r[10]
-        user.birthday = r[11]
-        user.verify_type = r[12]
-        user.verify_info = r[13]
-        user.register_time = r[14]
+        user.screen_name = info.get('name')
+        user.province = info.get('province')
+        user.city = info.get('city')
+        user.location = info.get('location')
+        user.description = info.get('description')
+        user.headimg_url = info.get('headimg_url')
+        user.blog_url = info.get('blog_url')
+        user.domain_name = info.get('domain_name')
+        user.gender = info.get('gender')
+        user.followers_count = info.get('followers_count')
+        user.friends_count = info.get('friends_count')
+        user.status_count = info.get('status_count')
+        user.birthday = info.get('birthday')
+        user.verify_type = info.get('verify_type')
+        user.verify_info = info.get('verify_info')
+        user.register_time = info.get('register_time')
 
         # 防止在插入数据库的时候encode()出问题
         for key in user.__dict__:
             if user.__dict__[key] is None:
                 setattr(user, key, '')
 
-        print('该用户信息已经存在于数据库中')
+        storage.info('ID为{id}的用户信息已经存在于数据库中'.format(id=user_id))
+
     else:
         url = 'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more'
         html = get_page(url, session, headers)
@@ -88,6 +83,7 @@ def get_profile(user_id, session, headers):
             user.verify_info = get_publicinfo.get_verifyreason(html, user.verify_type)
 
             save_user(user)
+            storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
 
     return user
 
