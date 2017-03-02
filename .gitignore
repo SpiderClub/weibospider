@@ -29,3 +29,4 @@ tests
 将删除 data_process/do_statusprocess/__pycache__/
 将删除 data_process/get_userprocess/__pycache__/
 将删除 weibo_login/__pycache__/
+将删除 utils/__pycache__/
