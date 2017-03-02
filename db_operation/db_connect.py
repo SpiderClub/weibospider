@@ -3,6 +3,10 @@
 import os
 import cx_Oracle
 from config.get_config import get_db_args
+from contextlib import contextmanager
+from logger.log import storage
+
+
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 
 
@@ -70,5 +74,18 @@ def db_dml_many(con, sql, params_list):
     cursor.close()
 
 
-
+@contextmanager
+def db_execute():
+    con = None
+    try:
+        con = get_con()
+    except Exception as e:
+        storage.error('连接数据库错误，具体信息是{e}'.format(e=e))
+    try:
+        yield con
+    except Exception as e:
+        storage.error('操作数据库出错，具体信息是{e}'.format(e=e))
+    finally:
+        if con:
+            db_close(con)
 

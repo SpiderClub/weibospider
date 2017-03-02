@@ -2,7 +2,7 @@
 from functools import wraps
 from traceback import format_tb
 from utils.util_cls import Timeout, KThread
-from logger.log import storage, parser, crawler
+from logger.log import parser, crawler
 
 
 # 用于超时设置
