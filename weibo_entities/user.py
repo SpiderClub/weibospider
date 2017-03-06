@@ -29,4 +29,6 @@ class User(object):
         self.verify_info = ''
 
     def __str__(self):
-        return 'id = {id},name={name}'.format(id=self.id, name=self.screen_name)
+        return 'id = {id},name={name}, city={city}, gender={gender}, verify_type={vt},verify_info={vi}'.format(
+            id=self.id, name=self.screen_name, city=self.city, gender=self.gender, vt=self.verify_type,
+            vi=self.verify_info)

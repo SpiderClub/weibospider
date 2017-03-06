@@ -3,7 +3,7 @@
 # 后台获取用户信息
 import logging, time
 from db_operation import weibosearch_dao
-from data_get import get_userinfo
+from page_get import user
 from db_operation import user_dao
 from gl import max_len, headers, count
 
@@ -15,7 +15,7 @@ def get_users_info(q):
     users = []
     for uid in ids:
         print(uid)
-        user = get_userinfo.get_profile(user_id=uid, session=session, headers=headers)
+        user = user.get_profile(user_id=uid, session=session, headers=headers)
         if user is not None:
             users.append(user)
         if len(users) == max_len:
