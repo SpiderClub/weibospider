@@ -1,5 +1,6 @@
 # -*-coding:utf-8 -*-
-import json, time
+import json
+import time
 from headers import headers
 from page_get.basic import get_page
 from page_parse import basic

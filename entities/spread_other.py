@@ -34,9 +34,3 @@ class SpreadOther(object):
         return 'id={id},name={name},upperid={upperid},uppername={uppername}'.format(id=self.id, name=self.screen_name,
                                                                                     upperid=self.upper_user_id,
                                                                                     uppername=self.upper_user_name)
-
-if __name__ == '__main__':
-    so = SpreadOther()
-    so.id = '123'
-    so.screen_name = 'wpm'
-    print('spreadother为:{so}'.format(so=so) )

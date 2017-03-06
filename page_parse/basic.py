@@ -33,7 +33,6 @@ def is_403(html):
             return False
     else:
         print('检查是否存在soup.title和soup.title.text')
-        print(soup)
         return False
 
 

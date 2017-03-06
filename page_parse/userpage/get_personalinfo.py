@@ -112,7 +112,6 @@ def get_detail(html):
                     elif '个性域名' in each_str:
                         personal_domain = each.find('a').get_text()
                         user.domain_name = personal_domain
-            print(user)
 
             if '标签信息' in basic_str:
                 basic_info = each_module.find_all(attrs={'class': 'li_1 clearfix'})
