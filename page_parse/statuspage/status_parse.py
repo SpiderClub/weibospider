@@ -2,7 +2,7 @@
 # 微博详情页
 import re, json
 from bs4 import BeautifulSoup
-from weibo_decorator.decorators import parse_decorator
+from decorator.decorators import parse_decorator
 from logger.log import parser
 
 

@@ -1,8 +1,8 @@
 # -*-coding:utf-8 -*-
 # 个人用户个人资料页
 from bs4 import BeautifulSoup
-from data_process.get_userprocess import get_publicinfo
-from weibo_decorator.decorators import parse_decorator
+from page_parse.userpage import get_publicinfo
+from decorator.decorators import parse_decorator
 from weibo_entities.user import User
 
 

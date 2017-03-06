@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from bs4 import BeautifulSoup
-from weibo_decorator.decorators import parse_decorator
+from decorator.decorators import parse_decorator
 
 
 @parse_decorator(3)

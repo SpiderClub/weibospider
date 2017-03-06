@@ -1,7 +1,7 @@
 import time, logging, gl, requests
 from gl import time_out
-from data_process.basic import is_403, is_404, is_complete
-from weibo_decorator.decorators import timeout_decorator, timeout
+from page_parse.basic import is_403, is_404, is_complete
+from decorator.decorators import timeout_decorator, timeout
 
 
 @timeout(200)

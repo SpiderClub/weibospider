@@ -3,8 +3,8 @@
 import re
 import json
 from bs4 import BeautifulSoup
-from data_process.get_userprocess import get_publicinfo
-from weibo_decorator.decorators import parse_decorator
+from page_parse.userpage import get_publicinfo
+from decorator.decorators import parse_decorator
 
 
 @parse_decorator(4)

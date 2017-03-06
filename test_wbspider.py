@@ -3,7 +3,7 @@ import unittest
 
 class TestWeiboSpider(unittest.TestCase):
     def test_getrepostcounts(self):
-        from data_process.do_statusprocess import status_parse
+        from page_parse.statuspage import status_parse
         with open('./tests/reposts_root.html') as f:
             cont = f.read()
             repost_count = status_parse.get_repostcounts(cont)
@@ -15,7 +15,7 @@ class TestWeiboSpider(unittest.TestCase):
             self.assertEqual(repost_count, 38)
 
     def test_getcomments(self):
-        from data_process.do_statusprocess import status_parse
+        from page_parse.statuspage import status_parse
         with open('./tests/reposts_root.html') as f:
             cont = f.read()
             repost_count = status_parse.get_commentcounts(cont)

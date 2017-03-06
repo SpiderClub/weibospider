@@ -1,12 +1,12 @@
 # -*-coding:utf-8 -*-
 #  获取微博信息
 import logging
-from data_get.basic import get_page
-from data_process.basic import is_404
-from data_process.do_statusprocess import status_parse
+from page_get.basic import get_page
+from page_parse.basic import is_404
+from page_parse.statuspage import status_parse
 from weibo_entities.spread_other_cache import SpreadOtherCache
 from weibo_entities.spread_other import SpreadOther
-from data_get import get_userinfo
+from page_get import user
 from weibo_entities.other_and_cache import SpreadOtherAndCache
 
 
@@ -25,7 +25,7 @@ def get_status_info(url, session, user_id, name, headers, mid=''):
         so.id = repost_user_id
         so.screen_name = repost_user_name
         so.upper_user_name = status_parse.get_upperusername(repost_cont, name)
-        cur_user = get_userinfo.get_profile(repost_user_id, session, headers)
+        cur_user = user.get_profile(repost_user_id, session, headers)
         try:
             so.province = cur_user.province
             so.city = cur_user.city

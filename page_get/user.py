@@ -1,9 +1,9 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
 from weibo_entities.user import User
-from data_process.get_userprocess import get_enterpriseinfo, get_personalinfo, get_publicinfo
-from data_process.basic import is_404
-from data_get.basic import get_page
+from page_parse.userpage import get_enterpriseinfo, get_personalinfo, get_publicinfo
+from page_parse.basic import is_404
+from page_get.basic import get_page
 from db_operation.user_dao import save_user, get_user
 from logger.log import storage
 
@@ -84,6 +84,8 @@ def get_profile(user_id, session, headers):
 
             save_user(user)
             storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
+
+    print(user)
 
     return user
 

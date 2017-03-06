@@ -3,8 +3,8 @@
 import re
 import json
 from bs4 import BeautifulSoup
-from data_process.do_statusprocess import status_parse
-from weibo_decorator.decorators import parse_decorator
+from page_parse.statuspage import status_parse
+from decorator.decorators import parse_decorator
 
 
 def get_userid(html):

@@ -3,7 +3,7 @@
 import re
 from bs4 import BeautifulSoup
 from weibo_entities.weibo_search_data import WeiboSearch
-from weibo_decorator.decorators import parse_decorator
+from decorator.decorators import parse_decorator
 
 
 @parse_decorator(1)
