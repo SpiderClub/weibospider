@@ -4,10 +4,10 @@ import logging
 from page_get.basic import get_page
 from page_parse.basic import is_404
 from page_parse.statuspage import status_parse
-from weibo_entities.spread_other_cache import SpreadOtherCache
-from weibo_entities.spread_other import SpreadOther
+from entities.spread_other_cache import SpreadOtherCache
+from entities.spread_other import SpreadOther
 from page_get import user
-from weibo_entities.other_and_cache import SpreadOtherAndCache
+from entities.other_and_cache import SpreadOtherAndCache
 
 
 def get_status_info(url, session, user_id, name, headers, mid=''):

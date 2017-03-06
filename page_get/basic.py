@@ -1,5 +1,6 @@
-import time, logging, gl, requests
+import time, gl, requests
 from gl import time_out
+from logger.log import crawler
 from page_parse.basic import is_403, is_404, is_complete
 from decorator.decorators import timeout_decorator, timeout
 
@@ -12,20 +13,19 @@ def get_page(url, session, headers, user_verify=True):
     """
     print('本次抓取的url为{url}'.format(url=url))
     try:
-        page = session.get(url, headers=headers, timeout=time_out, verify=False).text.\
-            encode('utf-8',  'ignore').decode('utf-8')
+        page = session.get(url, headers=headers, timeout=time_out, verify=False).text. \
+            encode('utf-8', 'ignore').decode('utf-8')
         gl.count += 1
         time.sleep(1)
         if user_verify:
             if is_403(page):
-                logging.info('本账号已经被冻结')
+                crawler.warning('本账号已经被冻结')
                 print('账号{username}已经被冻结')
-                logging.info('它的页面源码为{page}'.format(page=page))
-                logging.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
+                crawler.warning('它的页面源码为{page}'.format(page=page))
+                crawler.info('本次抓取结束，时间是:{curtime}，一共抓取了{count}个页面'.format(curtime=time.strftime(
                     '%Y-%m-%d %H:%M:%S', time.localtime()), count=gl.count))
             if is_404(page):
-                logging.info('url为{url}的连接不存在'.format(url=url))
-                print('url为{url}的连接不存在'.format(url=url))
+                crawler.warning('url为{url}的连接不存在'.format(url=url))
                 return ''
             if not is_complete(page):
                 time.sleep(30)
@@ -36,15 +36,12 @@ def get_page(url, session, headers, user_verify=True):
                     print(why)
                     return ''
     except requests.exceptions.ReadTimeout:
-        logging.info('抓取{url}时连接目标服务器超时'.format(url=url))
-        print('抓取{url}时连接目标服务器超时'.format(url=url))
+        crawler.info('抓取{url}时连接目标服务器超时'.format(url=url))
         time.sleep(60)  # 休眠5分钟
         return ''
     except requests.exceptions.ConnectionError as e:
-        logging.info('目标服务器拒绝连接，程序休眠1分钟,具体异常信息为:{e}'.format(e=e))
-        print('目标服务器拒绝连接，程序休眠1分钟,具体异常信息为:{e}'.format(e=e))
-        time.sleep(60) # 休眠5分钟
+        crawler.info('目标服务器拒绝连接，程序休眠1分钟,具体异常信息为:{e}'.format(e=e))
+        time.sleep(60)  # 休眠5分钟
         return ''
     else:
         return page
-

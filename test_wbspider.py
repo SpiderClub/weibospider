@@ -39,12 +39,22 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_get_user_from_db(self):
         from db_operation.user_dao import get_user
-        user = get_user('385887323')
+        # 数据库中存在的数据
+        user = get_user('3858873234')
         self.assertEqual(user.get('name'), '景区宝')
 
-    def test_get_user_from_web(self):
-        from weibo_login import login_info
-        session = login_info.get_session().get('session', '')
-        if session:
-            pass
+        # 数据库中不存在的数据
+        user2 = get_user('2674334272')
+        self.assertEqual(isinstance(user2, dict), True)
 
+    def test_get_user_from_web(self):
+        from wblogin.login import get_session
+        from page_get.user import get_profile
+        from gl import headers
+
+        user_id = '2674334272'
+        session = get_session().get('session', '')
+
+        if session:
+            user = get_profile(user_id, session, headers)
+            self.assertNotEqual(user.description, '')

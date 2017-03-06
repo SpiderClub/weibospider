@@ -101,7 +101,6 @@ def get_user(uid):
     info = dict()
     with db_connect.db_execute() as conn:
         rs = db_connect.db_queryone_params(conn, select_sql, {'suid': uid})
-
         if rs:
             info.update(
                 name=rs[0],

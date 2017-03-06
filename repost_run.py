@@ -2,7 +2,7 @@
 from multiprocessing import Process, Manager
 from time import sleep, ctime
 from get_cookie import get_session
-from task.get_repost import get_all
+from task.repost import get_all
 from logger.log import other
 
 

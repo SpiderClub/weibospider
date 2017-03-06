@@ -2,7 +2,7 @@ import time
 from requests.exceptions import SSLError as ResE
 from requests.packages.urllib3.exceptions import SSLError as SslE
 from ssl import SSLEOFError as SsE
-from weibo_login import login
+from wblogin import login
 from logger.log import other
 
 

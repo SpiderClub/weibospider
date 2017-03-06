@@ -2,7 +2,7 @@
 # 微博搜索页
 import re
 from bs4 import BeautifulSoup
-from weibo_entities.weibo_search_data import WeiboSearch
+from entities.weibo_search_data import WeiboSearch
 from decorator.decorators import parse_decorator
 
 

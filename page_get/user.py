@@ -1,6 +1,6 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
-from weibo_entities.user import User
+from entities.user import User
 from page_parse.userpage import get_enterpriseinfo, get_personalinfo, get_publicinfo
 from page_parse.basic import is_404
 from page_get.basic import get_page
@@ -57,6 +57,7 @@ def get_profile(user_id, session, headers):
 
             if domain == '100505' or domain == '103505' or domain == '100306':
                 user = get_personalinfo.get_detail(html)
+                print(user)
                 if user is not None:
                     user.followers_count = get_personalinfo.get_fans(html)
                     user.friends_count = get_personalinfo.get_friends(html)
@@ -84,8 +85,6 @@ def get_profile(user_id, session, headers):
 
             save_user(user)
             storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
-
-    print(user)
 
     return user
 

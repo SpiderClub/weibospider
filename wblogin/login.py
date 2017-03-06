@@ -68,7 +68,7 @@ def get_redirect(data, post_url, session):
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
 def get_session():
     session = requests.Session()
-    js_path = os.path.join(os.getcwd(), 'weibo_login/sinalogin.js')
+    js_path = os.path.join(os.getcwd(), 'wblogin/sinalogin.js')
     runntime = get_runntime(js_path)
 
     su = get_encodename(name_password['name'], runntime)
