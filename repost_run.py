@@ -18,7 +18,6 @@ if __name__ == '__main__':
 
         try:
             pw.start()
-            # 防止pr先执行
             pr.start()
         except Exception as e:
             other.error(e)

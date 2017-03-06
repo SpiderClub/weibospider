@@ -2,6 +2,7 @@
 # 这两行用于指定在linux下面的数据库连接符编码方式
 import os
 import cx_Oracle
+import traceback
 from config.get_config import get_db_args
 from contextlib import contextmanager
 from logger.log import storage
@@ -77,14 +78,16 @@ def db_dml_many(con, sql, params_list):
 @contextmanager
 def db_execute():
     con = None
+
     try:
         con = get_con()
     except Exception as e:
         storage.error('连接数据库错误，具体信息是{e}'.format(e=e))
+
     try:
         yield con
     except Exception as e:
-        storage.error('操作数据库出错，具体信息是{e}'.format(e=e))
+        storage.error('操作数据库出错，具体信息是{e},\n堆栈信息是{detail}'.format(e=e, detail=repr(traceback.format_stack())))
     finally:
         if con:
             db_close(con)

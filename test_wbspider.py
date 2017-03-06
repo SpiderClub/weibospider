@@ -39,6 +39,6 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_get_user(self):
         from db_operation.user_dao import get_user
-        user = get_user('3858873234')
+        user = get_user('385887323')
         self.assertEqual(user.get('name'), '景区宝')
 
