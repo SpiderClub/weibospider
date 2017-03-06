@@ -1,7 +1,7 @@
 # -*-coding:utf-8 -*-
 # 获取扩散信息
 import requests, re, json, os
-import execjs, gl
+import execjs, headers
 from logger.log import other
 from config.get_config import get_weibo_args
 
@@ -55,7 +55,7 @@ def get_redirect(data, post_url, session):
     :param session:
     :return: 服务器返回的下一次需要请求的url
     """
-    logining_page = session.post(post_url, data=data, headers=gl.headers)
+    logining_page = session.post(post_url, data=data, headers=headers.headers)
     post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
     if '正在登录' in login_loop:

@@ -1,4 +1,5 @@
-import os, random
+import os
+import random
 from yaml import load
 
 config_path = os.path.join(os.getcwd(), 'config/spider.yaml')
@@ -16,6 +17,20 @@ def get_db_args():
 
 def get_weibo_args():
     acounts_info = cf.get('weibo_account')
-    #return random.choice(acounts_info).get('account')
-    return dict(name='18708103033', password='pmaixq3344')
+    return random.choice(acounts_info).get('account')
 
+
+def get_timeout():
+    return cf.get('time_out')
+
+
+def get_crawl_interal():
+    return cf.get('crawl_interal')
+
+
+def get_excp_interal():
+    return cf.get('excp_interal')
+
+
+def get_max_page():
+    return cf.get('max_page')

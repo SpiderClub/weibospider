@@ -2,6 +2,10 @@ import unittest
 
 
 class TestWeiboSpider(unittest.TestCase):
+    def test_get_timeout(self):
+        from config.get_config import get_timeout
+        self.assertEqual(get_timeout(), 200)
+
     def test_getrepostcounts(self):
         from page_parse.statuspage import status_parse
         with open('./tests/reposts_root.html') as f:
@@ -50,11 +54,20 @@ class TestWeiboSpider(unittest.TestCase):
     def test_get_user_from_web(self):
         from wblogin.login import get_session
         from page_get.user import get_profile
-        from gl import headers
+        from headers import headers
 
         user_id = '2674334272'
-        session = get_session().get('session', '')
+        sc = get_session()
+        if sc:
+            session = sc.get('session', '')
 
-        if session:
-            user = get_profile(user_id, session, headers)
-            self.assertNotEqual(user.description, '')
+            if session:
+                # 数据库已有的数据
+                user = get_profile(user_id, session, headers)
+                self.assertNotEqual(user.description, '')
+                # 数据库没有的数据
+                user2 = get_profile('3614046244', session, headers)
+                self.assertEqual(user2.status_count, 35)
+        else:
+            raise Exception('模拟登录失败')
+

@@ -57,7 +57,6 @@ def get_profile(user_id, session, headers):
 
             if domain == '100505' or domain == '103505' or domain == '100306':
                 user = get_personalinfo.get_detail(html)
-                print(user)
                 if user is not None:
                     user.followers_count = get_personalinfo.get_fans(html)
                     user.friends_count = get_personalinfo.get_friends(html)

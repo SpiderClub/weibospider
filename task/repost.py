@@ -1,6 +1,6 @@
 # -*-coding:utf-8 -*-
 import json, time
-from gl import headers, page_max
+from headers import headers
 from page_get.basic import get_page
 from page_parse import basic
 from db_operation import spread_original_dao
@@ -10,6 +10,10 @@ from page_get import status
 from page_get import user
 from db_operation import spread_other_dao, weibosearch_dao
 from logger.log import crawler, parser
+from config.get_config import get_max_page
+
+
+page_max = get_max_page()
 
 
 def _get_current_reposts(url, session, weibo_mid):

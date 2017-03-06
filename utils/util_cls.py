@@ -1,4 +1,5 @@
-from utils import *
+import threading
+import sys
 
 
 class KThread(threading.Thread):
