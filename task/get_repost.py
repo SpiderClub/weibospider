@@ -121,10 +121,6 @@ def get_all(d):
         # session放在里面是为了防止某个抓取队列太长或者转发微博太多
         session = d.get('session')
 
-        if session is None:
-            crawler.error('当前登录错误')
-            exit(-1)
-
         crawler.info('正在抓取url为{url}的微博'.format(url=data['url']))
         _get_current_reposts(data['url'], session, data['mid'])
         weibosearch_dao.update_weibo_url(data['mid'])

@@ -37,8 +37,14 @@ class TestWeiboSpider(unittest.TestCase):
         rs = get_repost_comment(mid)
         self.assertEqual(rs, (reposts, comments))
 
-    def test_get_user(self):
+    def test_get_user_from_db(self):
         from db_operation.user_dao import get_user
         user = get_user('385887323')
         self.assertEqual(user.get('name'), '景区宝')
+
+    def test_get_user_from_web(self):
+        from weibo_login import login_info
+        session = login_info.get_session().get('session', '')
+        if session:
+            pass
 
