@@ -21,7 +21,7 @@ def _get_session(d):
 
 
 def get_session(d):
-    while True:
+    while 1:
         is_sucess = _get_session(d)
         if is_sucess:
             time.sleep(10*60*60)

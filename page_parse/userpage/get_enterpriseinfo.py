@@ -38,7 +38,6 @@ def get_friends(html):
     cont = get_publicinfo.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return int(soup.find_all('strong')[0].get_text())
-#    return soup.find_all(attrs={'class': 'W_f14'})[0].get_text()
 
 
 @parse_decorator(0)

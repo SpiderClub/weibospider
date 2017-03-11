@@ -1,6 +1,7 @@
 # -*-coding:utf-8 -*-
 # 微博详情页
-import re, json
+import re
+import json
 from bs4 import BeautifulSoup
 from decorator.decorators import parse_decorator
 from logger.log import parser

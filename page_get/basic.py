@@ -26,9 +26,9 @@ def get_page(url, session, headers, user_verify=True):
         if user_verify:
             if is_403(page):
                 crawler.warning('本账号已经被冻结')
-                crawler.warning('它的页面源码为{page}'.format(page=page))
                 crawler.info('本次抓取结束，时间是:{curtime}'.format(curtime=time.strftime(
                     '%Y-%m-%d %H:%M:%S', time.localtime())))
+                exit(-1)
             if is_404(page):
                 crawler.warning('url为{url}的连接不存在'.format(url=url))
                 return ''

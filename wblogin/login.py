@@ -1,12 +1,13 @@
 # -*-coding:utf-8 -*-
 # 获取扩散信息
-import requests, re, json, os
-import execjs, headers
+import requests
+import re
+import json
+import os
+import execjs
+import headers
 from logger.log import other
 from config.get_config import get_weibo_args
-
-
-name_password = get_weibo_args()
 
 
 def get_runntime(path):
@@ -67,6 +68,7 @@ def get_redirect(data, post_url, session):
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
 def get_session():
+    name_password = get_weibo_args()
     session = requests.Session()
     js_path = os.path.join(os.getcwd(), 'wblogin/sinalogin.js')
     runntime = get_runntime(js_path)
@@ -124,11 +126,3 @@ def get_session():
     else:
         other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
         return None
-
-
-
-
-
-
-
-

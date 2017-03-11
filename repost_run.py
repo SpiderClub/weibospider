@@ -8,7 +8,7 @@ from logger.log import other
 
 if __name__ == '__main__':
     is_sleep = 1
-    while True:
+    while 1:
         mgr = Manager()
         d = mgr.dict()
         pw = Process(target=get_session, args=(d,))
