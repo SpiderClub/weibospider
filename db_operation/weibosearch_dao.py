@@ -1,4 +1,5 @@
 # -*-coding:utf-8 -*-
+from yat import WeiboUrl
 from db_operation import db_connect
 from logger.log import storage
 
@@ -14,8 +15,11 @@ def get_crawl_urls():
     with db_connect.db_execute() as conn:
         rs = db_connect.db_queryall(conn, sql)
         for r in rs:
-            data = {'url': 'http://weibo.com/' + r[0] + '/' + r[1], 'mid': r[2]}
+            url = 'http://weibo.com/' + r[0] + '/' + r[1]
+            data = {'url': url, 'mid': r[2]}
             datas.append(data)
+            wburl = WeiboUrl(url, r[2])
+            wburl.store()
 
     return datas
 
