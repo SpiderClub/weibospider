@@ -56,6 +56,11 @@ def get_redirect(data, post_url, session):
     :param session:
     :return: 服务器返回的下一次需要请求的url
     """
+    header = {
+        'Referer': 'http://weibo.com/',
+        'Host': 'login.sina.com.cn'
+    }
+    headers.headers.update(header)
     logining_page = session.post(post_url, data=data, headers=headers.headers)
     post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
@@ -82,25 +87,25 @@ def get_session():
 
     # 提交的数据可以根据抓包获得
     data = {
-        'entry': 'weibo',
-        'gateway': '1',
-        'from': '',
-        'savestate': '7',
-        'useticket': '1',
-        'pagerefer': "http://login.sina.com.cn/sso/logout.php?entry=miniblog&r=http%3A%2F%2Fweibo.com%2Flogout.php%3Fbackurl",
-        'vsnf': '1',
-        'su': su,
-        'service': 'miniblog',
-        'servertime': pre_obj['servertime'],
-        'nonce': pre_obj['nonce'],
-        'pwencode': 'rsa2',
-        'rsakv': pre_obj['rsakv'],
-        'sp': sp,
-        'sr': '1366*768',
         'encoding': 'UTF-8',
-        'prelt': '98',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
-        'returntype': 'META',
+        'entry': 'weibo',
+        'from': '',
+        'gateway': '1',
+        'nonce': pre_obj['nonce'],
+        'pagerefer': "",
+        'prelt': 67,
+        'pwencode': 'rsa2',
+        "returntype": "META",
+        'rsakv': pre_obj['rsakv'],
+        'savestate': '7',
+        'servertime': pre_obj['servertime'],
+        'service': 'miniblog',
+        'sp': sp,
+        'sr': '1920*1080',
+        'su': su,
+        'useticket': '1',
+        'vsnf': '1',
+        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
 
     rs_datas = get_redirect(data, post_url, session)
