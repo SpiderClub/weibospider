@@ -7,27 +7,16 @@ max_page: 30  # 转发信息最多抓取多少页
 
 
 db:
-    host: 202.115.44.140
-    port: 1521
-    user: dangban
-    password: 85418825
-    db_name: ntci
-    db_type: oracles
+    host: xxxx
+    port: xxxx
+    user: xxxx
+    password: xxxx
+    db_name: xxxx
+    db_type: xxxx
 
 # 如果微博账号比较多，也可以考虑使用数据库进行读取和修改(比如标记账号的有效性)
 weibo_account:
     - account:
-        name: 15708437303
-        password: rookiefly
-    - account:
-        name: 18708103033@163.com
-        password: rookiefly
-    - account:
-        name: rookiefly@aliyun.com
-        password: rookiefly
-    - account:
-        name: 13272625419
-        password: rookiefly
-    - account:
-        name: 1796246076@qq.com
-        password: rookiefly
+        name: xxxx
+        password: xxxx
+ 
