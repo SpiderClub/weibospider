@@ -2,6 +2,14 @@ import unittest
 
 
 class TestWeiboSpider(unittest.TestCase):
+    def test_login(self):
+        from wblogin.login import get_session
+        sc = get_session()
+        if sc:
+            print('登陆成功')
+        else:
+            raise Exception('登录失败')
+
     def test_get_timeout(self):
         from config.get_config import get_timeout
         self.assertEqual(get_timeout(), 200)

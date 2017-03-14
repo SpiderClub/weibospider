@@ -56,15 +56,10 @@ def get_redirect(data, post_url, session):
     :param session:
     :return: 服务器返回的下一次需要请求的url
     """
-    header = {
-        'Referer': 'http://weibo.com/',
-        'Host': 'login.sina.com.cn'
-    }
-    headers.headers.update(header)
-    logining_page = session.post(post_url, data=data, headers=headers.headers)
+    logining_page = session.post(post_url, data=data)
     post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
-    if '正在登录' in login_loop:
+    if '正在登录' or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
         return re.findall(pa, login_loop)[0], post_cookie
     else:
