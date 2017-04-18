@@ -5,9 +5,7 @@ test.py
 config/spider.yaml
 logs/*.txt
 tests
-
-.idea/inspectionProfiles/
-.idea/markdown-navigator/
+.idea
 __pycache__/
 config/__pycache__/
 db_operation/__pycache__/
