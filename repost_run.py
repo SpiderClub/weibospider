@@ -7,7 +7,9 @@ from logger.log import other
 
 
 if __name__ == '__main__':
+    # is_sleep用来防止启动模拟登录失败，也会睡眠2个小时
     is_sleep = 1
+
     while 1:
         mgr = Manager()
         d = mgr.dict()
