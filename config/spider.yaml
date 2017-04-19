@@ -1,0 +1,24 @@
+time_out: 200   # 设置抓取和存储一个用户资料超时时间
+crawl_interal: 3 # 页面请求间隔
+excp_interal: 5*60 # 请求异常的时候睡眠的时间
+limit: 3  # 批量插入的最大数据量
+count: 0  # 计数器，每次抓取一个url则进行一次计数
+max_page: 30  # 转发信息最多抓取多少页
+
+
+db:
+    host: x.x.x.x
+    port: 1521
+    user: xxxx
+    password: xxxx
+    db_name: xxxx
+    db_type: xxxx
+
+# 如果微博账号比较多，也可以考虑使用数据库进行读取和修改(比如标记账号的有效性)
+weibo_account:
+    - account:
+        name: xxxx
+        password: xxxx
+    - account:
+        name: xxx
+        password: xxxx
