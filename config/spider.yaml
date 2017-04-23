@@ -1,0 +1,25 @@
+time_out: 200   # 设置抓取和存储一个用户资料超时时间
+crawl_interal: 3 # 页面请求间隔
+excp_interal: 5*60 # 请求异常的时候睡眠的时间
+limit: 3  # 批量插入的最大数据量
+count: 0  # 计数器，每次抓取一个url则进行一次计数
+max_page: 30  # 转发信息最多抓取多少页
+
+
+db:
+    host: localhost
+    port: 3306
+    user: root
+    password: 123456
+    db_name: weibo
+    db_type: mysql
+
+# 保存登录的cookies
+redis:
+    host: localhost
+    port: 6379
+    db: 1
+
+# celery调度的blocker和backend
+brocker: redis://localhost/5
+backend: redis://localhost/6

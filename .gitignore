@@ -2,7 +2,6 @@
 test.py
 *.xml
 *.pyc
-config/spider.yaml
 logs/*.txt
 tests
 .idea
