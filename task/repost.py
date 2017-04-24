@@ -5,7 +5,7 @@ from headers import headers
 from page_get.basic import get_page
 from page_parse import basic
 from db_operation import spread_original_dao
-from page_parse.statuspage import status_parse
+from page_parse.wbpage import wbparse
 from entities.spread_other_cache import SpreadOtherCache
 from page_get import status
 from page_get import user
@@ -26,21 +26,21 @@ def _get_current_reposts(url, session, weibo_mid):
     spread_other_and_caches = list()
 
     html = get_page(url, session, headers)
-    reposts = status_parse.get_repostcounts(html)
-    comments = status_parse.get_commentcounts(html)
+    reposts = wbparse.get_repostcounts(html)
+    comments = wbparse.get_commentcounts(html)
 
     # 更新weibo_search_data表中的转发数、评论数
     weibosearch_dao.update_repost_comment(mid=weibo_mid, reposts=reposts, comments=comments)
 
     if not basic.is_404(html):
         root_url = url
-        mid = status_parse.get_mid(html)
-        user_id = status_parse.get_userid(html)
-        user_name = status_parse.get_username(html)
-        post_time = status_parse.get_statustime(html)
-        device = status_parse.get_statussource(html)
-        comments_count = status_parse.get_commentcounts(html)
-        reposts_count = status_parse.get_repostcounts(html)
+        mid = wbparse.get_mid(html)
+        user_id = wbparse.get_userid(html)
+        user_name = wbparse.get_username(html)
+        post_time = wbparse.get_statustime(html)
+        device = wbparse.get_statussource(html)
+        comments_count = wbparse.get_commentcounts(html)
+        reposts_count = wbparse.get_repostcounts(html)
         root_user = user.get_profile(user_id, session, headers)
 
         spread_original_dao.save(root_user, mid, post_time, device, reposts_count, comments_count, root_url)
@@ -77,7 +77,7 @@ def _get_current_reposts(url, session, weibo_mid):
                     except Exception as why:
                         parser.error('{url}使用json解析转发信息出现异常，具体信息为:{why}'.format(url=ajax_url, why=why))
                     else:
-                        repost_urls = status_parse.get_reposturls(repost_html)
+                        repost_urls = wbparse.get_reposturls(repost_html)
 
                         # 转发节点排序逻辑
                         for repost_url in repost_urls:
