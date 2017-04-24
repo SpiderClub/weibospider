@@ -1,5 +1,5 @@
-bs4==0.0.1
-cx-Oracle==5.2.1
 PyYAML==3.12
 requests==2.13.0
 rsa=3.4.2
+redis=2.10.5
+celery=4.0.2

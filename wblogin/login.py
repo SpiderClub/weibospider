@@ -9,7 +9,8 @@ import rsa
 import binascii
 from logger.log import other
 from headers import headers
-from config.get_config import get_weibo_args
+from page_parse.basic import is_403
+from .wbcookies import store_cookies
 
 
 # 获取经base64编码的用户名
@@ -52,21 +53,20 @@ def get_redirect(data, post_url, session):
     :return: 服务器返回的下一次需要请求的url
     """
     logining_page = session.post(post_url, data=data, headers=headers)
-    post_cookie = logining_page.cookies
     login_loop = logining_page.content.decode("GBK")
     if '正在登录' or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
-        return re.findall(pa, login_loop)[0], post_cookie
+        return re.findall(pa, login_loop)[0]
     else:
-        return '', post_cookie
+        return ''
 
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
-def get_session():
-    name_password = get_weibo_args()
-    other.info('本次取得的账号是{}'.format(name_password['name']))
+# todo  改为直接存储cookie而不返回登录相关信息
+def get_session(name, password):
+    other.info('本次取得的账号是{}'.format(name))
     session = requests.Session()
-    su = get_encodename(name_password['name'])
+    su = get_encodename(name)
 
     sever_data = get_server_data(su, session)
     servertime = sever_data["servertime"]
@@ -74,7 +74,7 @@ def get_session():
     rsakv = sever_data["rsakv"]
     pubkey = sever_data["pubkey"]
 
-    sp = get_password(name_password['password'], servertime, nonce, pubkey)
+    sp = get_password(password, servertime, nonce, pubkey)
 
     # 提交的数据可以根据抓包获得
     data = {
@@ -99,9 +99,8 @@ def get_session():
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
-    rs_datas = get_redirect(data, post_url, session)
+    url = get_redirect(data, post_url, session)
 
-    url = rs_datas[0]
     if url != '':
         rs_cont = session.get(url, headers=headers)
         login_info = rs_cont.text
@@ -110,14 +109,24 @@ def get_session():
         m = re.search(u_pattern, login_info)
         if m:
             if m.group(1):
-                other.info('本次登陆账号为:{name}'.format(name=name_password['name']))
+                # 任意验证一个页面看能否访问，使用这个方法验证比较依赖外部条件，但是没找到更好的方式(有的情况下，
+                # 账号存在问题，但是可以访问自己的主页，所以通过自己的主页验证账号是否正常不恰当)
+                check_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
+                resp = session.get(check_url, headers=headers)
+
+                if is_403(resp.text):
+                    other.error('账号{}已被冻结'.format(name))
+                    # todo 将账号标识设置为不可用，并且使用别的账号重试
+                    return None
+                other.info('本次登陆账号为:{}'.format(name))
+                store_cookies(name, session.cookies.get_dict())
                 return session
             else:
-                other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
+                other.error('本次账号{}登陆失败'.format(name))
                 return None
         else:
-            other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
+            other.error('本次账号{}登陆失败'.format(name))
             return None
     else:
-        other.error('本次账号{name}登陆失败'.format(name=name_password['name']))
+        other.error('本次账号{}登陆失败'.format(name))
         return None
