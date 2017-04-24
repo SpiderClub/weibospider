@@ -1,21 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 test.py
-*.xml
-*.pyc
-logs/*.txt
 tests
 .idea
 __pycache__/
-config/__pycache__/
-db_operation/__pycache__/
-decorator/__pycache__/
-entities/__pycache__/
-logger/__pycache__/
 logs/
-page_get/__pycache__/
-page_parse/__pycache__/
-page_parse/statuspage/__pycache__/
-page_parse/userpage/__pycache__/
-task/__pycache__/
-utils/__pycache__/
-wblogin/__pycache__/
