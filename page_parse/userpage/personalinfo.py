@@ -1,7 +1,7 @@
 # -*-coding:utf-8 -*-
 # 个人用户个人资料页
 from bs4 import BeautifulSoup
-from page_parse.userpage import get_publicinfo
+from page_parse.userpage import publicinfo
 from decorator.decorators import parse_decorator
 from entities.user import User
 
@@ -12,7 +12,7 @@ def get_friends(html):
     :param html:
     :return: 返回关注数
     """
-    cont = get_publicinfo.get_left(html)
+    cont = publicinfo.get_left(html)
     if cont == '':
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
@@ -28,7 +28,7 @@ def get_fans(html):
     :param html:
     :return: 返回粉丝数
     """
-    cont = get_publicinfo.get_left(html)
+    cont = publicinfo.get_left(html)
     if cont == '':
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
@@ -44,7 +44,7 @@ def get_status(html):
     :param html:
     :return: 返回微博总数
     """
-    cont = get_publicinfo.get_left(html)
+    cont = publicinfo.get_left(html)
     if cont == '':
         return 0
     soup = BeautifulSoup(cont, 'html.parser')
@@ -58,7 +58,7 @@ def get_status(html):
 # todo 补充所有信息
 def get_detail(html):
     user = User()
-    cont = get_publicinfo.get_right(html)
+    cont = publicinfo.get_right(html)
     if cont == '':
         return user
     soup = BeautifulSoup(cont, 'html.parser')

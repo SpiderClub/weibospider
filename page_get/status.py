@@ -3,7 +3,7 @@
 import logging
 from page_get.basic import get_page
 from page_parse.basic import is_404
-from page_parse.statuspage import status_parse
+from page_parse.wbpage import wbparse
 from entities.spread_other_cache import SpreadOtherCache
 from entities.spread_other import SpreadOther
 from page_get import user
@@ -16,15 +16,15 @@ def get_status_info(url, session, user_id, name, headers, mid=''):
     repost_cont = get_page(url, session, headers)
 
     if not is_404(repost_cont):
-        repost_user_id = status_parse.get_userid(repost_cont)
-        repost_user_name = status_parse.get_username(repost_cont)
+        repost_user_id = wbparse.get_userid(repost_cont)
+        repost_user_name = wbparse.get_username(repost_cont)
         soc.set_id(repost_user_id)
         soc.set_name(repost_user_name)
 
         so = SpreadOther()
         so.id = repost_user_id
         so.screen_name = repost_user_name
-        so.upper_user_name = status_parse.get_upperusername(repost_cont, name)
+        so.upper_user_name = wbparse.get_upperusername(repost_cont, name)
         cur_user = user.get_profile(repost_user_id, session, headers)
         try:
             so.province = cur_user.province
@@ -45,16 +45,16 @@ def get_status_info(url, session, user_id, name, headers, mid=''):
             if so.screen_name == name:
                 so.id = user_id
 
-            so.mid = status_parse.get_mid(repost_cont)
-            so.status_post_time = status_parse.get_statustime(repost_cont)
-            so.device = status_parse.get_statussource(repost_cont)
+            so.mid = wbparse.get_mid(repost_cont)
+            so.status_post_time = wbparse.get_statustime(repost_cont)
+            so.device = wbparse.get_statussource(repost_cont)
             if mid:
                 so.original_status_id = mid
             else:
-                so.original_status_id = status_parse.get_orignalmid(repost_cont)
-            so.comments_count = status_parse.get_commentcounts(repost_cont)
-            so.reposts_count = status_parse.get_repostcounts(repost_cont)
-            so.like_count = status_parse.get_likecounts(repost_cont)
+                so.original_status_id = wbparse.get_orignalmid(repost_cont)
+            so.comments_count = wbparse.get_commentcounts(repost_cont)
+            so.reposts_count = wbparse.get_repostcounts(repost_cont)
+            so.like_count = wbparse.get_likecounts(repost_cont)
             so.status_url = url
         except AttributeError as e:
             # todo:找出这里的问题

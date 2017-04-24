@@ -15,27 +15,27 @@ class TestWeiboSpider(unittest.TestCase):
         self.assertEqual(get_timeout(), 200)
 
     def test_getrepostcounts(self):
-        from page_parse.statuspage import status_parse
+        from page_parse.wbpage import wbparse
         with open('./tests/reposts_root.html') as f:
             cont = f.read()
-            repost_count = status_parse.get_repostcounts(cont)
+            repost_count = wbparse.get_repostcounts(cont)
             self.assertEqual(repost_count, 0)
 
         with open('./tests/reposts_sub.html') as f:
             cont = f.read()
-            repost_count = status_parse.get_repostcounts(cont)
+            repost_count = wbparse.get_repostcounts(cont)
             self.assertEqual(repost_count, 38)
 
     def test_getcomments(self):
-        from page_parse.statuspage import status_parse
+        from page_parse.wbpage import wbparse
         with open('./tests/reposts_root.html') as f:
             cont = f.read()
-            repost_count = status_parse.get_commentcounts(cont)
+            repost_count = wbparse.get_commentcounts(cont)
             self.assertEqual(repost_count, 0)
 
         with open('./tests/reposts_sub.html') as f:
             cont = f.read()
-            repost_count = status_parse.get_commentcounts(cont)
+            repost_count = wbparse.get_commentcounts(cont)
             self.assertEqual(repost_count, 9)
 
     def test_update_repost_comment(self):
