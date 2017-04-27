@@ -21,3 +21,6 @@ def fetch_cookies():
 
 def _get_random_key():
     return rd_con.randomkey()
+
+def delete_cookies(name):
+    rd_con.delete(name)
