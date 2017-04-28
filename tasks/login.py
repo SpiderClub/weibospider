@@ -15,7 +15,7 @@ app.conf.update(
 # 20小时自动登录一次
 app.conf.beat_schedule = {
     'login_task': {
-        'task': 'tasks.login.excute_login_task',
+        'tasks': 'tasks.login.excute_login_task',
         'schedule': 60*60*20.0,
     },
 }

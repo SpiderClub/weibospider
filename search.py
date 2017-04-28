@@ -1,7 +1,7 @@
 # 根据某个关键词搜索微博
 from multiprocessing import Process, Manager
 from get_cookie import get_session
-from task.search import search_all
+from tasks.search import search_all
 from time import sleep
 
 
