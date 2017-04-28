@@ -2,8 +2,8 @@
 # 搜索页面获取
 from headers import headers
 from page_get.basic import get_page
-from page_parse.searchpage import search_parse
-from db_operation.weibosearch_dao import add_search_cont
+from page_parse.search import search_parse
+from db.weibosearch_dao import add_search_cont
 
 
 # 根据某个关键字搜索,只抓取最热门(第一页)的内容

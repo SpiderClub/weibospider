@@ -4,12 +4,12 @@ import time
 from headers import headers
 from page_get.basic import get_page
 from page_parse import basic
-from db_operation import spread_original_dao
+from db import spread_original_dao
 from page_parse.wbpage import wbparse
 from entities.spread_other_cache import SpreadOtherCache
 from page_get import status
 from page_get import user
-from db_operation import spread_other_dao, weibosearch_dao
+from db import spread_other_dao, weibosearch_dao
 from logger.log import crawler, parser
 from config.get_config import get_max_page
 

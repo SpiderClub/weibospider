@@ -3,7 +3,7 @@
 import re
 import json
 from bs4 import BeautifulSoup
-from page_parse.userpage import publicinfo
+from page_parse.user import public
 from decorator.decorators import parse_decorator
 
 
@@ -15,7 +15,7 @@ def get_detail(html):
     :return:
     """
     details = {}
-    cont = publicinfo.get_right(html)
+    cont = public.get_right(html)
     soup = BeautifulSoup(cont, 'html.parser')
     basic_modules = soup.find_all(attrs={'class': 'WB_cardwrap S_bg2'})
     basic_info = soup.find_all(attrs={'class': 'li_1 clearfix'})
@@ -35,21 +35,21 @@ def get_detail(html):
 # 以下是通过认证企业主页进行解析
 @parse_decorator(0)
 def get_friends(html):
-    cont = publicinfo.get_left(html)
+    cont = public.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return int(soup.find_all('strong')[0].get_text())
 
 
 @parse_decorator(0)
 def get_fans(html):
-    cont = publicinfo.get_left(html)
+    cont = public.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return int(soup.find_all('strong')[1].get_text())
 
 
 @parse_decorator(0)
 def get_status(html):
-    cont = publicinfo.get_left(html)
+    cont = public.get_left(html)
     soup = BeautifulSoup(cont, 'html.parser')
     return int(soup.find_all('strong')[2].get_text())
 

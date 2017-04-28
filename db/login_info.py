@@ -6,7 +6,7 @@ def get_login_info():
     """
     :return: is_crawled = 0的字段，即需要进行扩散分析的字段
     """
-    sql = 'select name, password from weibo_login_info where enable = 1'
+    sql = 'select name, password from login_info where enable = 1'
 
     datas = list()
     with db_connect.db_execute() as conn:

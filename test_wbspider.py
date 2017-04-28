@@ -39,7 +39,7 @@ class TestWeiboSpider(unittest.TestCase):
             self.assertEqual(repost_count, 9)
 
     def test_update_repost_comment(self):
-        from db_operation.weibosearch_dao import update_repost_comment, get_repost_comment
+        from db.weibosearch_dao import update_repost_comment, get_repost_comment
         mid = '3791583457149221'
         reposts = 42
         comments = 9
@@ -50,7 +50,7 @@ class TestWeiboSpider(unittest.TestCase):
         self.assertEqual(rs, (reposts, comments))
 
     def test_get_user_from_db(self):
-        from db_operation.user_dao import get_user
+        from db.user_dao import get_user
         # 数据库中存在的数据
         user = get_user('3858873234')
         self.assertEqual(user.get('name'), '景区宝')

@@ -1,10 +1,10 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
 from entities.user import User
-from page_parse.userpage import enterpriseinfo, personalinfo, publicinfo
+from page_parse.user import enterprise, person, public
 from page_parse.basic import is_404
 from page_get.basic import get_page
-from db_operation.user_dao import save_user, get_user
+from db.user_dao import save_user, get_user
 from logger.log import storage
 
 
@@ -53,14 +53,14 @@ def get_profile(user_id, session, headers):
         html = get_page(url, session, headers)
 
         if not is_404(html):
-            domain = publicinfo.get_userdomain(html)
+            domain = public.get_userdomain(html)
 
             if domain == '100505' or domain == '103505' or domain == '100306':
-                user = personalinfo.get_detail(html)
+                user = person.get_detail(html)
                 if user is not None:
-                    user.followers_count = personalinfo.get_fans(html)
-                    user.friends_count = personalinfo.get_friends(html)
-                    user.status_count = personalinfo.get_status(html)
+                    user.followers_count = person.get_fans(html)
+                    user.friends_count = person.get_friends(html)
+                    user.status_count = person.get_status(html)
                 else:
                     user = User()
             else:
@@ -71,16 +71,16 @@ def get_profile(user_id, session, headers):
                     if html == '':
                         return user
 
-                user.followers_count = enterpriseinfo.get_fans(html)
-                user.friends_count = enterpriseinfo.get_friends(html)
-                user.status_count = enterpriseinfo.get_status(html)
-                user.description = enterpriseinfo.get_description(html).encode('gbk', 'ignore').decode('gbk')
+                user.followers_count = enterprise.get_fans(html)
+                user.friends_count = enterprise.get_friends(html)
+                user.status_count = enterprise.get_status(html)
+                user.description = enterprise.get_description(html).encode('gbk', 'ignore').decode('gbk')
 
             user.id = user_id
-            user.screen_name = publicinfo.get_username(html)
-            user.headimg_url = publicinfo.get_headimg(html)
-            user.verify_type = publicinfo.get_verifytype(html)
-            user.verify_info = publicinfo.get_verifyreason(html, user.verify_type)
+            user.screen_name = public.get_username(html)
+            user.headimg_url = public.get_headimg(html)
+            user.verify_type = public.get_verifytype(html)
+            user.verify_info = public.get_verifyreason(html, user.verify_type)
 
             save_user(user)
             storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
