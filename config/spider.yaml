@@ -16,10 +16,11 @@ db:
 
 # 保存登录的cookies
 redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
-    db: 1
+    cookies_db: 1
+    urls_db: 2
 
 # celery调度的blocker和backend
-brocker: redis://localhost/5
-backend: redis://localhost/6
+brocker: redis://127.0.0.1/5
+backend: redis://127.0.0.1/6
