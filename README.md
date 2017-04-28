@@ -35,6 +35,7 @@
  - celery的broker和backend统一采用redis，分布式部署的时候需要关闭redis的保护模式，或者为redis设置密码
  - 启动登录定时任务和worker节点进行登录,定时登录是为了维护cookie的时效性，据我实验，微博的cookie有效时长为24小时。
    - 先启动worker(在多个节点启动，分散登录地点)：```celery -A tasks.login worker --loglevel=info --concurrency=1```
+   - 第一次登陆为了的时候，为了让抓取任务能马上执行，需要```cd tasks```然后执行```python login.py```获取首次登陆的cookie
    - 再启动beat任务(beat只启动一个，否则会重复登录)：```celery beat -A tasks.login --loglevel=info```
  - 为了保证cookie的可用性，从redis层面将cookie过期时间设置为23小时，每次更新就重设过期时间
 
