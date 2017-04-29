@@ -26,9 +26,9 @@
 - 打开[配置文件](./config/spider.yaml)修改数据库相关配置
 - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
 - 入口文件 
- - [search.py](./search_run.py):微博搜索程序:通过搜索接口搜索相关话题微博
+ - [search.py](./tasks/search.py):微博搜索程序:通过搜索接口搜索相关话题微博
  - [user_crawler.py](./user_crawler.py):微博用户抓取程序，通过指定特定用户来进行增量抓取
- - [repost.py](./repost.py):微博扩散程序，根据指定微博id，查看它转发(扩散)的情况
+ - [repost.py](./tasks/repost.py):微博扩散程序，根据指定微博id，查看它转发(扩散)的情况
  - [login.py](./tasks/login.py):微博登陆客户端程序
 
 - 微博登陆:采用celery来调度登录，将获取的cookie序列化后保存到redis
