@@ -1,5 +1,9 @@
+import os
 import logging
 import logging.config as log_conf
+
+log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'log.txt')
+
 
 log_config = {
     'version': 1.0,
@@ -22,7 +26,7 @@ log_config = {
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 10,
-            'filename': 'logs/log.txt',
+            'filename': log_path,
             'level': 'INFO',
             'formatter': 'detail',
             'encoding': 'utf-8',
