@@ -1,6 +1,6 @@
 import pickle
 import redis
-from config.get_config import get_redis_args
+from config.conf import get_redis_args
 
 
 redis_args = get_redis_args()
@@ -21,6 +21,7 @@ def fetch_cookies():
 
 def _get_random_key():
     return rd_con.randomkey()
+
 
 def delete_cookies(name):
     rd_con.delete(name)
