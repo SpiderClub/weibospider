@@ -2,7 +2,7 @@ import os
 import logging
 import logging.config as log_conf
 
-log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'log.txt')
+log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'weibo.log')
 
 
 log_config = {
