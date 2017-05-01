@@ -66,7 +66,6 @@ celery最后支持的一个windows版本
  为23小时，每次更新就重设过期时间
 
 
-
 ## 其它说明
 - [sql表](./config/sql/spider.sql)中关于weibo_sina_users和
 weibo_search_data有一些没有sql注释的列，是老项目使用API获取的，目前已无法获取，
@@ -74,6 +73,7 @@ weibo_search_data有一些没有sql注释的列，是老项目使用API获取的
 - 本项目目前默认采用单线程进行抓取，因为多线程抓取会极大增加封号的危险。可能在尝试代理IP
 有效性后，会采用多线程。单线程可用分布式的方式来提高抓取速度。
 - 如果是开发版，可能会存在运行出问题的情况，所以建议通过[release](https://github.com/ResolveWang/WeiboSpider/releases)页面下载稳定版
+- 文档方面，暂时不会撰写该项目的相关文档。等时间宽裕了，会写一个关于该项目的详细使用和开发教程
 
 ## 本项目目前的一些数据可视化展示(使用的**d3.js**)（这部分代码目前还未实现，因为之前的数据可视化是一个朋友做的）:
 对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
