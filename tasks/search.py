@@ -2,7 +2,7 @@
 # 搜索页面获取
 from headers import headers
 from page_get.basic import get_page
-from page_parse.search import search_parse
+from page_parse import search
 from db.weibosearch_dao import add_search_cont
 
 
@@ -11,7 +11,7 @@ def search_one(keyword, session):
     url = 'http://s.weibo.com/weibo/' + keyword + '&Refer=STopic_box'
     search_page = get_page(url, session, headers)
     if search_page:
-        search_list = search_parse.get_search_info(search_page)
+        search_list = search.get_search_info(search_page)
         for s in search_list:
             s.keyword = keyword
             s.mk_primary = '_'.join([str(s.mid), keyword])

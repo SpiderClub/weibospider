@@ -2,10 +2,10 @@ import time
 
 import requests
 
-from config.get_config import get_timeout, get_crawl_interal, get_excp_interal
-from db.login_info import set_account_freeze
+from config.conf import get_timeout, get_crawl_interal, get_excp_interal
+from db.login_info import freeze_account
 from db.cookies_db import fetch_cookies
-from decorator.decorators import timeout_decorator, timeout
+from decorators import timeout_decorator, timeout
 from headers import headers
 from logger.log import crawler
 from page_parse.basic import is_403, is_404, is_complete
@@ -38,7 +38,7 @@ def get_page(url, user_verify=True):
         if user_verify:
             if 'unfreeze' in resp.url or is_403(page):
                 crawler.warning('账号{}已经被冻结'.format(name_cookies[0]))
-                set_account_freeze(name_cookies[0])
+                freeze_account(name_cookies[0])
                 # todo 将抓取失败的任务加入重试队列（但是微博扩散的失败重试逻辑和用户抓取的失败重试逻辑不同）
                 return ''
             if is_404(page):

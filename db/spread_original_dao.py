@@ -1,5 +1,5 @@
 # -*-coding:utf-8 -*-
-from db import db_connect
+from db import basic
 
 
 def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
@@ -18,9 +18,9 @@ def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
 
     to_crawl = True
 
-    with db_connect.db_execute() as conn:
-        r = db_connect.db_queryall(conn, select_sql)
-        rc = db_connect.db_queryall(conn, child_sql)
+    with basic.db_execute() as conn:
+        r = basic.db_queryall(conn, select_sql)
+        rc = basic.db_queryall(conn, child_sql)
 
         # 如果数据库存在源微博和它的一些转发信息，我们就认为它不必抓取了
         if len(r) > 0 and rc[0][0] > 0:
@@ -63,7 +63,7 @@ def save(user, mid, post_time, source, reposts_count, comments_count, root_url):
                 'status_url': root_url,
             }
 
-            db_connect.db_dml_parms(conn, insert_sql, args)
+            basic.db_dml_parms(conn, insert_sql, args)
 
     return to_crawl
 

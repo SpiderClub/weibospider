@@ -1,5 +1,5 @@
 # -*-coding:utf-8 -*-
-from db import db_connect
+from db import basic
 from logger.log import storage
 
 
@@ -18,7 +18,7 @@ def save(sos):
         ":upper_user_id,:original_status_id,:status_url)"
     )
 
-    with db_connect.db_execute() as conn:
+    with basic.db_execute() as conn:
 
         for item in sos:
             if item.verify_type == '':
@@ -49,7 +49,7 @@ def save(sos):
                     'original_status_id': item.original_status_id,
                     'status_url': item.status_url,
                 }
-                db_connect.db_dml_parms(conn, insert_sql, args)
+                basic.db_dml_parms(conn, insert_sql, args)
             except Exception as why:
                 storage.error(item.__dict__)
                 storage.error(why)

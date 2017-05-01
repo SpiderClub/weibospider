@@ -3,7 +3,7 @@
 import logging
 from page_get.basic import get_page
 from page_parse.basic import is_404
-from page_parse.wbpage import wbparse
+from page_parse import wbparse
 from entities.spread_other_cache import SpreadOtherCache
 from entities.spread_other import SpreadOther
 from page_get import user

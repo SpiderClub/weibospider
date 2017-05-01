@@ -5,7 +5,7 @@ from headers import headers
 from page_get.basic import get_page
 from page_parse import basic
 from db import spread_original_dao
-from page_parse.wbpage import wbparse
+from page_parse import wbparse
 from entities.spread_other_cache import SpreadOtherCache
 from page_get import status
 from page_get import user
