@@ -11,7 +11,7 @@ class TestWeiboSpider(unittest.TestCase):
             raise Exception('登录失败')
 
     def test_get_timeout(self):
-        from config.get_config import get_timeout
+        from config.conf import get_timeout
         self.assertEqual(get_timeout(), 200)
 
     def test_getrepostcounts(self):

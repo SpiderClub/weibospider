@@ -3,7 +3,7 @@
 import os
 import cx_Oracle
 import traceback
-from config.get_config import get_db_args
+from config.conf import get_db_args
 from contextlib import contextmanager
 from logger.log import storage
 

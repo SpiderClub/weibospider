@@ -1,6 +1,6 @@
 import time
 from celery import Celery
-from config.get_config import get_backend, get_brocker
+from config.conf import get_backend, get_brocker
 from wblogin import login
 from db import login_info
 

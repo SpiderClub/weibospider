@@ -11,7 +11,7 @@ from page_get import status
 from page_get import user
 from db import spread_other_dao, weibosearch_dao
 from logger.log import crawler, parser
-from config.get_config import get_max_page
+from config.conf import get_max_page
 
 
 page_max = get_max_page()
