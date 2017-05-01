@@ -1,5 +1,4 @@
 import os
-import random
 from yaml import load
 
 config_path = os.path.join(os.path.dirname(__file__), 'spider.yaml')
@@ -17,11 +16,6 @@ def get_db_args():
 
 def get_redis_args():
     return cf.get('redis')
-
-
-def get_weibo_args():
-    acounts_info = cf.get('weibo_account')
-    return random.choice(acounts_info).get('account')
 
 
 def get_timeout():
