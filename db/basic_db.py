@@ -3,6 +3,9 @@
 import os
 import cx_Oracle
 import traceback
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from config.conf import get_db_args
 from contextlib import contextmanager
 from logger.log import storage
@@ -11,8 +14,12 @@ from logger.log import storage
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 
 
-def get_con():
+def get_engine():
     args = get_db_args()
+    connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(args['db_type'], args['user'], args['password'],
+                                                            args['host'], args['port'], args['db_name'])
+    engine = create_engine(connect_str, encoding="utf-8", echo=True)
+    return engine
     dsn = cx_Oracle.makedsn(args['host'], args['port'], args['db_name'])
     conn = cx_Oracle.connect(args['user'], str(args['password']), dsn)
     return conn
@@ -80,7 +87,7 @@ def db_execute():
     con = None
 
     try:
-        con = get_con()
+        con = get_engine()
     except Exception as e:
         storage.error('连接数据库错误，具体信息是{e}'.format(e=e))
 
@@ -88,7 +95,12 @@ def db_execute():
         yield con
     except Exception as e:
         storage.error('操作数据库出错，具体信息是{e},\n堆栈信息是{detail}'.format(e=e, detail=repr(traceback.format_stack())))
-    finally:
-        if con:
-            db_close(con)
 
+
+eng = get_engine()
+Base = declarative_base()
+Session = sessionmaker(bind=eng)
+db_session = Session()
+
+
+__all__ = ['eng', 'Base', 'db_session']
