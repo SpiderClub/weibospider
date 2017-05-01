@@ -6,7 +6,7 @@ excp_interal: 5*60 # 请求异常的时候睡眠的时间
 
 
 db:
-    host: localhost
+    host: 127.0.0.1
     port: 3306
     user: root
     password: 123456
