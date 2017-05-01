@@ -1,6 +1,5 @@
 # -*-coding:utf-8 -*-
-from yat import WeiboUrl
-from db import basic
+from db import basic_db
 from logger.log import storage
 
 
@@ -12,30 +11,32 @@ def get_crawl_urls():
            'se_sourcetype = \'新浪微博\' order by se_createtime desc')
 
     datas = list()
-    with basic.db_execute() as conn:
-        rs = basic.db_queryall(conn, sql)
+    with basic_db.db_execute() as conn:
+        rs = basic_db.db_queryall(conn, sql)
         for r in rs:
             url = 'http://weibo.com/' + r[0] + '/' + r[1]
             data = {'url': url, 'mid': r[2]}
             datas.append(data)
-            wburl = WeiboUrl(url, r[2])
-            wburl.store()
 
     return datas
 
 
-def update_weibo_url(mid):
-    sql = "update weibo_search_data set is_crawled = 1 where se_mid = :mid"
-    args = {'mid': str(mid)}
-    with basic.db_execute() as conn:
-        basic.db_dml_parms(conn, sql, args)
+def update_weibo_url(mid, result):
+    """
+    :param mid: 微博mid
+    :param result: 抓取结果.result=1表示已经成功抓取，为2表示抓取失败，为0表示未抓取
+    """
+    sql = "update weibo_search_data set is_crawled = :rs where se_mid = :mid"
+    args = {'mid': str(mid), 'rs': result}
+    with basic_db.db_execute() as conn:
+        basic_db.db_dml_parms(conn, sql, args)
 
 
 def get_repost_comment(mid):
     sql = 'select se_repost_count, se_comment_count from weibo_search_data where se_mid = :mid'
     args = dict(mid=mid)
-    with basic.db_execute() as con:
-        rs = basic.db_queryone_params(con, sql, args)
+    with basic_db.db_execute() as con:
+        rs = basic_db.db_queryone_params(con, sql, args)
     return rs
 
 
@@ -46,13 +47,13 @@ def update_repost_comment(**kwargs):
     sql = 'select se_repost_count, se_comment_count from weibo_search_data where se_mid = :mid'
     args = dict(mid=mid)
 
-    with basic.db_execute() as conn:
-        rs = basic.db_queryone_params(conn, sql, args)
+    with basic_db.db_execute() as conn:
+        rs = basic_db.db_queryone_params(conn, sql, args)
         if reposts != rs[0] or comments != rs[1]:
             update_sql = ('update weibo_search_data set se_repost_count = :reposts, se_comment_count = :comments '
                           'where se_mid = :mid')
             update_args = dict(mid=mid, reposts=reposts, comments=comments)
-            basic.db_dml_parms(conn, update_sql, update_args)
+            basic_db.db_dml_parms(conn, update_sql, update_args)
 
 
 def add_search_cont(search_list):
@@ -62,7 +63,7 @@ def add_search_cont(search_list):
                 ':murl, :create_time, :praise_count,:repost_count, :comment_count, :content, :device, '
                 ':user_id, :username,:uheadimage, :user_home, :keyword)'
                 )
-    with basic.db_execute() as conn:
+    with basic_db.db_execute() as conn:
 
         for search_cont in search_list:
             search_info = {
@@ -82,7 +83,7 @@ def add_search_cont(search_list):
                 'keyword': search_cont.keyword
             }
             try:
-                basic.db_dml_parms(conn, save_sql, search_info)
+                basic_db.db_dml_parms(conn, save_sql, search_info)
             except Exception as why:
                 storage.error('插入出错,具体原因为:{why}, 插入数据是{info}'.format(why=why, info=search_info.__dict__))
 

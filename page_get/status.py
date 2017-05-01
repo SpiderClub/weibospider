@@ -1,31 +1,35 @@
 # -*-coding:utf-8 -*-
 #  获取微博信息
 import logging
+from page_get import user
 from page_get.basic import get_page
 from page_parse.basic import is_404
-from page_parse import wbparse
+from page_parse import status as parse_status
 from entities.spread_other_cache import SpreadOtherCache
 from entities.spread_other import SpreadOther
-from page_get import user
 from entities.other_and_cache import SpreadOtherAndCache
 
 
-def get_status_info(url, session, user_id, name, headers, mid=''):
+# 获取当前转发微博信息
+def get_status_info(url, user_id, name, mid=''):
     soc = SpreadOtherCache()
     print('当前转发微博url为:' + url)
-    repost_cont = get_page(url, session, headers)
+    repost_cont = get_page(url)
 
     if not is_404(repost_cont):
-        repost_user_id = wbparse.get_userid(repost_cont)
-        repost_user_name = wbparse.get_username(repost_cont)
+        repost_user_id = parse_status.get_userid(repost_cont)
+        if repost_user_id == '':
+            return None
+
+        repost_user_name = parse_status.get_username(repost_cont)
         soc.set_id(repost_user_id)
         soc.set_name(repost_user_name)
 
         so = SpreadOther()
         so.id = repost_user_id
         so.screen_name = repost_user_name
-        so.upper_user_name = wbparse.get_upperusername(repost_cont, name)
-        cur_user = user.get_profile(repost_user_id, session, headers)
+        so.upper_user_name = parse_status.get_upperusername(repost_cont, name)
+        cur_user = user.get_profile(repost_user_id)
         try:
             so.province = cur_user.province
             so.city = cur_user.city
@@ -45,16 +49,16 @@ def get_status_info(url, session, user_id, name, headers, mid=''):
             if so.screen_name == name:
                 so.id = user_id
 
-            so.mid = wbparse.get_mid(repost_cont)
-            so.status_post_time = wbparse.get_statustime(repost_cont)
-            so.device = wbparse.get_statussource(repost_cont)
+            so.mid = parse_status.get_mid(repost_cont)
+            so.status_post_time = parse_status.get_statustime(repost_cont)
+            so.device = parse_status.get_statussource(repost_cont)
             if mid:
                 so.original_status_id = mid
             else:
-                so.original_status_id = wbparse.get_orignalmid(repost_cont)
-            so.comments_count = wbparse.get_commentcounts(repost_cont)
-            so.reposts_count = wbparse.get_repostcounts(repost_cont)
-            so.like_count = wbparse.get_likecounts(repost_cont)
+                so.original_status_id = parse_status.get_orignalmid(repost_cont)
+            so.comments_count = parse_status.get_commentcounts(repost_cont)
+            so.reposts_count = parse_status.get_repostcounts(repost_cont)
+            so.like_count = parse_status.get_likecounts(repost_cont)
             so.status_url = url
         except AttributeError as e:
             # todo:找出这里的问题

@@ -1,6 +1,6 @@
 # -*-coding:utf-8 -*-
 # 操作用户信息
-from db import basic
+from db import basic_db
 
 
 def save_user(user):
@@ -42,8 +42,8 @@ def save_user(user):
         'su_verifyinfo': user.verify_info,
     }
 
-    with basic.db_execute() as conn:
-        basic.db_dml_parms(conn, save_sql, user_info)
+    with basic_db.db_execute() as conn:
+        basic_db.db_dml_parms(conn, save_sql, user_info)
 
 
 def save_users(users):
@@ -88,8 +88,8 @@ def save_users(users):
         }
         datas.append(user_info)
 
-    with basic.db_execute() as conn:
-        basic.db_dml_many(conn, save_sql, datas)
+    with basic_db.db_execute() as conn:
+        basic_db.db_dml_many(conn, save_sql, datas)
 
 
 def get_user(uid):
@@ -99,8 +99,8 @@ def get_user(uid):
                   )
     # 由于连接关闭所有不能直接返回带状态的rs，不然description读取会异常
     info = dict()
-    with basic.db_execute() as conn:
-        rs = basic.db_queryone_params(conn, select_sql, {'suid': uid})
+    with basic_db.db_execute() as conn:
+        rs = basic_db.db_queryone_params(conn, select_sql, {'suid': uid})
         if rs:
             info.update(
                 name=rs[0],

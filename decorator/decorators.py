@@ -1,16 +1,16 @@
 # -*-coding:utf-8 -*-
 from functools import wraps
 from traceback import format_tb
-from utils.util_cls import Timeout, KThread
 from logger.log import parser, crawler
+from utils.util_cls import Timeout, KThread
 
 
 # 用于超时设置
 def timeout_decorator(func):
     @wraps(func)
-    def time_limit(url, session, *k):
+    def time_limit(url, *k):
         try:
-            return func(url, session, *k)
+            return func(url, *k)
         except Exception as e:
             crawler.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
                                                                    stack=format_tb(e.__traceback__)[0]))

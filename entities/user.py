@@ -31,5 +31,5 @@ class User(object):
     def __str__(self):
         return 'id = {id},name={name}, location={location}, gender={gender}, verify_type={vt},verify_info={vi}, ' \
                'description={desc}'.format(
-            id=self.id, name=self.screen_name, location=self.location, gender=self.gender, vt=self.verify_type,
-            vi=self.verify_info, desc=self.description)
+                id=self.id, name=self.screen_name, location=self.location, gender=self.gender, vt=self.verify_type,
+                vi=self.verify_info, desc=self.description)

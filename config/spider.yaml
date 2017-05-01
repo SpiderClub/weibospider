@@ -1,25 +1,28 @@
-limit: 3  # 批量插入的最大数据量
-count: 0  # 计数器，每次抓取一个url则进行一次计数，这里可以不需要了，可以在抓取的时候写到redis中
-max_page: 30  # 转发信息最多抓取多少页time_out: 200   # 设置抓取和存储一个用户资料超时时间
-crawl_interal: 20 # 页面请求间隔
+time_out: 200   # 设置抓取和存储一个用户资料超时时间
+crawl_interal: 30 # 页面请求间隔
 excp_interal: 5*60 # 请求异常的时候睡眠的时间
+count: 0  # 计数器，每次抓取一个url则进行一次计数
+max_page: 30  # 转发信息最多抓取多少页
+max_retries: 5 # 抓取失败重试次数
 
 
 db:
     host: 127.0.0.1
-    port: 3306
+    port: 1521
     user: root
     password: 123456
     db_name: weibo
-    db_type: mysql
 
 # 保存登录的cookies
 redis:
     host: 127.0.0.1
     port: 6379
     cookies_db: 1
-    urls_db: 2
+    url_db: 2
 
 # celery调度的blocker和backend
 brocker: redis://127.0.0.1/5
 backend: redis://127.0.0.1/6
+
+
+

@@ -27,7 +27,7 @@ def is_404(html):
 def is_403(html):
     soup = BeautifulSoup(html, 'html.parser')
     if soup.title:
-        if '访问受限' in soup.title.text:
+        if '访问受限' in soup.title.text or '解冻' in soup.title.text:
             return True
         else:
             return False

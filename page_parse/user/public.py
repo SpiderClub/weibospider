@@ -3,20 +3,20 @@
 import re
 import json
 from bs4 import BeautifulSoup
-from page_parse.wbpage import wbparse
+from page_parse import status
 from decorator.decorators import parse_decorator
 
 
 def get_userid(html):
-    return wbparse.get_userid(html)
+    return status.get_userid(html)
 
 
 def get_username(html):
-    return wbparse.get_username(html)
+    return status.get_username(html)
 
 
 def get_userdomain(html):
-    return wbparse.get_userdomain(html)
+    return status.get_userdomain(html)
 
 
 @parse_decorator(1)

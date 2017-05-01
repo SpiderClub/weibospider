@@ -1,8 +1,8 @@
 # coding:utf-8
 # 搜索页面获取
 from headers import headers
-from page_get.basic import get_page
 from page_parse import search
+from page_get.basic import get_page
 from db.weibosearch_dao import add_search_cont
 
 

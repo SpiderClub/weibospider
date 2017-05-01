@@ -83,6 +83,7 @@ def get_orignalmid(html):
 def get_statussource(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
+    # 不同模版的不同解析方法
     try:
         return soup.find(attrs={'action-type': 'app_source'}).text
     except AttributeError:
@@ -202,7 +203,8 @@ def get_upperusername(html, defaultname):
     if 'type=atname' in cont:
         try:
             soup = BeautifulSoup(cont, 'html.parser')
-            content = soup.find(attrs={'node-type': 'feed_list_content'}).find(attrs={'render': 'ext', 'extra-data': 'type=atname'}).text
+            content = soup.find(attrs={'node-type': 'feed_list_content'}).find(attrs={'render': 'ext',
+                                                                                      'extra-data': 'type=atname'}).text
             return content[1:]
         except AttributeError:
             return defaultname

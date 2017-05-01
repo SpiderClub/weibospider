@@ -34,6 +34,10 @@ def get_max_page():
     return cf.get('max_page')
 
 
+def get_max_retries():
+    return cf.get('max_retries')
+
+
 def get_brocker():
     return cf.get('brocker')
 

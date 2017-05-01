@@ -1,4 +1,3 @@
-# 从'https://udger.com/resources/ua-list'该网站获取ua列表
 import random
 
 
@@ -26,6 +25,7 @@ user_agents = [
     'Opera/9.80 (Linux armv6l ; U; CE-HTML/1.0 NETTV/3.0.1;; en) Presto/2.6.33 Version/10.60',
     'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; baidubrowser 1.x)'
 ]
+
 
 headers = {
     'User-Agent': random.choice(user_agents),

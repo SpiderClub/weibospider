@@ -2,41 +2,31 @@ import unittest
 
 
 class TestWeiboSpider(unittest.TestCase):
+    def get_login_info(self):
+        from db import login_info
+        infos = login_info.get_login_info()
+        self.assertEqual(len(infos), 8)
+
     def test_login(self):
         from wblogin.login import get_session
-        sc = get_session()
+        sc = get_session('15708437303', 'rookiefly')
         if sc:
             print('登陆成功')
         else:
             raise Exception('登录失败')
 
+    def test_crawl_by_cookie(self):
+        import requests
+        from headers import headers
+        from db.cookies_db import fetch_cookies
+        test_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
+        cookies = fetch_cookies()
+        resp = requests.get(test_url, cookies=cookies, headers=headers)
+        self.assertIn('深扒娱乐热点', resp.text)
+
     def test_get_timeout(self):
         from config.conf import get_timeout
         self.assertEqual(get_timeout(), 200)
-
-    def test_getrepostcounts(self):
-        from page_parse.wbpage import wbparse
-        with open('./tests/reposts_root.html') as f:
-            cont = f.read()
-            repost_count = wbparse.get_repostcounts(cont)
-            self.assertEqual(repost_count, 0)
-
-        with open('./tests/reposts_sub.html') as f:
-            cont = f.read()
-            repost_count = wbparse.get_repostcounts(cont)
-            self.assertEqual(repost_count, 38)
-
-    def test_getcomments(self):
-        from page_parse.wbpage import wbparse
-        with open('./tests/reposts_root.html') as f:
-            cont = f.read()
-            repost_count = wbparse.get_commentcounts(cont)
-            self.assertEqual(repost_count, 0)
-
-        with open('./tests/reposts_sub.html') as f:
-            cont = f.read()
-            repost_count = wbparse.get_commentcounts(cont)
-            self.assertEqual(repost_count, 9)
 
     def test_update_repost_comment(self):
         from db.weibosearch_dao import update_repost_comment, get_repost_comment
@@ -59,23 +49,11 @@ class TestWeiboSpider(unittest.TestCase):
         user2 = get_user('2674334272')
         self.assertEqual(isinstance(user2, dict), True)
 
-    def test_get_user_from_web(self):
-        from wblogin.login import get_session
-        from page_get.user import get_profile
-        from headers import headers
+    def test_freeze_account(self):
+        from db.login_info import set_account_freeze
+        set_account_freeze('13272625419')
 
-        user_id = '2674334272'
-        sc = get_session()
-        if sc:
-            session = sc.get('session', '')
-
-            if session:
-                # 数据库已有的数据
-                user = get_profile(user_id, session, headers)
-                self.assertNotEqual(user.description, '')
-                # 数据库没有的数据
-                user2 = get_profile('3614046244', session, headers)
-                self.assertEqual(user2.status_count, 35)
-        else:
-            raise Exception('模拟登录失败')
+    def test_delete_cookies(self):
+        from db.cookies_db import delete_cookies
+        delete_cookies('15708437303')
 

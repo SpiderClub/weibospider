@@ -1,21 +1,18 @@
 # -*-coding:utf-8 -*-
-# 获取扩散信息
-import base64
-import binascii
 import re
 import time
+import base64
+import binascii
 from urllib.parse import quote_plus
-
 import requests
 import rsa
-
-from db.cookies_db import store_cookies
 from headers import headers
-from logger.log import other
 from page_parse.basic import is_403
+from logger.log import crawler, other
+from db.login_info import set_account_freeze
+from db.cookies_db import store_cookies
 
 
-# 获取经base64编码的用户名
 def get_encodename(name):
     # 如果用户名是手机号，那么需要转为字符串才能继续操作
     username_quote = quote_plus(str(name))
@@ -63,10 +60,8 @@ def get_redirect(data, post_url, session):
         return ''
 
 
-# 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session
-# todo  改为直接存储cookie而不返回登录相关信息
+# 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
 def get_session(name, password):
-    other.info('本次取得的账号是{}'.format(name))
     session = requests.Session()
     su = get_encodename(name)
 
@@ -118,7 +113,8 @@ def get_session(name, password):
 
                 if is_403(resp.text):
                     other.error('账号{}已被冻结'.format(name))
-                    # todo 将账号标识设置为不可用，并且使用别的账号重试
+                    crawler.warning('账号{}已经被冻结'.format(name))
+                    set_account_freeze(name)
                     return None
                 other.info('本次登陆账号为:{}'.format(name))
                 store_cookies(name, session.cookies.get_dict())
