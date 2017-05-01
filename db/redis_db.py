@@ -24,6 +24,7 @@ class Cookies(object):
     @classmethod
     def delete_cookies(cls, name):
         cls.rd_con.delete(name)
+        return True
 
 
 class Urls(object):
