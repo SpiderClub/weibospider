@@ -1,4 +1,3 @@
-import json
 import redis
 from config.conf import get_redis_args
 
