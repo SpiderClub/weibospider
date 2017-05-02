@@ -14,9 +14,10 @@ def login_task(name, password):
 @app.task
 def excute_login_task():
     infos = login_info.get_login_info()
+    log.crawler.info('本轮模拟登陆开始')
     for info in infos:
-        app.send_task('tasks.login.login_task', args=(info['name'], info['password']))
+        app.send_task('tasks.login.login_task', args=(info.name, info.password))
         time.sleep(10)
-    log.crawler.info('本轮模拟登陆完成')
+
 
 
