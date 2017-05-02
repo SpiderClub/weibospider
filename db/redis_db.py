@@ -19,7 +19,10 @@ class Cookies(object):
     @classmethod
     def fetch_cookies(cls):
         random_name = cls.rd_con.randomkey()
-        return random_name, json.loads(cls.rd_con.get(random_name).decode('utf-8'))
+        if random_name:
+            return random_name, json.loads(cls.rd_con.get(random_name).decode('utf-8'))
+        else:
+            return None
 
     @classmethod
     def delete_cookies(cls, name):
