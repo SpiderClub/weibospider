@@ -7,7 +7,19 @@ def get_seed_ids():
     return db_session.query(SeedIds.uid).filter(text('is_crawled=0')).all()
 
 
-def set_seed_crawled(uid):
+def set_seed_crawled(uid, result):
+    """
+    该表适用于用户抓取相关逻辑
+    :param uid: 被抓取用户id
+    :param result: 抓取结果
+    :return: None
+    """
     seed = db_session.query(SeedIds).filter(SeedIds.uid == uid).first()
-    seed.is_crawled = 1
+    if seed:
+        seed.is_crawled = result
+    else:
+        seed = SeedIds(uid=uid, is_crawled=result)
+        db_session.add(seed)
     db_session.commit()
+
+# todo 优化用户抓取逻辑，定期扫描表，看哪些用户信息已经被抓取，而他的关注和粉丝没被抓取
