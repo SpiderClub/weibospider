@@ -5,9 +5,7 @@ from db.models import LoginInfo
 
 
 def get_login_info():
-    rs = db_session.query(LoginInfo.name, LoginInfo.password, LoginInfo.enable).filter(text('enable=1')).all()
-    print(rs)
-    return rs
+    return db_session.query(LoginInfo.name, LoginInfo.password, LoginInfo.enable).filter(text('enable=1')).all()
 
 
 def freeze_account(name):
