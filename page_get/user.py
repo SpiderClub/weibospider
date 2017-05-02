@@ -1,11 +1,11 @@
 # -*-coding:utf-8 -*-
 #  获取用户资料
-from logger.log import storage
 from db.models import User
-from db.user import save_user, get_user_by_uid
-from db.seed_ids import set_seed_crawled
+from logger.log import storage
 from page_get.basic import get_page
 from page_parse.basic import is_404
+from db.user import save_user, get_user_by_uid
+from db.seed_ids import set_seed_crawled
 from page_parse.user import enterprise, person, public
 
 
@@ -21,6 +21,16 @@ def get_user_detail(user_id, html):
         user.wb_num = person.get_status(html)
     else:
         set_seed_crawled(user_id, 2)
+    return user
+
+
+def get_enterprise_detail(user_id, html):
+    user = User()
+    user.uid = user_id
+    user.follows_num = enterprise.get_friends(html)
+    user.fans_num = enterprise.get_fans(html)
+    user.wb_num = enterprise.get_status(html)
+    user.description = enterprise.get_description(html).encode('gbk', 'ignore').decode('gbk')
     return user
 
 
@@ -45,12 +55,7 @@ def get_url_from_web(user_id):
         elif domain == '100505':
             user = get_user_detail(user_id, html)
         else:
-            user = User()
-            user.uid = user_id
-            user.follows_num = enterprise.get_friends(html)
-            user.fans_num = enterprise.get_fans(html)
-            user.wb_num = enterprise.get_status(html)
-            user.description = enterprise.get_description(html).encode('gbk', 'ignore').decode('gbk')
+            user = get_enterprise_detail(user_id, html)
 
         if user is None:
             return None
