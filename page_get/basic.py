@@ -1,10 +1,11 @@
+import os
 import time
 import requests
 from headers import headers
 from logger.log import crawler
-from db.url_db import store_crawl_url
-from db.cookies_db import fetch_cookies, delete_cookies
-from db.login_info import set_account_freeze
+from db.redis_db import Urls
+from db.redis_db import Cookies
+from db.login_info import freeze_account
 from page_parse.basic import is_403, is_404, is_complete
 from decorator.decorators import timeout_decorator, timeout
 from config.conf import get_timeout, get_crawl_interal, get_excp_interal, get_max_retries
@@ -32,7 +33,11 @@ def get_page(url, user_verify=True):
 
     while count < max_retries:
         # 每次重试的时候都换cookies,并且和上次不同
-        name_cookies = fetch_cookies()
+        name_cookies = Cookies.fetch_cookies()
+
+        if name_cookies is None:
+            crawler.error('cookie池中不存在cookie，请检查账号和登录任务是否正常。采集程序退出。')
+            os._exit(0)
 
         if name_cookies == latest_name_cookies:
             continue
@@ -41,7 +46,11 @@ def get_page(url, user_verify=True):
 
         try:
             resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=time_out, verify=False)
-            page = resp.text.encode('utf-8', 'ignore').decode('utf-8')
+            page = resp.text
+            if page:
+                page = page.encode('utf-8', 'ignore').decode('utf-8')
+            else:
+                continue
 
             # 每次抓取过后程序sleep的时间，降低封号危险
             time.sleep(interal)
@@ -49,8 +58,8 @@ def get_page(url, user_verify=True):
             if user_verify:
                 if 'unfreeze' in resp.url or is_403(page):
                     crawler.warning('账号{}已经被冻结'.format(name_cookies[0]))
-                    set_account_freeze(name_cookies[0])
-                    delete_cookies(name_cookies[0])
+                    freeze_account(name_cookies[0])
+                    Cookies.delete_cookies(name_cookies[0])
                     count += 1
                     continue
 
@@ -62,15 +71,17 @@ def get_page(url, user_verify=True):
                     crawler.warning('url为{url}的连接不存在'.format(url=url))
                     return ''
 
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, AttributeError) as e:
             crawler.warning('抓取{}出现异常，具体信息是{}'.format(url, e))
             count += 1
             time.sleep(excp_interal)
 
         else:
-            store_crawl_url(url, 1)
+            Urls.store_crawl_url(url, 1)
             return page
 
-    crawler.warning('抓取{}已达到最大重试次数，请在失败队列中查看该url并检查原因'.format(url))
-    store_crawl_url(url, 0)
+    crawler.warning('抓取{}已达到最大重试次数，请在redis的失败队列中查看该url并检查原因'.format(url))
+    Urls.store_crawl_url(url, 0)
     return ''
+
+__all__ = ['get_page']
