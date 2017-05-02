@@ -31,7 +31,6 @@ def get_detail(html):
     return details
 
 
-# todo:这里返回空字符串，和解析微博页面返回的整数0不符合
 # 以下是通过认证企业主页进行解析
 @parse_decorator(0)
 def get_friends(html):

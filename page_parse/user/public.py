@@ -120,3 +120,11 @@ def get_right(html):
     return cont
 
 
+@parse_decorator(0)
+def get_level(html):
+    pattern = '<span>Lv.(.*?)<\\\/span>'
+    rs = re.search(pattern, html)
+    if rs:
+        return rs.group(1)
+    else:
+        return 0
