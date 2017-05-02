@@ -14,13 +14,16 @@ def timeout_decorator(func):
         except Exception as e:
             crawler.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
                                                                    stack=format_tb(e.__traceback__)[0]))
-            return None
+            return ''
 
     return time_limit
 
 
-# 用于捕捉页面解析的异常, 2表示返回[]，1表示返回空字符串，0表示返回数字0, 3表示返回True,4表示返回{},5返回None
 def parse_decorator(return_type):
+    """
+    :param return_type: 用于捕捉页面解析的异常, 0表示返回数字0, 1表示返回空字符串, 2表示返回[],3表示返回False, 4表示返回{}, 5返回None
+    :return: 0,'',[],False,{},None
+    """
     def page_parse(func):
         @wraps(func)
         def handle_error(*keys):
