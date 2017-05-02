@@ -9,7 +9,19 @@ from page_parse.basic import is_404
 from page_parse.user import enterprise, person, public
 
 
-base_url = 'http://weibo.com/p/100505{}/info?mod=pedit_more'
+base_url = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
+
+
+def get_user_detail(user_id, html):
+    user = person.get_detail(html)
+    if user is not None:
+        user.uid = user_id
+        user.follows_num = person.get_friends(html)
+        user.fans_num = person.get_fans(html)
+        user.wb_num = person.get_status(html)
+    else:
+        set_seed_crawled(user_id, 2)
+    return user
 
 
 def get_url_from_web(user_id):
@@ -20,23 +32,18 @@ def get_url_from_web(user_id):
     :param user_id: 用户id
     :return: 用户类实体
     """
-    url = base_url.format(user_id)
+    url = base_url.format('100505', user_id)
     html = get_page(url)
 
     if not is_404(html):
         domain = public.get_userdomain(html)
 
-        # todo 检查这里逻辑是否有问题，貌似并未抓103505等的详细信息
-        if domain == '100505' or domain == '103505' or domain == '100306':
-            user = person.get_detail(html)
-            if user is not None:
-                user.uid = user_id
-                user.follows_num = person.get_friends(html)
-                user.fans_num = person.get_fans(html)
-                user.wb_num = person.get_status(html)
-            else:
-                set_seed_crawled(user_id, 2)
-                return None
+        if domain == '103505' or domain == '100306':
+            url = base_url.format(domain, user_id)
+            html = get_page(url)
+            user = get_user_detail(user_id, html)
+        elif domain == '100505':
+            user = get_user_detail(user_id, html)
         else:
             user = User()
             user.uid = user_id
@@ -44,6 +51,10 @@ def get_url_from_web(user_id):
             user.fans_num = enterprise.get_fans(html)
             user.wb_num = enterprise.get_status(html)
             user.description = enterprise.get_description(html).encode('gbk', 'ignore').decode('gbk')
+
+        if user is None:
+            return None
+
         user.name = public.get_username(html)
         user.head_img = public.get_headimg(html)
         user.verify_type = public.get_verifytype(html)
