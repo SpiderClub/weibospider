@@ -7,8 +7,8 @@
 的工作量也更小，但是数据采集经验比较丰富的同学应该也知道移动端的微博和用户信息并不全面，所
 以在项目启动的时候定位就是**PC端的微博数据采集**。
 - 与该项目类似的项目大概有[SinaSpider](https://github.com/LiuXingMing/SinaSpider),[weibo_terminater](https://github.com/jinfagang/weibo_terminater)。
-前者是一个基于```scrapy```的项目，爬的是移动版微博用户信息，质量还不错；后者嘛，呵呵。
-看了它的源代码过后，感觉在README部分写的很多都是噱头。
+前者是一个基于```scrapy```的项目，爬的是移动版微博用户信息，质量还不错；后者嘛,还是用户
+自己判断吧。
 
 ## 目的
 - 分布式微博爬虫
