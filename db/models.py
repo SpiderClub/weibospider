@@ -13,52 +13,31 @@ class LoginInfo(Base):
 
 class User(Base):
     __tablename__ = 'wbuser'
+    # 这里需要设置默认值，否则空的话可能会存储None，可能会引发未catch的异常
     id = Column(INTEGER, primary_key=True, autoincrement=True)
-    uid = Column(INTEGER, unique=True)
-    name = Column(String(200))
-    gender = Column(INTEGER)
-    birthday = Column(String(200))
-    location = Column(String(100))
-    description = Column(String(500))
-    register_time = Column(String(200))
-    is_verify = Column(INTEGER)
-    verify_type = Column(INTEGER)
-    verify_info = Column(String(300))
-    follows_num = Column(INTEGER)
-    fans_num = Column(INTEGER)
-    wb_num = Column(INTEGER)
-    level = Column(INTEGER)
-    tags = Column(String(500))
-    work_info = Column(String(500))
-    contact_info = Column(String(300))
-    education_info = Column(String(300))
-    head_img = Column(String(500))
-    # TODO 先不做__init__操作，看看默认值是否有效
-    # def __init__(self):
-    #     self.name = ''
-    #     self.location = ''
-    #     self.description = ''
-    #     self.head_img = ''
-    #     self.gender = 0
-    #     self.level = 0
-    #     self.followers_num = 0
-    #     self.fans_num = 0
-    #     self.wb_num = 0
-    #     self.birthday = ''
-    #     self.contact_info = ''
-    #     self.work_info = ''
-    #     self.education_info = ''
-    #     self.tags = ''
-    #     self.register_time = ''
-    #     self.is_verify = 0
-    #     self.verify_type = 0
-    #     self.verify_info = ''
-
-    def __str__(self):
-        return 'id = {id},name={name}, location={location}, verify_type={vt},verify_info={vi}, description={desc}'.\
-            format(id=self.uid, name=self.name, location=self.location, vt=self.verify_type, vi=self.verify_info,
-                   desc=self.description)
+    uid = Column(String, unique=True)
+    name = Column(String(200), default='')
+    gender = Column(INTEGER, default=0)
+    birthday = Column(String(200), default='')
+    location = Column(String(100), default='')
+    description = Column(String(500), default='')
+    register_time = Column(String(200), default='')
+    verify_type = Column(INTEGER, default=0)
+    verify_info = Column(String(300), default='')
+    follows_num = Column(INTEGER, default=0)
+    fans_num = Column(INTEGER, default=0)
+    wb_num = Column(INTEGER, default=0)
+    level = Column(INTEGER, default=0)
+    tags = Column(String(500), default='')
+    work_info = Column(String(500), default='')
+    contact_info = Column(String(300), default='')
+    education_info = Column(String(300), default='')
+    head_img = Column(String(500), default='')
 
 
-class SpreadOriginal(object):
-    pass
+class SeedIds(Base):
+    __tablename__ = 'seed_ids'
+    id = Column(INTEGER, primary_key=True, autoincrement=True)
+    uid = Column(String, unique=True)
+    is_crawled = Column(INTEGER, default=0)
+    other_crawled = Column(INTEGER, default=0)
