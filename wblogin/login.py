@@ -9,8 +9,8 @@ import rsa
 from headers import headers
 from page_parse.basic import is_403
 from logger.log import crawler, other
-from db.login_info import set_account_freeze
-from db.cookies_db import store_cookies
+from db.login_info import freeze_account
+from db.redis_db import Cookies
 
 
 def get_encodename(name):
@@ -114,10 +114,10 @@ def get_session(name, password):
                 if is_403(resp.text):
                     other.error('账号{}已被冻结'.format(name))
                     crawler.warning('账号{}已经被冻结'.format(name))
-                    set_account_freeze(name)
+                    freeze_account(name)
                     return None
                 other.info('本次登陆账号为:{}'.format(name))
-                store_cookies(name, session.cookies.get_dict())
+                Cookies.store_cookies(name, session.cookies.get_dict())
                 return session
             else:
                 other.error('本次账号{}登陆失败'.format(name))
