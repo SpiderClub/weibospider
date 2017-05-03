@@ -32,4 +32,17 @@ def insert_seeds(ids):
     db_session.execute(SeedIds.__table__.insert().prefix_with('IGNORE'), [{'uid': i} for i in ids])
     db_session.commit()
 
-# todo 优化用户抓取逻辑，定期扫描表，看哪些用户信息已经被抓取，而他的关注和粉丝没被抓取
+
+def set_seed_other_crawled(uid):
+    """
+    存在则更新，不存在则插入
+    :param uid: 用户id
+    :return: None
+    """
+    seed = get_seed_by_id(uid)
+    if seed is None:
+        seed = SeedIds(uid=uid, is_crawled=1, other_crawled=1)
+        db_session.add(seed)
+    else:
+        seed.other_crawled = 1
+    db_session.commit()
