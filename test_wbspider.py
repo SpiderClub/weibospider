@@ -2,58 +2,81 @@ import unittest
 
 
 class TestWeiboSpider(unittest.TestCase):
-    def get_login_info(self):
+    # 这单元测试写得我很尴尬...
+    def test_get_login_info(self):
         from db import login_info
         infos = login_info.get_login_info()
-        self.assertEqual(len(infos), 8)
+        self.assertEquals(len(infos), 8)
 
     def test_login(self):
+        import random
         from wblogin.login import get_session
-        sc = get_session('15708437303', 'rookiefly')
+        from db.login_info import get_login_info
+        infos = get_login_info()
+        info = random.choice(infos)
+        sc = get_session(info.name, info.password)
+
         if sc:
             print('登陆成功')
         else:
             raise Exception('登录失败')
 
-    def test_crawl_by_cookie(self):
-        import requests
-        from headers import headers
-        from db.cookies_db import fetch_cookies
-        test_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
-        cookies = fetch_cookies()
-        resp = requests.get(test_url, cookies=cookies, headers=headers)
-        self.assertIn('深扒娱乐热点', resp.text)
-
-    def test_get_timeout(self):
-        from config.conf import get_timeout
-        self.assertEqual(get_timeout(), 200)
-
-    def test_update_repost_comment(self):
-        from db.weibosearch_dao import update_repost_comment, get_repost_comment
-        mid = '3791583457149221'
-        reposts = 42
-        comments = 9
-        rs = get_repost_comment(mid)
-        self.assertNotEqual(rs, (reposts, comments))
-        update_repost_comment(mid=mid, reposts=reposts, comments=comments)
-        rs = get_repost_comment(mid)
-        self.assertEqual(rs, (reposts, comments))
-
-    def test_get_user_from_db(self):
-        from db.user_dao import get_user
-        # 数据库中存在的数据
-        user = get_user('3858873234')
-        self.assertEqual(user.get('name'), '景区宝')
-
-        # 数据库中不存在的数据
-        user2 = get_user('2674334272')
-        self.assertEqual(isinstance(user2, dict), True)
-
     def test_freeze_account(self):
-        from db.login_info import set_account_freeze
-        set_account_freeze('13272625419')
+        from db import login_info
+        login_info.freeze_account('18708103033')
+        infos = login_info.get_login_info()
+        for info in infos:
+            if info[0] == '18708103033':
+                self.assertEqual(info.enable, 0)
 
     def test_delete_cookies(self):
-        from db.cookies_db import delete_cookies
-        delete_cookies('15708437303')
+        from db.redis_db import Cookies
+        r = Cookies.delete_cookies('18708103033')
+        self.assertEqual(r, True)
 
+    def test_page_get(self):
+        from page_get import basic
+        test_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
+        text = basic.get_page(test_url)
+        self.assertIn('深扒娱乐热点', text)
+
+    def test_parse_user_info(self):
+        from page_parse.user import person, public
+        from page_get.user import get_user_detail
+        with open('./tests/writer.html') as f:
+            cont = f.read()
+        user = person.get_detail(cont)
+        user.verify_type = public.get_verifytype(cont)
+        self.assertEqual(user.verify_type, 1)
+        self.assertEqual(user.description, '韩寒')
+        with open('./tests/person.html') as f:
+            cont = f.read()
+        user = get_user_detail('222333312', cont)
+        self.assertEqual(user.follows_num, 539)
+
+    def test_get_url_from_web(self):
+        from page_get import user as user_get
+        normal_user = user_get.get_profile('1195908387')
+        self.assertEqual(normal_user.name, '日_推')
+        writer = user_get.get_profile('1191258123')
+        self.assertEqual(writer.description, '韩寒')
+        enterprise_user = user_get.get_profile('1839256234')
+        self.assertEqual(enterprise_user.level, 36)
+
+    def test_get_fans(self):
+        from page_parse.user import public
+        with open('./tests/fans.html') as f:
+            cont = f.read()
+        public.get_fans_or_follows(cont)
+        ids, cur_urls = public.get_fans_or_follows(cont)
+        self.assertEqual(len(ids), 9)
+        self.assertEqual(len(cur_urls), 5)
+
+    def test_bulk_insert_with_duplicates(self):
+        from db.seed_ids import insert_seeds
+        ids = ['2891529877', '2891529878', '281296709']
+        insert_seeds(ids)
+
+
+if __name__ == '__main__':
+    unittest.main()
