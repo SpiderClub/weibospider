@@ -77,6 +77,9 @@ class TestWeiboSpider(unittest.TestCase):
         ids = ['2891529877', '2891529878', '281296709']
         insert_seeds(ids)
 
+    def test_crawl_person_infos(self):
+        from tasks.user import crawl_person_infos
+        crawl_person_infos('2041028560')
 
 if __name__ == '__main__':
     unittest.main()
