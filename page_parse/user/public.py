@@ -156,7 +156,10 @@ def get_fans_or_follows(html):
             for follow in follows:
                 m = re.search(pattern, str(follow))
                 if m:
-                    user_ids.append(m.group(1))
+                    r = m.group(1)
+                    # 过滤掉非正常id
+                    if r.isdigit():
+                        user_ids.append(m.group(1))
     return user_ids
 
 

@@ -19,8 +19,6 @@ def get_user_detail(user_id, html):
         user.follows_num = person.get_friends(html)
         user.fans_num = person.get_fans(html)
         user.wb_num = person.get_status(html)
-    else:
-        set_seed_crawled(user_id, 2)
     return user
 
 
@@ -71,12 +69,10 @@ def get_url_from_web(user_id):
 
         # 保存用户信息到数据库
         save_user(user)
-        set_seed_crawled(user_id, 1)
         storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
 
         return user
     else:
-        set_seed_crawled(user_id, 2)
         return None
 
 
@@ -87,9 +83,13 @@ def get_profile(user_id):
 
     if user:
         storage.info('ID为{id}的用户信息已经存在于数据库中'.format(id=user_id))
-
+        set_seed_crawled(user_id, 1)
     else:
         user = get_url_from_web(user_id)
+        if user is not None:
+            set_seed_crawled(user_id, 1)
+        else:
+            set_seed_crawled(user_id, 1)
 
     return user
 

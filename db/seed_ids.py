@@ -16,7 +16,8 @@ def set_seed_crawled(uid, result):
     """
     seed = db_session.query(SeedIds).filter(SeedIds.uid == uid).first()
     if seed:
-        seed.is_crawled = result
+        if seed.is_crawled == 0:
+            seed.is_crawled = result
     else:
         seed = SeedIds(uid=uid, is_crawled=result)
         db_session.add(seed)
