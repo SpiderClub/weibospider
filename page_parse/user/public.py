@@ -128,3 +128,58 @@ def get_level(html):
         return rs.group(1)
     else:
         return 0
+
+
+@parse_decorator(2)
+def get_fans_or_follows(html):
+    """
+    :param: 关注或者粉丝页面
+    :return:urls表示获取的该页关注或者粉丝主页URL，cur_urls表示该用户所有能查看的页面URL,不包括当前页(一般只有五页)
+    """
+    if html == '':
+        return list()
+
+    pattern = re.compile(r'FM.view\((.*)\)')
+    soup = BeautifulSoup(html, "html.parser")
+    scripts = soup.find_all('script')
+
+    user_ids = list()
+    for script in scripts:
+        m = re.search(pattern, script.string)
+
+        if m and 'pl.content.followTab.index' in script.string:
+            all_info = m.group(1)
+            cont = json.loads(all_info).get('html', '')
+            soup = BeautifulSoup(cont, 'html.parser')
+            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item'})
+            pattern = 'uid=(.*?)&'
+            for follow in follows:
+                m = re.search(pattern, str(follow))
+                if m:
+                    user_ids.append(m.group(1))
+    return user_ids
+
+
+def get_max_crawl_pages(html):
+    if html == '':
+        return 1
+
+    pattern = re.compile(r'FM.view\((.*)\)')
+    soup = BeautifulSoup(html, "html.parser")
+    scripts = soup.find_all('script')
+    length = 1
+
+    for script in scripts:
+        m = re.search(pattern, script.string)
+
+        if m and 'pl.content.followTab.index' in script.string:
+            all_info = m.group(1)
+            cont = json.loads(all_info).get('html', '')
+            soup = BeautifulSoup(cont, 'html.parser')
+            pattern = 'uid=(.*?)&'
+
+            if 'pageList' in cont:
+                urls2 = soup.find(attrs={'node-type': 'pageList'}).find_all(attrs={
+                    'class': 'page S_txt1', 'bpfilter': 'page'})
+                length += urls2
+    return length
