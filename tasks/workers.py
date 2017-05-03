@@ -22,4 +22,8 @@ app.conf.CELERYBEAT_SCHEDULE = {
         'task': 'tasks.repost.excute_repost_task',
         'schedule': 60*60*2.0,
     },
+    'user_task': {
+        'task': 'tasks.user.excute_user_task',
+        'schedule': 60.0*5
+    }
 }
