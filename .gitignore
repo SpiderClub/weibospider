@@ -2,4 +2,4 @@
 test.py
 .idea
 __pycache__/
-logs/
+logs/weibo.log

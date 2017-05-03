@@ -181,5 +181,5 @@ def get_max_crawl_pages(html):
             if 'pageList' in cont:
                 urls2 = soup.find(attrs={'node-type': 'pageList'}).find_all(attrs={
                     'class': 'page S_txt1', 'bpfilter': 'page'})
-                length += urls2
+                length += len(urls2)
     return length

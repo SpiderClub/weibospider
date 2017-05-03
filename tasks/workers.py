@@ -2,8 +2,9 @@ from celery import Celery
 from config.conf import get_backend, get_brocker
 
 
-# todo 设置任务路由
-app = Celery('weibo_task', include=['tasks.login', 'tasks.repost'], broker=get_brocker(), backend=get_backend())
+# todo 为不同任务设置任务路由
+# include的作用就是注册服务化函数
+app = Celery('weibo_task', include=['tasks.login', 'tasks.repost', 'tasks.user'], broker=get_brocker(), backend=get_backend())
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
     CELERY_ENABLE_UTC=True,
@@ -24,6 +25,6 @@ app.conf.CELERYBEAT_SCHEDULE = {
     },
     'user_task': {
         'task': 'tasks.user.excute_user_task',
-        'schedule': 60.0*5
+        'schedule': 60.0*3
     }
 }

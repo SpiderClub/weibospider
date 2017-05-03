@@ -42,6 +42,9 @@ def get_url_from_web(user_id):
     :param user_id: 用户id
     :return: 用户类实体
     """
+    if not user_id:
+        return None
+
     url = base_url.format('100505', user_id)
     html = get_page(url)
 
@@ -83,11 +86,6 @@ def get_profile(user_id):
     user = get_user_by_uid(user_id)
 
     if user:
-        # 防止在插入数据库的时候encode()出问题
-        for key in user.__dict__:
-            if user.__dict__[key] is None:
-                setattr(user, key, '')
-
         storage.info('ID为{id}的用户信息已经存在于数据库中'.format(id=user_id))
 
     else:

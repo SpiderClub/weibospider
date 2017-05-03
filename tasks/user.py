@@ -10,19 +10,24 @@ def crawl_person_infos(uid):
     :param uid: 用户id
     :return: 
     """
+    if not uid:
+        return
+
     # 由于与别的任务共享数据表，所以需要先判断数据库是否有该用户信息，再进行抓取
     user = user_get.get_profile(uid)
     # 不抓取企业号
     if user.verify_type == 2:
+        set_seed_other_crawled(uid)
         return
 
     seed = get_seed_by_id(uid)
-    if seed is None or seed.other_crawled == 0:
+    if seed.other_crawled == 0:
         rs = user_get.get_fans_or_followers_ids(uid, 1)
         rs.extend(user_get.get_fans_or_followers_ids(uid, 2))
-        # 重复数据跳过插入
         datas = set(rs)
-        insert_seeds(datas)
+        # 重复数据跳过插入
+        if datas:
+            insert_seeds(datas)
         set_seed_other_crawled(uid)
 
 
