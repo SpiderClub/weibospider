@@ -78,15 +78,8 @@ def get_url_from_web(user_id):
 
 
 # 进行用户个人资料抓取的时候，查询是否已存在于数据库，如果没有，那么就保存，有就直接从里面取出来
-# todo 改进用户信息抓取策略，以提高抓取效率
 def get_profile(user_id):
-    """
-    默认为个人用户，如果为作家，则需要再做一次抓取，而为企业用户，它会重定向到企业主页，直接解析即可
-    登陆后可以根据http://weibo.com/u/userId来进行确定用户主页，不知道稳定不，todo 测试这个路径
-    好像'http://weibo.com/p/100505' + user_id + '/info?mod=pedit_more' 这个路径可以解决大部分路径问题，只是非普通用户
-    会被重定向到主页，有的并不行，比如domain=100106
-    """
-    # 判断数据库是否存在
+    # 判断数据库是否存在该用户信息
     user = get_user_by_uid(user_id)
 
     if user:
@@ -101,4 +94,35 @@ def get_profile(user_id):
         user = get_url_from_web(user_id)
 
     return user
+
+
+def get_fans_or_followers_ids(user_id, crawl_type):
+    """
+    获取用户的粉丝和关注用户
+    :param user_id: 用户id
+    :param crawl_type: 1表示获取粉丝，2表示获取关注
+    :return: 获取的关注或者粉丝列表
+    """
+
+    # todo 验证作家等用户的粉丝和关注是否满足;处理粉丝或者关注5页的情况
+    if crawl_type == 1:
+        ff_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
+    else:
+        ff_url = 'http://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
+
+    cur_page = 1
+    max_page = 6
+    user_ids = list()
+    while cur_page < max_page:
+        url = ff_url.format(user_id, cur_page)
+        page = get_page(url)
+        if cur_page == 1:
+            user_ids.extend(public.get_fans_or_follows(page))
+            urls_length = public.get_max_crawl_pages(page)
+            if max_page > urls_length:
+                max_page = urls_length + 1
+
+        cur_page += 1
+
+    return user_ids
 
