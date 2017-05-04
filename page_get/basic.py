@@ -1,11 +1,12 @@
-import os
+import sys
 import time
 import requests
+from tasks import login
 from headers import headers
 from logger.log import crawler
 from db.redis_db import Urls
 from db.redis_db import Cookies
-from db.login_info import freeze_account
+from db.login_info import freeze_account, get_login_info
 from page_parse.basic import is_403, is_404, is_complete
 from decorator.decorators import timeout_decorator, timeout
 from config.conf import get_timeout, get_crawl_interal, get_excp_interal, get_max_retries
@@ -36,8 +37,16 @@ def get_page(url, user_verify=True):
         name_cookies = Cookies.fetch_cookies()
 
         if name_cookies is None:
-            crawler.error('cookie池中不存在cookie，请检查账号和登录任务是否正常。采集程序退出。')
-            os._exit(0)
+            crawler.warning('cookie池中不存在cookie，正在检查是否有可用账号')
+            rs = get_login_info()
+            if len(rs) == 0:
+                crawler.error('账号均不可用，请检查账号健康状况')
+                sys.exit(-1)
+            else:
+                # 如果有可用账号，那么就拿来登录
+                crawler.info('重新获取cookie中...')
+                login.excute_login_task()
+                time.sleep(10)
 
         if name_cookies == latest_name_cookies:
             continue
