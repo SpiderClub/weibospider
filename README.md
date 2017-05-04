@@ -42,7 +42,54 @@ dockerfile部署项目;讲解微博的反爬虫策略；讲解微博扩散信息
 
 
 ## 项目结构
-暂时略去
+
+```
+    config/
+        sql/
+            spider.sql  # 项目所用表
+    db/
+        __init__.py
+        basic_db.py # 数据库元操作
+        login_info.py # 微博账号管理操作
+        models.py # sqlalchemy中用到的models
+        redis_db.py # redis相关操作，比如管理cookies和urls
+        seed_ids.py # 种子用户id管理操作
+        user.py # 用户相关操作
+    decorator/
+        __init__.py
+        decorators.py # 项目中用到的装饰器，比如处理超时和模版解析异常
+    logger/
+        __init__.py
+        log.py        # 日志操作
+    logs/             # 该目录用于存放日志文件，由于程序没有创建文件夹的权限，所以需要提前建好
+    page_get/
+        __init__.py
+        basic.py      # 基本的数据抓取操作
+        user.py       # 微博用户抓取
+    page_parse/
+        user/
+            __init__.py
+            enterprise.py # 解析服务号
+            person.py     # 解析个人用户
+            public.py     # 公共模版解析
+    tasks/
+        __init__.py
+        workers.py        # celery worker
+        login.py          # 模拟登陆相关任务
+        user.py           # 用户抓取相关任务
+    tests/                # 一些解析模版，没多少用
+    utils/                # 工具类
+    wblogin/
+        __init__.py
+        login.py          # 微博模拟登陆具体实现
+    headers.py            # 请求头，主要是UA
+    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以第一次需要手动登陆
+    test_wbspider.py      # 没什么用的单元测试
+    requirements.txt      # 项目相关依赖
+
+```
+有的文件和模块在项目代码中存在，却没有在项目结构中呈现，那么就说明该模块或者该文件还未进行
+修改（oracle=>mysql）或者稳定性测试
 
 
 ## 配置和使用
