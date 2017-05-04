@@ -102,12 +102,14 @@ celery最后支持的一个windows版本
 
 - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
 - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
-- 入口文件 
+- 入口文件
+ - [login.py](./tasks/login.py)和[login_first.py](login_first.py):微博登
+ 陆客户端程序
+ - [user.py](./tasks/user.py):微博用户抓取程序
  - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):微
  博程序
  - [search.py](./tasks/search.py):微博搜索程序
- - [login.py](./tasks/login.py)和[login_first.py](login_first.py):微博登
- 陆客户端程序
+
 
 - 微博登录和数据采集:采用celery来进行任务调度
  - celery的broker和backend统一采用redis，分布式部署的时候需要关闭redis的保护
