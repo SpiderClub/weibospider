@@ -59,3 +59,17 @@ create table weibo.wbuser
 comment '微博用户表'
 ;
 
+
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2891529877', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2709820275', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1195908387', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1604363024', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('10503', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1819309485', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1853923717', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1565668374', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1751401422', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1758453771', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2041028560', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1191258123', 0, 0);
+INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1839256234', 0, 0);
