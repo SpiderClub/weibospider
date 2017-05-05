@@ -111,18 +111,18 @@ celery最后支持的一个windows版本
  - [search.py](./tasks/search.py):微博搜索程序
 
 
-- 微博登录和数据采集:采用celery来进行任务调度
+- 微博登录和数据采集:采用celery来进行分布式任务调度
  - celery的broker和backend统一采用redis，分布式部署的时候需要关闭redis的保护
  模式，或者为redis设置密码
  - 启动登录定时任务和worker节点进行登录,定时登录是为了维护cookie的时效性，据我实验，
  微博的cookie有效时长为24小时。
-   - 切换到tasks目录，首先启动worker(在多个节点启动，**分散登录地点**)：```celery
+   - 切换到tasks目录，首先启动worker(在多个分布式节点启动，**分散登录地点**)：```celery
    -A tasks.workers
    worker --loglevel=info --concurrency=1```
-   - 第一次登陆微博的时候，为了让抓取任务能马上执行，需要切换到根目录执行```python
+   - 第一次登陆微博的时候，为了让抓取任务能马上执行，需要在其中一个节点，切换到项目根目录执行```python
    login_first.py```获取首次登陆的cookie
    - 同理，第一次执行转发微博抓取，也需要执行```python repost_first.py```
-   - 切换到tasks目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：```
+   - 在一个分布式节点上，切换到tasks目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：```
    celery beat -A
    tasks.workers -l info```
    - 通过*flower*监控节点健康状况：```flower -A tasks.workers --port=6666```
