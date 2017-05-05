@@ -60,6 +60,8 @@ comment '微博用户表'
 ;
 
 
+
+
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2891529877', 0, 0);
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2709820275', 0, 0);
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1195908387', 0, 0);
