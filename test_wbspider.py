@@ -2,7 +2,7 @@ import unittest
 
 
 class TestWeiboSpider(unittest.TestCase):
-    # 这单元测试写得我很尴尬...ate
+    # 这单元测试写得我很尴尬...
     def test_get_login_info(self):
         from db import login_info
         infos = login_info.get_login_info()
@@ -58,7 +58,7 @@ class TestWeiboSpider(unittest.TestCase):
         """
         from page_parse.user import person, public
         from page_get.user import get_user_detail
-        with open('./tests/writer.html') as f:
+        with open('./tests/writer.html', encoding='utf-8') as f:
             cont = f.read()
         user = person.get_detail(cont)
         user.verify_type = public.get_verifytype(cont)
@@ -86,12 +86,11 @@ class TestWeiboSpider(unittest.TestCase):
         测试用户粉丝获取功能
         """
         from page_parse.user import public
-        with open('./tests/fans.html') as f:
+        with open('./tests/fans.html', encoding='utf-8') as f:
             cont = f.read()
         public.get_fans_or_follows(cont)
-        ids, cur_urls = public.get_fans_or_follows(cont)
+        ids = public.get_fans_or_follows(cont)
         self.assertEqual(len(ids), 9)
-        self.assertEqual(len(cur_urls), 5)
 
     def test_bulk_insert_with_duplicates(self):
         """
