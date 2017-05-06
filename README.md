@@ -95,7 +95,8 @@ dockerfile部署项目;讲解微博的反爬虫策略；讲解微博扩散信息
 ## 配置和使用
 - 由于高版本的celery不支持windows,所以务必在**类Unix系统**部署，如果需要在windows
 上部署的话，可以把celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
-celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！**
+celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！
+所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**
 - 安装相关依赖```pip install -r requirements.txt```,cx_Oracle的安装可能会
 出问题，windows平台请看[这里](http://rookiefly.cn/detail/69)，linux平台请
 看[这里](http://rookiefly.cn/detail/79)
@@ -128,7 +129,7 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
    - 通过*flower*监控节点健康状况：```flower -A tasks.workers --port=6666```
    (此处应有掌声)
  - 为了保证cookie的可用性，除了做定时登录以外，另外也从redis层面将cookie过期时间设置
- 为23小时，每次更新就重设过期时间
+ 为23小时，每次更新cookie就重设过期时间
 
 
 ## 其它说明
