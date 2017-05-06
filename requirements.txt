@@ -6,4 +6,5 @@ redis==2.10.5
 celery==4.0.2
 SQLAlchemy==1.1.9
 PyMySQL==0.7.11
+flower==0.9.1
 
