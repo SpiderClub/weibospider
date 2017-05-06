@@ -35,6 +35,7 @@ def _get_header(html):
 
 def get_verifytype(html):
     """
+    判断是否认证
     :param html:
     :return: 0表示未认证，1表示个人认证，2表示企业认证
     """
@@ -48,6 +49,12 @@ def get_verifytype(html):
 
 @parse_decorator(1)
 def get_verifyreason(html, verify_type):
+    """
+    获取具体认证信息
+    :param html:
+    :param verify_type: 认证类型
+    :return: 认证信息
+    """
     if verify_type == 1 or verify_type == 2:
         soup = BeautifulSoup(_get_header(html), 'html.parser')
         return soup.find(attrs={'class': 'pf_intro'})['title']
@@ -57,6 +64,11 @@ def get_verifyreason(html, verify_type):
 
 @parse_decorator(1)
 def get_headimg(html):
+    """
+    获取用户主页公共解析部分，上边页面
+    :param html: 
+    :return: 
+    """
     soup = BeautifulSoup(_get_header(html), 'html.parser')
     try:
         headimg = soup.find(attrs={'class': 'photo_wrap'}).find(attrs={'class': 'photo'})['src']
@@ -67,6 +79,9 @@ def get_headimg(html):
 
 @parse_decorator(1)
 def get_left(html):
+    """
+    获取公共解析部分，左边页面
+    """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
     pattern = re.compile(r'FM.view\((.*)\)')
@@ -93,6 +108,9 @@ def get_left(html):
 
 @parse_decorator(1)
 def get_right(html):
+    """
+    获取公共解析部分（右边页面）
+    """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
     pattern = re.compile(r'FM.view\((.*)\)')
@@ -122,6 +140,9 @@ def get_right(html):
 
 @parse_decorator(0)
 def get_level(html):
+    """
+    获取用户等级
+    """
     pattern = '<span>Lv.(.*?)<\\\/span>'
     rs = re.search(pattern, html)
     if rs:
@@ -133,8 +154,7 @@ def get_level(html):
 @parse_decorator(2)
 def get_fans_or_follows(html):
     """
-    :param: 关注或者粉丝页面
-    :return:urls表示获取的该页关注或者粉丝主页URL，cur_urls表示该用户所有能查看的页面URL,不包括当前页(一般只有五页)
+    获取用户粉丝或者关注的user id，返回一个列表
     """
     if html == '':
         return list()
@@ -164,6 +184,11 @@ def get_fans_or_follows(html):
 
 
 def get_max_crawl_pages(html):
+    """
+    获取用户粉丝或者关注最多爬取的页数
+    :param html: 
+    :return: 
+    """
     if html == '':
         return 1
 
