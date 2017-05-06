@@ -12,7 +12,7 @@
 ## 你可以用它来干嘛
 - 微博舆情分析，特别是**热门微博转发分析**
 - 微博数据分析，比如基于**微博用户信息**的分析
-- 作为自然语言处理的语料
+- 作为自然语言处理的**语料**
 - 该项目很适合**爬虫进阶学习**
 
 ## 为何选择本项目
@@ -93,51 +93,47 @@ dockerfile部署项目;讲解微博的反爬虫策略；讲解微博扩散信息
 修改（oracle=>mysql）或者稳定性测试，实现并且测试完成后会补充
 
 
-## 配置和使用
-- 由于高版本的celery不支持windows,所以务必在**类Unix系统**部署，如果需要在windows
+## 配置和使用 :sparkles:
+- 项目需要的Python解释器环境是Python3.x
+- 项目存储后端使用**mysql**，所以需要在存储服务器上安装mysql
+- 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
+需要使用broker和各个分布式节点通信，项目使用的是redis，所以需要先安装[redis](https://redis.io/download)。
+注意修改redis的配置文件让它能监听除本机外的别的节点的请求，建议给redis设置密码，如果没设置密码，需要关闭保护模式。
+- 由于高版本的celery不支持windows,所以请在**类Unix系统**部署。如果实在需要在windows
 上部署的话，可以把celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
 celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！
 所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**
-- 安装相关依赖```pip install -r requirements.txt```,cx_Oracle的安装可能会
-出问题，windows平台请看[这里](http://rookiefly.cn/detail/69)，linux平台请
-看[这里](http://rookiefly.cn/detail/79)
+- 安装相关依赖```pip install -r requirements.txt```
 
 - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
 - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
-- 入口文件
+- 入口文件：如果有同学有修改源码的需求，那么建议从入口文件开始阅读
  - [login.py](./tasks/login.py)和[login_first.py](login_first.py):微博登
  陆客户端程序
  - [user.py](./tasks/user.py):微博用户抓取程序
- - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):微
- 博程序
- - [search.py](./tasks/search.py):微博搜索程序
 
-
-- 微博登录和数据采集:采用celery来进行分布式任务调度
- - celery的broker和backend统一采用redis，分布式部署的时候需要关闭redis的保护
- 模式，或者为redis设置密码
- - 启动登录定时任务和worker节点进行登录,定时登录是为了维护cookie的时效性，据我实验，
- 微博的cookie有效时长为24小时。
-   - 切换到tasks目录，首先启动worker(在多个分布式节点启动，**分散登录地点**)：```celery
-   -A tasks.workers
-   worker --loglevel=info --concurrency=1```
-   - 第一次登陆微博的时候，为了让抓取任务能马上执行，需要在其中一个节点，切换到项目根目录执行```python
-   login_first.py```获取首次登陆的cookie
-   - 同理，第一次执行转发微博抓取，也需要执行```python repost_first.py```
-   - 在一个分布式节点上，切换到tasks目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：```
-   celery beat -A
-   tasks.workers -l info```
-   - 通过*flower*监控节点健康状况：```flower -A tasks.workers```，通过'http://localhost:5555'
-   访问节点信息
- - 为了保证cookie的可用性，除了做定时登录以外，另外也从redis层面将cookie过期时间设置
- 为23小时，每次更新cookie就重设过期时间
+- 微博登录和数据采集
+ - 下面说明该项目分布式抓取的基本用法:
+   - 项目使用了任务路由，在```tasks/workers```中可以查看所有的queue,所以需要在启动
+   worker的时候**指定节点的queue**,比如我的节点1需要做登录任务和用户信息抓取任务，那么我就
+   需要在节点1指定登录任务的queue```login_queue```和抓取用户信息的queue```user_crawler```,
+   这里启动worker的语句就应该是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1```,
+   该语句需要切换到项目根目录下执行。这里的节点1只会接收登录和抓取用户信息的任务，而抓取用户粉丝和关注的任务(*fans_followers*)是不会执行的。
+   相关知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)
+   - 如果是第一次运行该项目，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
+   login_first.py```**获取首次登陆的cookie**（它只会分发任务到指定了```login_queue```的节点上）
+   - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
+   ```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以通过```python login_first.py```来获取worker
+   首次运行需要的cookie是必须的
+   - 通过*flower*监控节点健康状况：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555'
+   访问所有节点信息，这里的```xxxx```指的是节点的IP
+ - 定时登录是为了维护cookie的时效性，据我实验，微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时。
+ - 为了保证cookie的可用性，除了做定时登录以外，另外也从redis层面将cookie过期时间设置为23小时，每次更新cookie就重设过期时间
 
 
 ## 其它说明
-- 建议使用linux或者mac作为worker节点，作者并未在win平台上做稳定性测试
-- [sql表](./config/sql/spider.sql)中关于weibo_sina_users和
-weibo_search_data有一些没有sql注释的列，是老项目使用API获取的，目前已无法获取，
-所以可根据自身需要删除或修改
+- 建议**使用linux或者mac**作为worker节点，windows平台也可以作为worker节点，**但是一定不能作为beat节点**。
+- 在运行项目之前，需要在数据库中建表，建表语句参见[sql表](./config/sql/spider.sql)，也需要**把自己的多个微博账号存入表(weibo.login_info)中**
 - 本项目目前默认采用单线程进行抓取，因为多线程和协程等方式抓取会极大增加封号的危险，只能
 在速度和稳定性之间进行取舍。可能在~~尝试代理IP有效性后~~弄清楚了微博的反爬虫策略后，会采
 用多线程(也可能采用非阻塞IO)。目前只能通过分布式的方式来提高抓取速度。
@@ -146,25 +142,6 @@ weibo_search_data有一些没有sql注释的列，是老项目使用API获取的
 开发教程。如果目前有什么问题，可以给该项目提issue,也可以加我微信交流，我的微信号是
 ```wpm_wx```，添加的时候请备注微博爬虫。
 - 如果试用了本项目，觉得项目还不错的，麻烦多多宣传啦，觉得项目太渣或是有一些好的想法，欢迎
-拍砖、吐槽或者提PR。随手点个```star```也是对本人工作的肯定和鼓励。送人玫瑰，手有余香:blush:。
+拍砖、吐槽或者提PR。随手点个```star```也是对本人工作的肯定和鼓励:kissing_heart:，作者也接受捐赠:laughing:。送人玫瑰，手有余香:blush:。
 
-## 本项目目前的一些数据可视化展示(使用的**d3.js**)（这部分代码目前还未实现，因为之前的数据可视化是一个队友做的，不方便开源她的代码）:
-
-对[某条指定微博](http://weibo.com/1973665271/E6HiqDiCg?refer_flag=1001030103_&type=comment#_rnd1473216182746)进行分析
-
-微博传播情况
-
-![微博扩散](./img/kuosan.png)
-
-转发该微博的用户性别比例
-
-![用户性别比例](./img/sex.png)
-
-转发该微博的时间
-
-![转发曲线](./img/reposttime.png)
-
-转发该微博的地域分析
-
-![转发地域](./img/diyu.png)
 
