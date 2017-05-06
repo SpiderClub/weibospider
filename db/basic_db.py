@@ -1,7 +1,4 @@
 # -*-coding:utf-8 -*-
-# 这两行用于指定在linux下面的数据库连接符编码方式
-import os
-import cx_Oracle
 import traceback
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,18 +8,12 @@ from contextlib import contextmanager
 from logger.log import storage
 
 
-os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
-
-
 def get_engine():
     args = get_db_args()
     connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(args['db_type'], args['user'], args['password'],
                                                              args['host'], args['port'], args['db_name'])
     engine = create_engine(connect_str, encoding="utf-8")
     return engine
-    dsn = cx_Oracle.makedsn(args['host'], args['port'], args['db_name'])
-    conn = cx_Oracle.connect(args['user'], str(args['password']), dsn)
-    return conn
 
 
 def db_close(con):
