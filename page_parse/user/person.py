@@ -70,11 +70,11 @@ def get_detail(html):
             if '基本信息' in basic_str:
                 for each in basic_info:
                     each_str = each.get_text()
-                    if '昵称' in each_str:
+                    if '昵称：' in each_str:
                         user.name = each.find(attrs={'class': 'pt_detail'}).get_text()
-                    elif '所在地' in each_str:
+                    elif '所在地：' in each_str:
                         user.location = each.find(attrs={'class': 'pt_detail'}).get_text()
-                    elif '性别' in each_str:
+                    elif '性别：' in each_str:
                         gender = each.find(attrs={'class': 'pt_detail'}).get_text()
                         if gender == '男':
                             user.gender = 1
@@ -82,26 +82,26 @@ def get_detail(html):
                             user.gender = 2
                         else:
                             user.gender = 0
-                    elif '生日' in each_str:
+                    elif '生日：' in each_str:
                         user.birthday = each.find(attrs={'class': 'pt_detail'}).get_text()
-                    elif '简介' in each_str:
+                    elif '简介：' in each_str:
                         description = each.find(attrs={'class': 'pt_detail'}).get_text()
                         user.description = description.encode('gbk', 'ignore').decode('gbk')
-                    elif '注册时间' in each_str:
+                    elif '注册时间：' in each_str:
                         user.register_time = each.find(attrs={'class': 'pt_detail'}).get_text().replace('\t', '').replace(
                             '\r\n', '')
 
             if '标签信息' in basic_str:
                 basic_info = each_module.find_all(attrs={'class': 'li_1 clearfix'})
                 for each in basic_info:
-                    if '标签' in each.get_text():
+                    if '标签：' in each.get_text():
                         user.tags = each.find(attrs={'class': 'pt_detail'}).get_text().replace('\t', '').replace(
                             '\n\n\n', '') .strip().replace('\r\n', ';')
 
             if '教育信息' in basic_str:
                 basic_info = each_module.find_all(attrs={'class': 'li_1 clearfix'})
                 for each in basic_info:
-                    if '大学' in each.get_text():
+                    if '大学：' in each.get_text():
                         user.education_info = each.find(attrs={'class': 'pt_detail'}).get_text().replace('\r\n', ',') \
                             .replace('\t', '').replace('\n', ';').lstrip(';').rstrip(';')
 
@@ -109,7 +109,7 @@ def get_detail(html):
                 basic_info = each_module.find_all(attrs={'class': 'li_1 clearfix'})
                 jobs_info = []
                 for each in basic_info:
-                    if '公司' in each.get_text():
+                    if '公司：' in each.get_text():
                         jobs = each.find_all(attrs={'class': 'pt_detail'})
                         for job in jobs:
                             jobs_info.append(job.get_text().replace('\r\n', '').replace('\t', '').replace('\n', ''))
@@ -119,12 +119,12 @@ def get_detail(html):
                 basic_info = each_module.find_all(attrs={'class': 'li_1 clearfix'})
                 contact_info = []
                 for each in basic_info:
-                    if 'QQ' in each.get_text():
+                    if 'QQ：' in each.get_text():
                         contact_info.append(
                             'qq:' + each.find(attrs={'class': 'pt_detail'}).get_text().replace('\n', ''))
-                    if '邮箱' in each.get_text():
+                    if '邮箱：' in each.get_text():
                         contact_info.append('email:' + each.find(attrs={'class': 'pt_detail'}).get_text())
-                    if 'MSN' in each.get_text():
+                    if 'MSN：' in each.get_text():
                         contact_info.append('msn:' + each.find(attrs={'class': 'pt_detail'}).get_text())
                 user.contact_info = ';'.join(contact_info)
         except Exception as why:
