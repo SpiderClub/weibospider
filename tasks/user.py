@@ -1,9 +1,10 @@
+# coding:utf-8
 from tasks.workers import app
 from page_get import user as user_get
 from db.seed_ids import get_seed_ids, get_seed_by_id, insert_seeds, set_seed_other_crawled
 
 
-@app.task
+@app.task(ignore_result=True)
 def crawl_follower_fans(uid):
     seed = get_seed_by_id(uid)
     if seed.other_crawled == 0:
@@ -16,7 +17,7 @@ def crawl_follower_fans(uid):
         set_seed_other_crawled(uid)
 
 
-@app.task
+@app.task(ignore_result=True)
 def crawl_person_infos(uid):
     """
     根据用户id来爬取用户相关资料和用户的关注数和粉丝数（由于微博服务端限制，默认爬取前五页，企业号的关注和粉丝也不能查看）
@@ -37,7 +38,7 @@ def crawl_person_infos(uid):
                   routing_key='for_fans_followers')
 
 
-@app.task
+@app.task(ignore_result=True)
 def excute_user_task():
     seeds = get_seed_ids()
     if seeds:

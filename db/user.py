@@ -1,3 +1,4 @@
+# coding:utf-8
 from db.basic_db import db_session
 from db.models import User
 
