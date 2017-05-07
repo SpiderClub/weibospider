@@ -2,7 +2,6 @@
 time_out: 200   # 设置抓取和存储一个用户资料超时时间
 crawl_interal: 4 # 页面请求间隔
 excp_interal: 5*60 # 请求异常的时候睡眠的时间
-count: 0  # 计数器，每次抓取一个url则进行一次计数
 max_page: 30  # 转发信息最多抓取多少页
 max_retries: 5 # 抓取失败重试次数
 
