@@ -130,9 +130,11 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
    - 项目使用了任务路由，在```tasks/workers```中可以查看所有的queue,所以需要在启动
    worker的时候**指定节点的queue**,比如我的节点1需要做登录任务和用户信息抓取任务，那么我就
    需要在节点1指定登录任务的queue```login_queue```和抓取用户信息的queue```user_crawler```,
-   这里启动worker的语句就应该是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1```,
+   这里启动worker的语句就应该是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1 -Ofair```。
+   这句话的各个参数的意思为：```-A```指定celery app为```tasks.workers```, ```-Q```指定节点1能接受的任务队列是```login_queue```和```user_crawler```，
+   ```-l```表示的是日志等级，```--concurrency```是worker的线程数，这里规定为1，```-Ofair```是避免让celery发生死锁
    该语句需要切换到项目根目录下执行。这里的节点1只会接收登录和抓取用户信息的任务，而抓取用户粉丝和关注的任务(*fans_followers*)是不会执行的。
-   相关知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)
+   更为详细的知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)
    - 如果是第一次运行该项目，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
    login_first.py```**获取首次登陆的cookie**（它只会分发任务到指定了```login_queue```的节点上）
    - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
