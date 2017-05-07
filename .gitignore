@@ -3,3 +3,4 @@ test.py
 .idea
 __pycache__/
 logs/weibo.log
+celerybeat-schedule.db
