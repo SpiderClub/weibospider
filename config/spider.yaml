@@ -1,5 +1,6 @@
+# coding:utf-8
 time_out: 200   # 设置抓取和存储一个用户资料超时时间
-crawl_interal: 5 # 页面请求间隔
+crawl_interal: 4 # 页面请求间隔
 excp_interal: 5*60 # 请求异常的时候睡眠的时间
 count: 0  # 计数器，每次抓取一个url则进行一次计数
 max_page: 30  # 转发信息最多抓取多少页
@@ -18,6 +19,7 @@ db:
 redis:
     host: 223.129.0.190
     port: 6379
+    password: ''
     cookies: 1
     urls: 2
 
