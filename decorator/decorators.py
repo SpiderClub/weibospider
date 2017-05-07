@@ -1,7 +1,8 @@
 # -*-coding:utf-8 -*-
 from functools import wraps
 from traceback import format_tb
-from logger.log import parser, crawler
+from db.basic_db import db_session
+from logger.log import parser, crawler, storage
 from utils.util_cls import Timeout, KThread
 
 
@@ -17,6 +18,17 @@ def timeout_decorator(func):
             return ''
 
     return time_limit
+
+
+def db_commit_decorator(func):
+    @wraps(func)
+    def session_commit(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as e:
+            storage.error('数据库操作失败，具体信息是{}'.format(e))
+            db_session.rollback()
+        return session_commit
 
 
 def parse_decorator(return_type):

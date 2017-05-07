@@ -154,8 +154,6 @@ def get_current_reposts(url, weibo_mid):
     weibosearch_dao.update_weibo_url(weibo_mid, 1)
 
 
-# todo 添加为定时任务，但是要考虑到在上一次get_all()执行完了才执行下一次的get_all;验证如果并发数为1，是否就会依次执行？
-# todo 如何判断一轮任务已经完成？根据一轮任务完成时间，定义一个间隔执行第二轮任务？如何让该函数阻塞执行？
 @app.task
 def excute_repost_task():
     datas = weibosearch_dao.get_crawl_urls()

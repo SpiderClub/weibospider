@@ -2,12 +2,14 @@
 from sqlalchemy import text
 from db.basic_db import db_session
 from db.models import SeedIds
+from decorator.decorators import db_commit_decorator
 
 
 def get_seed_ids():
     return db_session.query(SeedIds.uid).filter(text('is_crawled=0')).all()
 
 
+@db_commit_decorator
 def set_seed_crawled(uid, result):
     """
     该表适用于用户抓取相关逻辑
@@ -29,12 +31,14 @@ def get_seed_by_id(uid):
     return db_session.query(SeedIds).filter(SeedIds.uid == uid).first()
 
 
+@db_commit_decorator
 def insert_seeds(ids):
     # 批量插入，遇到重复则跳过
     db_session.execute(SeedIds.__table__.insert().prefix_with('IGNORE'), [{'uid': i} for i in ids])
     db_session.commit()
 
 
+@db_commit_decorator
 def set_seed_other_crawled(uid):
     """
     存在则更新，不存在则插入
