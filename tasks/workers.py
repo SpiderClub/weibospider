@@ -1,12 +1,30 @@
+# coding:utf-8
+from datetime import timedelta
 from celery import Celery
 from kombu import Exchange, Queue
 from config.conf import get_backend, get_brocker
 
 
-# todo 为不同任务设置任务路由
 # include的作用就是注册服务化函数
 app = Celery('weibo_task', include=['tasks.login', 'tasks.user'], broker=get_brocker(),
              backend=get_backend())
+
+
+app.conf.beat_schedule = {
+    'user_task': {
+        'task': 'tasks.user.excute_user_task',
+        'schedule': timedelta(minutes=3),
+    },
+    'login_task': {
+        'task': 'tasks.login.excute_login_task',
+        'schedule': timedelta(hours=10),
+    },
+    # 'repost_task': {
+    #     'task': 'tasks.repost.excute_repost_task',
+    #     'schedule': 60*60*2.0,
+    # },
+}
+
 
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
@@ -22,17 +40,3 @@ app.conf.update(
 )
 
 
-app.conf.CELERYBEAT_SCHEDULE = {
-    'login_task': {
-        'task': 'tasks.login.excute_login_task',
-        'schedule': 60*60*10.0,
-    },
-    'user_task': {
-        'task': 'tasks.user.excute_user_task',
-        'schedule': 60.0 * 3
-    },
-    # 'repost_task': {
-    #     'task': 'tasks.repost.excute_repost_task',
-    #     'schedule': 60*60*2.0,
-    # },
-}
