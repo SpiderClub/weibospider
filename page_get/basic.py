@@ -1,4 +1,5 @@
 # coding:utf-8
+import os
 import sys
 import time
 import requests
@@ -43,9 +44,11 @@ def get_page(url, user_verify=True, need_login=True):
             if name_cookies is None:
                 crawler.warning('cookie池中不存在cookie，正在检查是否有可用账号')
                 rs = get_login_info()
+
                 if len(rs) == 0:
-                    crawler.error('账号均不可用，请检查账号健康状况')
-                    sys.exit(-1)
+                    crawler.error('账q号均不可用，请检查账号健康状况')
+                    # 杀死所有关于celery的进程
+                    os.popen('pkill -f "celery"')
                 else:
                     # 如果有可用账号，那么就拿来登录
                     crawler.info('重新获取cookie中...')
