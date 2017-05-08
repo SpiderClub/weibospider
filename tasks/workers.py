@@ -1,4 +1,5 @@
 # coding:utf-8
+import os
 from datetime import timedelta
 from celery import Celery
 from kombu import Exchange, Queue
@@ -8,6 +9,8 @@ from celery import platforms
 # 允许celery以root身份启动
 platforms.C_FORCE_ROOT = True
 
+worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'celery.log')
+beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'beat.log')
 
 # include的作用就是注册服务化函数
 app = Celery('weibo_task', include=['tasks.login', 'tasks.user'], broker=get_brocker(),
@@ -17,6 +20,8 @@ app = Celery('weibo_task', include=['tasks.login', 'tasks.user'], broker=get_bro
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
     CELERY_ENABLE_UTC=True,
+    CELERYD_LOG_FILE=worker_log_path,
+    CELERYBEAT_LOG_FILE=beat_log_path,
     CELERY_ACCEPT_CONTENT=['json'],
     CELERY_TASK_SERIALIZER='json',
     CELERY_RESULT_SERIALIZER='json',
