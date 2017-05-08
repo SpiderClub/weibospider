@@ -28,7 +28,7 @@ def db_commit_decorator(func):
         except Exception as e:
             storage.error('数据库操作失败，具体信息是{}'.format(e))
             db_session.rollback()
-        return session_commit
+    return session_commit
 
 
 def parse_decorator(return_type):
