@@ -34,7 +34,7 @@ app.conf.update(
         'login_task': {
             'task': 'tasks.login.excute_login_task',
             'schedule': timedelta(hours=10),
-            'options': {'queue': 'fans_followers', 'routing_key': 'for_fans_follwers'}
+            'options': {'queue': 'login_queue', 'routing_key': 'for_login'}
         },
     },
     CELERY_QUEUES=(
