@@ -48,7 +48,10 @@ def get_page(url, user_verify=True, need_login=True):
                 if len(rs) == 0:
                     crawler.error('账q号均不可用，请检查账号健康状况')
                     # 杀死所有关于celery的进程
-                    os.popen('pkill -f "celery"')
+                    if 'win32' in sys.platform:
+                        os.popen('taskkill /F /IM "celery*"')
+                    else:
+                        os.popen('pkill -f "celery"')
                 else:
                     # 如果有可用账号，那么就拿来登录
                     crawler.info('重新获取cookie中...')
