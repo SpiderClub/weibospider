@@ -1,5 +1,6 @@
 # coding:utf-8
 import os
+import random
 from yaml import load
 
 config_path = os.path.join(os.path.dirname(__file__), 'spider.yaml')
@@ -24,7 +25,8 @@ def get_timeout():
 
 
 def get_crawl_interal():
-    return cf.get('crawl_interal')
+    interal = random.randint(cf.get('min_crawl_interal'), cf.get('max_crawl_interal'))
+    return interal
 
 
 def get_excp_interal():
