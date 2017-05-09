@@ -112,7 +112,8 @@ dockerfile部署项目;讲解微博的反爬虫策略；讲解微博扩散信息
 - 项目存储后端使用**mysql**，所以需要在存储服务器上安装mysql
 - 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
 需要使用broker和各个分布式节点通信，项目使用的是redis，所以需要先安装[redis](https://redis.io/download)。
-注意修改redis的配置文件让它能监听除本机外的别的节点的请求，建议给redis设置密码，如果没设置密码，需要关闭保护模式。
+注意修改redis的配置文件让它能监听除本机外的别的节点的请求，**建议给redis设置密码**，如
+果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。
 - 由于高版本的celery不支持windows,所以请在**类Unix系统**部署。如果实在需要在windows
 上部署的话，可以把celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
 celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！
