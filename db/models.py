@@ -4,6 +4,7 @@ from db.basic_db import Base
 
 
 class LoginInfo(Base):
+    # 登录账号表
     __tablename__ = 'login_info'
     id = Column(INTEGER, primary_key=True, autoincrement=True)
     name = Column(String(100))
@@ -12,6 +13,7 @@ class LoginInfo(Base):
 
 
 class User(Base):
+    # 用户表
     __tablename__ = 'wbuser'
     # 这里需要设置默认值，否则空的话可能会存储None，可能会引发未catch的异常
     id = Column(INTEGER, primary_key=True, autoincrement=True)
@@ -36,8 +38,17 @@ class User(Base):
 
 
 class SeedIds(Base):
+    # 种子用户表
     __tablename__ = 'seed_ids'
     id = Column(INTEGER, primary_key=True, autoincrement=True)
     uid = Column(String, unique=True)
     is_crawled = Column(INTEGER, default=0)
     other_crawled = Column(INTEGER, default=0)
+
+
+class KeyWords(Base):
+    # 关键词搜索表
+    __tablename__ = 'keywords'
+    id = Column(INTEGER, primary_key=True, autoincrement=True)
+    keyword = Column(String, unique=True)
+    enable = Column(INTEGER, default=1)
