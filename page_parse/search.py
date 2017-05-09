@@ -1,5 +1,4 @@
 # -*-coding:utf-8 -*-
-# 微博搜索页
 import re
 from bs4 import BeautifulSoup
 from decorator.decorators import parse_decorator
@@ -27,6 +26,8 @@ def _search_page_parse(html):
 @parse_decorator(5)
 def get_search_info(html):
     content = _search_page_parse(html)
+    if content == '':
+        return list()
     soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     user_pattern = r'id=(\d+)&u'
