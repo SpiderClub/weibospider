@@ -49,12 +49,15 @@ def get_url_from_web(user_id):
     if not is_404(html):
         domain = public.get_userdomain(html)
 
-        if domain == '103505' or domain == '100306' or domain == '100206':
+        # 作家
+        if domain == '103505' or domain == '100306':
             url = base_url.format(domain, user_id)
             html = get_page(url)
             user = get_user_detail(user_id, html)
+        # 普通用户
         elif domain == '100505':
             user = get_user_detail(user_id, html)
+        # 默认是企业
         else:
             user = get_enterprise_detail(user_id, html)
 
