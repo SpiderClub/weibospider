@@ -49,7 +49,7 @@ def get_url_from_web(user_id):
     if not is_404(html):
         domain = public.get_userdomain(html)
 
-        if domain == '103505' or domain == '100306':
+        if domain == '103505' or domain == '100306' or domain == '100206':
             url = base_url.format(domain, user_id)
             html = get_page(url)
             user = get_user_detail(user_id, html)
