@@ -33,8 +33,12 @@ def get_excp_interal():
     return cf.get('excp_interal')
 
 
-def get_max_page():
-    return cf.get('max_page')
+def get_max_repost_page():
+    return cf.get('max_repost_page')
+
+
+def get_max_search_page():
+    return cf.get('max_search_page')
 
 
 def get_max_retries():

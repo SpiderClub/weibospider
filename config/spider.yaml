@@ -3,7 +3,8 @@ time_out: 200   # 设置抓取和存储一个用户资料超时时间
 min_crawl_interal: 15 # 页面请求最小间隔
 max_crawl_interal: 18 # 页面请求最大间隔
 excp_interal: 5*60 # 请求异常的时候睡眠的时间
-max_page: 30  # 转发信息最多抓取多少页
+max_repost_page: 30  # 转发信息最多抓取多少页
+max_search_page: 30 # 搜索最多抓多少页
 max_retries: 5 # 抓取失败重试次数
 
 
