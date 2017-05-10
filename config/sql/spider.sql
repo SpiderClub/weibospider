@@ -59,6 +59,20 @@ create table weibo.wbuser
 comment '微博用户表'
 ;
 
+create table weibo.keywords
+(
+	id int not null auto_increment
+		primary key,
+	keyword varchar(200) not null comment '搜索关键词',
+	enable int default '1' null comment '搜索关键词是否需要使用',
+	constraint keywords_id_uindex
+		unique (id),
+	constraint keywords_keyword_uindex
+		unique (keyword)
+)
+comment '搜索关键词表'
+;
+
 
 
 
