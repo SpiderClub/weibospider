@@ -74,6 +74,42 @@ comment '搜索关键词表'
 ;
 
 
+create table weibo.keywords_wbdata
+(
+	id int not null auto_increment
+		primary key,
+	keyword_id int null comment '关键词主键id',
+	wb_id varchar(200) null comment '微博id，注意不是微博数据表主键id',
+	constraint keywords_wbcont_id_uindex
+		unique (id)
+)
+;
+
+create table weibo.weibo_data
+(
+	id int not null auto_increment comment '主键id'
+		primary key,
+	weibo_id varchar(200) not null comment '微博id',
+	weibo_cont varchar(6000) null,
+	repost_num int default '0' null comment '转发数',
+	comment_num int default '0' null comment '评论数',
+	praise_num int default '0' null comment '点赞数',
+	uid varchar(20) not null comment '该微博用户id',
+	is_origin int default '1' null comment '是否是源微博，1 是源微博，0 是转发微博',
+	device varchar(200) default '' null comment '微博发布设备',
+	weibo_url varchar(300) not null comment '微博url',
+	create_time varchar(200) null comment '微博创建时间',
+	constraint weibo_data_id_uindex
+		unique (id),
+	constraint weibo_data_weibo_id_uindex
+		unique (weibo_id)
+)
+;
+
+create index weibo_data_weibo_id_index
+	on weibo_data (weibo_id)
+;
+
 
 
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2891529877', 0, 0);
