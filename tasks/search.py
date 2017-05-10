@@ -6,10 +6,10 @@ from tasks.workers import app
 from config.conf import get_max_search_page
 from page_get.basic import get_page
 from db.search_words import get_search_keywords
-from db.weibosearch_dao import add_search_cont
+from db.wb_data import insert_weibo_datas
 
 
-# 只抓取原创微博，默认是按照时间进行排序
+# 只抓取原创微博，默认是按照时间进行排序，如果只抓首页，那么就不需要登录
 url = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
 limit = get_max_search_page() + 1
 
@@ -28,7 +28,7 @@ def search_one(keyword):
 
             if search_list:
                 # todo 该函数插入之前，先判断数据库里是否存在相关的微博，如果有，那就说明是已经抓取的微博，就退出循环
-                add_search_cont(search_list)
+                insert_weibo_datas(search_list)
 
             # 判断是否包含下一页
             if 'page next S_txt1 S_line1' in search_page:

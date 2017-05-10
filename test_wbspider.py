@@ -1,3 +1,4 @@
+# coding:utf-8
 import unittest
 
 
@@ -6,7 +7,7 @@ class TestWeiboSpider(unittest.TestCase):
     def test_get_login_info(self):
         from db import login_info
         infos = login_info.get_login_info()
-        self.assertEquals(len(infos), 8)
+        self.assertEquals(len(infos), 5)
 
     def test_login(self):
         """
@@ -16,6 +17,9 @@ class TestWeiboSpider(unittest.TestCase):
         from wblogin.login import get_session
         from db.login_info import get_login_info
         infos = get_login_info()
+        if not infos:
+            raise Exception('未获取到登陆信息')
+
         info = random.choice(infos)
         sc = get_session(info.name, info.password)
 
@@ -64,10 +68,14 @@ class TestWeiboSpider(unittest.TestCase):
         user.verify_type = public.get_verifytype(cont)
         self.assertEqual(user.verify_type, 1)
         self.assertEqual(user.description, '韩寒')
-        with open('./tests/person.html') as f:
+        with open('./tests/person.html', encoding='utf-8') as f:
             cont = f.read()
         user = get_user_detail('222333312', cont)
         self.assertEqual(user.follows_num, 539)
+        with open('./tests/excp.html', encoding='utf-8') as f:
+            cont = f.read()
+        user = get_user_detail('1854706423', cont)
+        self.assertEqual(user.birthday, '1988年2月21日')
 
     def test_get_url_from_web(self):
         """
@@ -102,10 +110,42 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_crawl_person_infos(self):
         """
-        测试
+        测试用户信息抓取
         """
         from tasks.user import crawl_person_infos
         crawl_person_infos('2041028560')
+
+    def test_get_search_info(self):
+        """
+        测试微博搜索结果页面解析功能
+        :return: 
+        """
+        from page_parse import search
+        with open('tests/search.html', encoding='utf-8') as f:
+            cont = f.read()
+        infos = search.get_search_info(cont)
+        self.assertEqual(len(infos), 20)
+
+    def test_get_keyword(self):
+        """
+        获取搜索关键词
+        :return: 
+        """
+        from db.search_words import get_search_keywords
+        rs = get_search_keywords()
+        self.assertEqual(len(rs), 5)
+
+    def test_add_search_cont(self):
+        """
+        测试批量添加微博信息
+        :return: 
+        """
+        from db.wb_data import insert_weibo_datas
+        from page_parse import search
+        with open('tests/search.html', encoding='utf-8') as f:
+            cont = f.read()
+        infos = search.get_search_info(cont)
+        insert_weibo_datas(infos)
 
 if __name__ == '__main__':
     unittest.main()
