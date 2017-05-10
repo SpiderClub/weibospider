@@ -1,4 +1,4 @@
-## 关于本项目
+## 关于本项目 :octocat:
 - 分布式微博爬虫,为微博数据抓取而生
 - 欲实现内容包括用户信息、微博信息、微博搜索、微博评论和微博转发关系抓取等
 - 该项目本来是我们项目组的一个子模块，作用是舆情分析。整个系统比较庞大，我只能开源自己写
@@ -30,7 +30,7 @@
 - 由于本项目与本人实际工作挂钩，所以可以放心它会长期更新。目前已经迭代近一年了。
 
 
-## TODO
+## TODO :dart:
 - 微博内容抓取相关
   - [x] 模拟登陆
   - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取
@@ -68,7 +68,7 @@
   - [ ] 可视化展示某条微博具体传播信息，微博用户信息等。这个优先级会比较低，目前重点
     解决数据抓取和复杂页面解析的问题
 
-## 项目结构
+## 项目结构 :bell:
 
 - 功能模块
  - 微博模拟登陆任务[login.py](./tasks/login.py)和[login_first.py](login_first.py)
@@ -230,11 +230,13 @@ bs的解析速度也不算慢了。
 作者也接受捐赠:laughing:。送人玫瑰，手有余香:blush:。
 
 
-## 赞助本项目
+## 赞助本项目:thumbsup:
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 - [捐赠记录](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 
-## 致谢
+如果本项目对你有用，欢迎对本项目进行捐赠，捐赠时候请留下你的```github ID```，当然您也可以匿名捐赠。
+
+## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢网友 李* 热心测试和提供建议
