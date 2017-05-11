@@ -2,5 +2,5 @@
 test.py
 .idea
 __pycache__/
-logs/weibo.log
+logs
 celerybeat-schedule.db

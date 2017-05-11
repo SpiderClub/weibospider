@@ -23,7 +23,6 @@ def _search_page_parse(html):
             m2 = pattern2.search(search_cont)
             if m2:
                 return m2.group(1).encode('utf-8', 'ignore').decode('unicode-escape', 'ignore').replace('\\', '')
-    print('未匹配到相关内容')
     return ''
 
 
@@ -50,7 +49,8 @@ def get_weibo_info(each, html):
         try:
             wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
         except Exception as e:
-            parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
+            #parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
+            return None
 
         try:
             feed_action = each.find(attrs={'class': 'feed_action'})
@@ -100,7 +100,9 @@ def get_search_info(html):
     if content == '':
         return list()
 
+    # todo 这里用bs会导致某些信息不能被解析（参考../tests/fail.html），可参考使用xpath，考虑到成本，暂时不实现
     soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
+
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     search_list = []
     for each in feed_list:
