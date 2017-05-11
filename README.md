@@ -232,9 +232,11 @@ bs的解析速度也不算慢了。
 
 ## 如何贡献
 - 如果遇到使用中有什么问题，可以在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提出来
-- 代码中如果有逻辑不合理或者内容不完善的地方，可以fork后进行修改，然后提PR，如果一经采纳，就会将你加入[contributors](https://github.com/ResolveWang/WeiboSpider/graphs/contributors)
+- 代码中如果有逻辑不合理或者内容不完善的地方，可以fork后进行修改，然后Pull Request，如果一经采纳，就会将你加入[contributors](https://github.com/ResolveWang/WeiboSpider/graphs/contributors)
 - 欢迎在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提有意义的future
 - 希望有仔细研究过微博反爬虫策略的同学积极提建议
+
+点击查看[贡献者名单](https://github.com/ResolveWang/WeiboSpider/wiki/%E8%B4%A1%E7%8C%AE%E8%80%85%E5%90%8D%E5%8D%95)
 
 ## 赞助本项目:thumbsup:
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
