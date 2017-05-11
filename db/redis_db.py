@@ -22,7 +22,7 @@ class Cookies(object):
     def fetch_cookies(cls):
         random_name = cls.rd_con.randomkey()
         if random_name:
-            return random_name, json.loads(cls.rd_con.get(random_name).decode('utf-8'))
+            return random_name.decode('utf-8'), json.loads(cls.rd_con.get(random_name).decode('utf-8'))
         else:
             return None
 
