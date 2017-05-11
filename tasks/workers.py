@@ -13,7 +13,7 @@ worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs
 beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'beat.log')
 
 # include的作用就是注册服务化函数
-app = Celery('weibo_task', include=['tasks.login', 'tasks.user'], broker=get_brocker(),
+app = Celery('weibo_task', include=['tasks.login', 'tasks.user', 'tasks.search'], broker=get_brocker(),
              backend=get_backend())
 
 
@@ -31,6 +31,11 @@ app.conf.update(
             'schedule': timedelta(minutes=3),
             'options': {'queue': 'user_crawler', 'routing_key': 'for_user_info'}
         },
+        'search_task': {
+            'task': 'tasks.search.excute_search_task',
+            'schedule': timedelta(hours=2),
+            'options': {'queue': 'search_crawler', 'routing_key': 'for_search_info'}
+        },
         'login_task': {
             'task': 'tasks.login.excute_login_task',
             'schedule': timedelta(hours=10),
@@ -40,6 +45,7 @@ app.conf.update(
     CELERY_QUEUES=(
         Queue('login_queue', exchange=Exchange('login', type='direct'), routing_key='for_login'),
         Queue('user_crawler', exchange=Exchange('user_info', type='direct'), routing_key='for_user_info'),
+        Queue('search_crawler', exchange=Exchange('search_info', type='direct'), routing_key='for_search_info'),
         Queue('fans_followers', exchange=Exchange('fans_followers', type='direct'), routing_key='for_fans_followers')
     )
 )
