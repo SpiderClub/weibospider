@@ -51,6 +51,5 @@ def excute_search_task():
     # keyword应该从数据库中读取出来
     keywords = get_search_keywords()
     for each in keywords:
-        print(each[0])
         app.send_task('tasks.search.search_keyword', args=(each[0],), queue='search_crawler',
                       routing_key='for_search_info')

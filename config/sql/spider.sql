@@ -125,3 +125,14 @@ INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1758453771'
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('2041028560', 0, 0);
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1191258123', 0, 0);
 INSERT INTO weibo.seed_ids (uid, is_crawled, other_crawled) VALUES ('1839256234', 0, 0);
+
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('择天记', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('胡歌客串', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('奶茶妹', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('火影', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('跑男', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('马云', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('腾讯', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('互联网安全', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('锤子手机', 1);
+INSERT INTO weibo.keywords (keyword, enable) VALUES ('外星人', 1);
