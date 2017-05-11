@@ -16,12 +16,14 @@ def _search_page_parse(html):
     pattern = re.compile(r'view\((.*)\)')
     for script in scripts:
         m = pattern.search(str(script))
+        # 这个判断不全面，对于json编码的可以成功，对于直接返回的不会成功
         if m and 'pl_weibo_direct' in script.string and 'S_txt1' in script.string:
             search_cont = m.group(1)
             pattern2 = re.compile(r'"html":"(.*)"}$')
             m2 = pattern2.search(search_cont)
             if m2:
                 return m2.group(1).encode('utf-8', 'ignore').decode('unicode-escape', 'ignore').replace('\\', '')
+    print('未匹配到相关内容')
     return ''
 
 
@@ -35,7 +37,7 @@ def get_weibo_info(each, html):
             m = re.match(user_pattern, user_info.img.get('usercard'))
 
             if m:
-                wb_data.user_id = m.group(1)
+                wb_data.uid = m.group(1)
             else:
                 parser.warning('未提取到用户id,页面源码是{}'.format(html))
                 return None
@@ -91,14 +93,14 @@ def get_search_info(html):
     :param html: 
     :return: 
     """
-    content = _search_page_parse(html)
+    # 搜索结果可能有两种方式，一种是直接返回的，一种是编码过后的
+    content = _search_page_parse(html) if '举报' not in html else html
 
     if content == '':
         return list()
 
     soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
-
     search_list = []
     for each in feed_list:
         wb_data = get_weibo_info(each, html)
