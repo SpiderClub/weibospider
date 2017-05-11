@@ -40,13 +40,13 @@ def get_page(url, user_verify=True, need_login=True):
         if need_login:
             # 每次重试的时候都换cookies,并且和上次不同
             name_cookies = Cookies.fetch_cookies()
-
+            
             if name_cookies is None:
                 crawler.warning('cookie池中不存在cookie，正在检查是否有可用账号')
                 rs = get_login_info()
 
                 if len(rs) == 0:
-                    crawler.error('账q号均不可用，请检查账号健康状况')
+                    crawler.error('账号均不可用，请检查账号健康状况')
                     # 杀死所有关于celery的进程
                     if 'win32' in sys.platform:
                         os.popen('taskkill /F /IM "celery*"')
@@ -66,8 +66,18 @@ def get_page(url, user_verify=True, need_login=True):
         try:
             if need_login:
                 resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=time_out, verify=False)
+
+                if "$CONFIG['islogin'] = '0'" in resp.text:
+                    crawler.warning('账号{}出现异常'.format(name_cookies[0]))
+                    freeze_account(name_cookies[0])
+                    Cookies.delete_cookies(name_cookies[0])
+                    continue
+
+                print('本次取得的账号是{}'.format(name_cookies[0]))
+
             else:
                 resp = requests.get(url, headers=headers, timeout=time_out, verify=False)
+
             page = resp.text
             if page:
                 page = page.encode('utf-8', 'ignore').decode('utf-8')
