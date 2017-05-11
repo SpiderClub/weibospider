@@ -72,9 +72,6 @@ def get_page(url, user_verify=True, need_login=True):
                     freeze_account(name_cookies[0])
                     Cookies.delete_cookies(name_cookies[0])
                     continue
-
-                print('本次取得的账号是{}'.format(name_cookies[0]))
-
             else:
                 resp = requests.get(url, headers=headers, timeout=time_out, verify=False)
 

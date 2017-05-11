@@ -47,19 +47,20 @@ def get_weibo_info(each, html):
             return None
 
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
-        wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
+        try:
+            wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
+        except Exception as e:
+            parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
 
-        feed_action = None
         try:
             feed_action = each.find(attrs={'class': 'feed_action'})
             wb_data.create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['title']
-            device_info = each.find(attrs={'rel': 'nofollow'})
-            wb_data.device = device_info.text if device_info else ''
+
         except Exception as why:
             parser.error('解析feed_action出错,出错原因:{},页面源码是{}'.format(why, html))
             wb_data.device = ''
 
-        if feed_action:
+        else:
             try:
                 wb_data.repost_num = int(feed_action.find(attrs={'action-type': 'feed_list_forward'}).find('em').text)
             except (AttributeError, ValueError):

@@ -124,8 +124,7 @@ class TestWeiboSpider(unittest.TestCase):
         with open('tests/search.html', encoding='utf-8') as f:
             cont = f.read()
         infos = search.get_search_info(cont)
-        for info in infos:
-            print(info.__dict__)
+
         self.assertEqual(len(infos), 20)
 
     def test_get_keyword(self):
