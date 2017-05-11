@@ -13,7 +13,7 @@ url = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
 limit = get_max_search_page() + 1
 
 
-@app.task
+@app.task(ignore_result=True)
 def search_keyword(keyword):
     cur_page = 1
     encode_keyword = url_parse.quote(keyword)
@@ -46,9 +46,11 @@ def search_keyword(keyword):
             return
 
 
-@app.task
+@app.task(ignore_result=True)
 def excute_search_task():
     # keyword应该从数据库中读取出来
     keywords = get_search_keywords()
     for each in keywords:
-        app.send_task('tasks.user.search_keyword', args=(each,), queue='search_crawler', routing_key='for_search_info')
+        print(each[0])
+        app.send_task('tasks.search.search_keyword', args=(each[0],), queue='search_crawler',
+                      routing_key='for_search_info')
