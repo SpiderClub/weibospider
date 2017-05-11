@@ -124,6 +124,8 @@ class TestWeiboSpider(unittest.TestCase):
         with open('tests/search.html', encoding='utf-8') as f:
             cont = f.read()
         infos = search.get_search_info(cont)
+        for info in infos:
+            print(info.__dict__)
         self.assertEqual(len(infos), 20)
 
     def test_get_keyword(self):
@@ -146,6 +148,14 @@ class TestWeiboSpider(unittest.TestCase):
             cont = f.read()
         infos = search.get_search_info(cont)
         insert_weibo_datas(infos)
+
+    def test_search_keyword(self):
+        """
+        测试搜索功能
+        :return: 
+        """
+        from tasks.search import search_keyword
+        search_keyword('陈羽凡公司发文')
 
 if __name__ == '__main__':
     unittest.main()
