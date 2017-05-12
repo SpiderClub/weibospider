@@ -4,7 +4,7 @@ import re
 import json
 from bs4 import BeautifulSoup
 from page_parse import status
-from decorator.decorators import parse_decorator
+from decorators.decorator import parse_decorator
 
 
 def get_userid(html):
@@ -109,7 +109,7 @@ def get_left(html):
 @parse_decorator(1)
 def get_right(html):
     """
-    获取公共解析部分（右边页面）
+    获取公共解析部分（右边页面，用户详细资料部分）
     """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -121,7 +121,9 @@ def get_right(html):
         m = pattern.search(script.string)
         if m and 'WB_frame_c' in script.string:
             all_info = m.group(1)
-            cont = json.loads(all_info)['html']
+            cont = json.loads(all_info).get('html', '')
+            if not cont:
+                return ''
             rsoup = BeautifulSoup(cont, 'html.parser')
             r_ids = rsoup.find(attrs={'class': 'WB_frame_c'}).find_all('div')
             for r in r_ids:
@@ -131,10 +133,8 @@ def get_right(html):
             m = pattern.search(script.string)
             if m and r_id in script.string:
                 all_info = m.group(1)
-                try:
-                    cont += json.loads(all_info)['html']
-                except KeyError:
-                    return ''
+                cont += json.loads(all_info).get('html', '')
+
     return cont
 
 

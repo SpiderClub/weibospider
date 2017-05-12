@@ -3,7 +3,7 @@
 import re
 import json
 from bs4 import BeautifulSoup
-from decorator.decorators import parse_decorator
+from decorators.decorator import parse_decorator
 from logger.log import parser
 
 
@@ -43,6 +43,7 @@ def _get_statushtml(html):
             m = pattern.search(script.string)
             if m and 'pl.content.weiboDetail.index' in script.string:
                 all_info = m.group(1)
+                # TODO 留意这里可能发生异常
                 cont = json.loads(all_info)['html']
         except TypeError:
             return ''

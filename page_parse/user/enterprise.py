@@ -4,7 +4,7 @@ import re
 import json
 from bs4 import BeautifulSoup
 from page_parse.user import public
-from decorator.decorators import parse_decorator
+from decorators.decorator import parse_decorator
 
 
 @parse_decorator(4)

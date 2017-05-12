@@ -10,7 +10,7 @@ from db.redis_db import Urls
 from db.redis_db import Cookies
 from db.login_info import freeze_account, get_login_info
 from page_parse.basic import is_403, is_404, is_complete
-from decorator.decorators import timeout_decorator, timeout
+from decorators.decorator import timeout_decorator, timeout
 from config.conf import get_timeout, get_crawl_interal, get_excp_interal, get_max_retries
 
 

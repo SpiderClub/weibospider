@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 from logger.log import parser
 from db.models import WeiboData
-from decorator.decorators import parse_decorator
+from decorators.decorator import parse_decorator
 
 
 user_pattern = r'id=(\d+)&u'
