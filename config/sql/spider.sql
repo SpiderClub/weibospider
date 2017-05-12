@@ -20,6 +20,7 @@ create table weibo.seed_ids
 	uid varchar(20) not null comment '微博的用户id',
 	is_crawled int default '0' not null comment '该id是否被爬取过,0表示未爬取，1表示已经爬取，2表示爬取出错',
 	other_crawled int default '0' not null comment '是否抓取了该用户的前五页粉丝和关注用户的ID，1为已经抓取，0为未抓取，默认是0',
+	home_crawled int default '0' null,
 	constraint seed_ids_uid_uindex
 		unique (uid)
 )
@@ -28,6 +29,7 @@ create table weibo.seed_ids
 create index seed_ids_uid_index
 	on seed_ids (uid)
 ;
+
 
 create table weibo.wbuser
 (
