@@ -2,7 +2,7 @@
 from sqlalchemy import text
 from db.basic_db import db_session
 from db.models import LoginInfo
-from decorator.decorators import db_commit_decorator
+from decorators.decorator import db_commit_decorator
 
 
 def get_login_info():
