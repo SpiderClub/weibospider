@@ -69,11 +69,14 @@ def set_seed_other_crawled(uid):
 @db_commit_decorator
 def set_seed_home_crawled(uid):
     """
-    将该用户的home_crawled字段设置为已经抓取,它和set_seed_other_crawled(uid)不同，因为后者的uid是通过用户关注
-    或者粉丝列表获取的,它们的信息有可能是没有的，所以需要判断是否存在，而这里是基于已经存在的信息
+    这里适配了直接指定uid和从数据库seed_ids表中读uid的情况
     :param uid: 用户id
     :return: None
     """
     seed = get_seed_by_id(uid)
-    seed.home_crawled = 1
+    if seed is None:
+        seed = SeedIds(uid=uid, is_crawled=0, other_crawled=0, home_crawled=1)
+        db_session.add(seed)
+    else:
+        seed.home_crawled = 1
     db_session.commit()
