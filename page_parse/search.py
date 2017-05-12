@@ -49,7 +49,7 @@ def get_weibo_info(each, html):
         try:
             wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
         except Exception as e:
-            #parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
+            parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
             return None
 
         try:
