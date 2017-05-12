@@ -44,6 +44,7 @@ class SeedIds(Base):
     uid = Column(String, unique=True)
     is_crawled = Column(INTEGER, default=0)
     other_crawled = Column(INTEGER, default=0)
+    home_crawled = Column(INTEGER, default=0)
 
 
 class KeyWords(Base):

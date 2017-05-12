@@ -5,7 +5,7 @@ max_crawl_interal: 11 # 页面请求最大间隔
 excp_interal: 5*60 # 请求异常的时候睡眠的时间
 max_repost_page: 30  # 转发信息最多抓取多少页
 max_search_page: 30 # 搜索最多抓多少页
-max_home_page: 30 # 主页微博最多抓取页数
+max_home_page: 35 # 主页微博最多抓取页数
 max_retries: 5 # 抓取失败重试次数
 
 
