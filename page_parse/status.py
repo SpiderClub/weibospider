@@ -25,7 +25,7 @@ def get_username(html):
 def get_userdomain(html):
     """
     :param html:
-    :return:用户类型，并不是用户类的那个domain(历史原因，那个类的属性名我还没改...)
+    :return:用户类型
     """
     pattern = re.compile(r'\$CONFIG\[\'domain\'\]=\'(.*)\';')
     m = pattern.search(html)

@@ -96,6 +96,8 @@ def get_weibo_list(html):
     :param html: 
     :return: 
     """
+    if not html:
+        return list()
     soup = BeautifulSoup(html, "html.parser")
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     weibo_datas = []
@@ -104,6 +106,17 @@ def get_weibo_list(html):
         if wb_data is not None:
             weibo_datas.append(wb_data)
     return weibo_datas
+
+
+def get_max_num(html):
+    """
+    获取总页数
+    :param html: 
+    :return: 
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    href_list = soup.find(attrs={'action-type': 'feed_list_page_morelist'}).find_all('a')
+    return len(href_list)
 
 
 def get_wbdata_fromweb(html):
@@ -125,3 +138,15 @@ def get_home_wbdata_byajax(html):
     cont = json.loads(html, encoding='utf-8').get('data', '')
     return get_weibo_list(cont)
 
+
+def get_total_page(html):
+    """
+    从ajax返回的内容获取用户主页的所有能看到的页数
+    :param html: 
+    :return: 
+    """
+    cont = json.loads(html, encoding='utf-8').get('data', '')
+    if not cont:
+        # todo 返回1或者0还需要验证只有一页的情况
+        return 1
+    return get_max_num(cont)
