@@ -156,5 +156,44 @@ class TestWeiboSpider(unittest.TestCase):
         from tasks.search import search_keyword
         search_keyword('陈羽凡公司发文')
 
+    def test_get_home_page_right(self):
+        """
+        测试主页右边部分（即微博数据部分）是否可以正常解析
+        :return: 
+        """
+        from page_parse import home
+        with open('tests/enterprisehome.html', encoding='utf-8') as f:
+            html = f.read()
+        wbcounts = home.get_wbdata_fromweb(html)
+        self.assertEqual(len(wbcounts), 15)
+
+        with open('tests/personhome.html', encoding='utf-8') as f:
+            html = f.read()
+        wbcounts = home.get_wbdata_fromweb(html)
+        self.assertEqual(len(wbcounts), 15)
+
+    def test_ajax_home_page_data(self):
+        """
+        测试通过ajax返回的主页数据是否可以正常解析
+        :return: 
+        """
+        from page_parse import home
+        with open('tests/asyncpersonhome.html', encoding='utf-8') as f:
+            html = f.read()
+        datas = home.get_home_wbdata_byajax(html)
+        self.assertEqual(len(datas), 15)
+
+    def test_get_total_home_page(self):
+        """
+        测试获取主页页数
+        :return: 
+        """
+        from page_parse import home
+        with open('tests/asyncpersonhome.html', encoding='utf-8') as f:
+            html = f.read()
+        num = home.get_total_page(html)
+        self.assertEqual(num, 18)
+
+
 if __name__ == '__main__':
     unittest.main()
