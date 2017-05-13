@@ -270,5 +270,5 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢网友 李* 和 西*弗斯 热心测试和提供建议
-- 感谢网友 sKeletOn、过客 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
-而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[say thanks](https://saythanks.io/to/kennethreitz)对其表示谢意。
+- 感谢网友 sKeletOn、frankfff 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
+而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
