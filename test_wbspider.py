@@ -194,6 +194,27 @@ class TestWeiboSpider(unittest.TestCase):
         num = home.get_total_page(html)
         self.assertEqual(num, 18)
 
+    def test_parse_comment_page(self):
+        """
+        测试对评论页的解析
+        :return: 
+        """
+        from page_parse import comment
+        with open('tests/comment.html', encoding='utf-8') as f:
+            html = f.read()
+        comment_list = comment.get_comment_list(html, '1123331211')
+        self.assertEqual(len(comment_list), 15)
+
+    def test_get_next_url(self):
+        """
+        测试获取下一页评论url
+        :return: 
+        """
+        from page_parse import comment
+        with open('tests/comment.html', encoding='utf-8') as f:
+            html = f.read()
+        url = comment.get_next_url(html)
+        print(url)
 
 if __name__ == '__main__':
     unittest.main()
