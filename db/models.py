@@ -79,4 +79,12 @@ class KeywordsWbdata(Base):
     wb_id = Column(String(200))
 
 
-
+class WeiboComment(Base):
+    # 微博评论表
+    __tablename__ = 'weibo_comment'
+    id = Column(INTEGER, primary_key=True, autoincrement=True)
+    comment_id = Column(String(50))
+    comment_cont = Column(String(5000))
+    weibo_id = Column(String(200))
+    user_id = Column(String(20))
+    create_time = Column(String(200)) 
