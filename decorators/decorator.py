@@ -9,9 +9,9 @@ from utils.util_cls import Timeout, KThread
 # 用于超时设置
 def timeout_decorator(func):
     @wraps(func)
-    def time_limit(url, *k):
+    def time_limit(url, *k, **kargs):
         try:
-            return func(url, *k)
+            return func(url, *k, **kargs)
         except Exception as e:
             crawler.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=url, e=e,
                                                                    stack=format_tb(e.__traceback__)[0]))
@@ -89,7 +89,10 @@ def timeout(seconds):
                 finally:
                     return ''
             else:
-                return result[0]
+                if result:
+                    return result[0]
+                else:
+                    return ''
 
         _.__name__ = func.__name__
 
