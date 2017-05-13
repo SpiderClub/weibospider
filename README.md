@@ -57,7 +57,7 @@
  账号被封了，然后同一个IP用别的账号还能登陆，所以账号的限制比IP更加严格
 
 - 其它
-  - [ ] 已有代码修改：将存储后端从Oracle转向Mysql
+  - [x] 已有代码修改：将存储后端从Oracle转向Mysql
   - [x] 优化代码，让程序运行更加快速和稳定：水平有限，已经优化过一次了。下一次可能
     要等一段时间了
   - [x] 修复某些时候抓取失败的问题(已添加重试机制)
@@ -151,14 +151,14 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
 - 微博登录和数据采集
  - 下面说明该项目分布式抓取的基本概念和用法:
    - 项目使用了[任务路由](http://docs.celeryproject.org/en/latest/userguide/routing.html)，
-   在```tasks/workers```中可以查看[所有的queue](./tasks/worker.py),所以需要在启动
+   在```tasks/workers```中可以查看[所有的queue](./tasks/workers.py),所以需要在启动
    worker的时候**指定分布式节点的queue**,这个queue的作用就是规定该节点能接什么任务，不会接什么任务。比如我的节点1需要做登录任务和用户信息抓取任务，那么我就
    需要在节点1指定登录任务的queue```login_queue```和抓取用户信息的queue```user_crawler```,
    这里启动worker的语句就应该是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1 -Ofair```。这样节点1
    就只会执行*模拟登陆*和*用户信息*的相关任务。这样做的好处是：某些任务耗时比较多，就需要更多节点执行，有的耗时小，就不需要这么多节点，比如用户抓取，一个http请求
    只能得到一个用户信息，而对于用户关注和粉丝抓取，一个http请求可以得到几十个关注或者粉丝用户的uid。然后再说说各个启动参数的意思：```-A```指定celery app为
-   [```tasks.workers```](./tasks/workers), ```-Q```指定节点1能接受的任务队列是```login_queue```和```user_crawler```，即使你对它发送抓取用户粉丝
-   和用户关注的任务(这个任务在该项目中的queue是```fans_followers```,在[tasks.workers](./tasks/workers)中可查看)，它也不会执行。```-l```表示的是日志等级，
+   [```tasks.workers```](./tasks/workers.py), ```-Q```指定节点1能接受的任务队列是```login_queue```和```user_crawler```，即使你对它发送抓取用户粉丝
+   和用户关注的任务(这个任务在该项目中的queue是```fans_followers```,在[tasks.workers](./tasks/workers.py)中可查看)，它也不会执行。```-l```表示的是日志等级，
    ```--concurrency```是worker的线程数，这里规定为1，celery默认采用多线程的方式实现并发,我们也可以让它使用
    基于异步IO的方式实现并发，具体参考[Celery Concurrency](http://docs.celeryproject.org/en/master/userguide/concurrency/eventlet.html)，
    -Ofair```是避免让celery发生死锁。启动worker的语句需要切换到项目根目录下执行。关于celery更为详细的
