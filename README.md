@@ -1,21 +1,21 @@
 ## 关于本项目 :octocat:
-- 分布式微博爬虫,为微博数据抓取而生
-- 欲实现内容包括用户信息、微博信息、微博搜索、微博评论和微博转发关系抓取等
+- 无痛分布式微博爬虫,为微博数据抓取而生，部署简单，人肉文档支持
+- 实现内容包括用户信息、用户主页所有微博、微博搜索、微博评论和微博转发关系抓取等
 - 该项目本来是我们项目组的一个子模块，作用是舆情分析。整个系统比较庞大，我只能开源自己写
-的代码部分，希望能帮到对微博数据采集有需求的同学，对爬虫进阶感兴趣的同学也可以看看。该项目
-*从模拟登陆到各个页面的请求*、*从简单页面到复杂页面解析处理和相关的异常处理*、
+的代码部分，并基于此做了大量的修改和改进工作。希望能帮到对微博数据采集有需求的同学，对爬虫进阶
+感兴趣的同学也可以看看。该项目*从模拟登陆到各个页面的请求*、*从简单页面到复杂页面解析处理和相关的异常处理*、
 *从单机到分布式迁移*都做了大量的工作和反复测试，花了我绝大部分业余的时间。
-- 本项目不会承诺每天能抓到多少数据，因为数据量的大小很大程度上取决于用户可用微博账户的数量
+- 本项目不会承诺每天能抓到多少数据，因为**数据量的大小很大程度上取决于用户可用微博账户的数量**
 - 与该项目类似的项目大概有[SinaSpider](https://github.com/LiuXingMing/SinaSpider),[weibo_terminater](https://github.com/jinfagang/weibo_terminater)。
-前者是一个基于```scrapy```的项目，爬的是移动版微博用户信息，质量还不错；后者嘛,还是用户
+前者是一个基于```scrapy```的项目，爬的是移动版微博用户信息，质量还不错；后者嘛，还是留给用户
 自己判断吧。
 
 ## 你可以用它来干嘛 :u6709:
-- 微博舆情分析，比如是**热门微博转发分析**
+- **爬虫进阶学习**，对于需要学习Python进阶和爬虫的同学来说，都可以读读源码
+- 微博舆情分析，比如**热门微博转发分析**
 - 微博数据分析，比如基于**微博用户信息**的分析
-- 论文撰写的一些数据
+- 论文撰写的一些数据，本项目会将抓到的**所有数据**不定时公布（由于资源所限，暂时只有[8.2w条微博用户数据]()）
 - 自然语言处理的**语料**
-- **爬虫进阶学习**
 
 ## 为何选择本项目 :star:
 - 功能全面：包括了用户信息抓取、指定关键字搜索结果增量抓取、指定用户主页所有微博抓取、评论抓取和转发关系抓取等
@@ -35,11 +35,11 @@
 
 ## TODO :dart:
 - 微博内容抓取相关
-  - [x] 模拟登陆
-  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取
-  - [x] 微博搜索功能
-  - [x] 指定用户的主页：主要是微博内容,目前指定用户是基于已有的seed_ids表中的用户
-  - [ ] 指定微博的评论：主要是热门微博
+  - [x] 模拟登陆，账号请放置在[sql文件](./config/sql/spider.sql)的*login_info*表中
+  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子参见[sql文件](./config/sql/spider.sql)的*seed_ids*表
+  - [x] 微博搜索功能，搜索词由自己指定，参考[sql文件](./config/sql/spider.sql)的*keywords*表
+  - [x] 指定用户的主页：主要是微博内容，目前指定用户是基于已有的[seed_ids]((./config/sql/spider.sql))表中的用户，你也可以指定你想抓取的用户。
+  - [ ] 指定微博的评论：主要是热门微博，可以由自己指定
   - [ ] 指定微博的转发情况：主要是热门微博
 
 - 反爬虫相关
@@ -52,7 +52,8 @@
   - [x] 验证登录状态的cookies和代理ip是否可以成功抓取：测试结果是可以使用登录后的cookie
  从别的地方进行数据采集，根据这一点，可以考虑使用代理IP，但是代理IP的质量和稳定性可能会
  有问题，可能需要找一个或者自己写一个**高可用**的代理池，这一点还**有待考察**)
-  - [ ] 验证移动端登录cookie和pc端是否可共享，如果可以共享则为PC端大规模抓取提供了可能
+  - [ ] 验证移动端登录cookie和pc端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
+  移动端的异地模拟登陆难度比PC端要小
   - [x] 比较单IP和单账号哪个的限制更多，从而制定更加高效的数据采集方案：测试得知，经常是
  账号被封了，然后同一个IP用别的账号还能登陆，所以账号的限制比IP更加严格
 
@@ -66,18 +67,18 @@
     的基本概念和用法**，为不会python的同学提供使用的可能性;讲解微博的反爬虫策略;各个```tasks```模块的作用
     和使用方法
   - [ ] 完善代码注释，方便用户做二次开发
-  - [ ] 直接使用dockerfile部署项目
-  - [ ] 支持单个任务执行，在执行单个任务(比如分析指定微博的传播)的时候使用进度条
+  - [ ] 支持Dockerfile部署项目
+  - [ ] 支持单个任务执行单机或者多机，在执行单个任务(比如分析指定微博的传播)的时候使用进度条
   - [ ] 可视化展示某条微博具体传播信息，微博用户信息等。这个优先级会比较低，目前重点
     解决数据抓取和复杂页面解析的问题
 
 ## 项目结构 :bell:
 
 - 功能模块
- - 微博模拟登陆任务[login.py](./tasks/login.py)和[login_first.py](login_first.py)
- - 微博用户抓取任务:[user.py](./tasks/user.py)
- - 微博特定话题搜索任务:[search.py](./tasks/search.py)
-
+ - 微博模拟登陆任务 [login.py](./tasks/login.py)
+ - 微博用户抓取任务 [user.py](./tasks/user.py)
+ - 微博特定话题搜索任务 [search.py](./tasks/search.py)
+ - 微博用户主页信息抓取任务 [home.py](./tasks/home.py)
 
 ```
     config/
@@ -129,13 +130,14 @@
 
 
 ## 配置和使用 :sparkles:
-- 项目需要的Python解释器环境是Python3.x
-- 项目存储后端使用**mysql**，所以需要在存储服务器上安装mysql
+- 考虑到Python3是趋势和一些用于学习的用户，项目运行环境为**Python3.x**
+- 项目存储后端使用**mysql**，所以需要在存储服务器上**安装mysql**
 - 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
 需要使用broker和各个分布式节点通信，项目使用的是redis，所以需要先安装[redis](https://redis.io/download)。
 注意修改redis的配置文件让它能监听除本机外的别的节点的请求，**建议给redis设置密码**，如
-果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。
-- 由于高版本的celery不支持windows,所以请在**类Unix系统**部署。如果实在需要在windows
+果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。如果害怕遇到redis单点
+故障，可以使用redis主从配置。
+- 由于**高版本的celery不支持windows**,所以请在**类Unix系统**部署。如果实在需要在windows
 上部署的话，可以把celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
 celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！
 所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**
@@ -143,13 +145,15 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
 
 - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
 - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
+
 - 入口文件：如果有同学有修改源码的需求，那么建议从入口文件开始阅读
- - [login.py](./tasks/login.py)和[login_first.py](login_first.py):微博登
- 陆客户端程序
- - [user.py](./tasks/user.py):微博用户抓取程序
+ - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
+ - [user.py](./tasks/user.py)和[user_first.py](user_first.py):微博用户抓取程序
+ - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
+ - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
 
 - 微博登录和数据采集
- - 下面说明该项目分布式抓取的基本概念和用法:
+ - 下面说明该项目分布式抓取的基本概念和用法
    - 项目使用了[任务路由](http://docs.celeryproject.org/en/latest/userguide/routing.html)，
    在```tasks/workers```中可以查看[所有的queue](./tasks/workers.py),所以需要在启动
    worker的时候**指定分布式节点的queue**,这个queue的作用就是规定该节点能接什么任务，不会接什么任务。比如我的节点1需要做登录任务和用户信息抓取任务，那么我就
@@ -162,7 +166,9 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
    ```--concurrency```是worker的线程数，这里规定为1，celery默认采用多线程的方式实现并发,我们也可以让它使用
    基于异步IO的方式实现并发，具体参考[Celery Concurrency](http://docs.celeryproject.org/en/master/userguide/concurrency/eventlet.html)，
    -Ofair```是避免让celery发生死锁。启动worker的语句需要切换到项目根目录下执行。关于celery更为详细的
-   知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)
+   知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)。项目中使用的所有queue和它们的
+   作用参见[WeiboSpider中的所有任务及其说明和使用](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)
+
    - 如果是**第一次运行该项目**，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
    login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上
    - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
@@ -174,6 +180,8 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
  - 定时登录是为了维护cookie的时效性，据我实验，微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认10小时就定时登录一次。
 
  - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
+
+ - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加我微信（微信号:wpm_wx）询问
 
 
 ## 常见问题 :question:
@@ -205,9 +213,9 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
 答：这个实在是没办法保证。数据量由你的账号和分布式节点数量决定的，最关键的是账号数量，目前我6个账号，4个节点，每天抓取量大概
 2w条，如果需要更快，那么更多的账号是必不可少的。所以用户需要在速度和稳定性上做一些考量。
 
-6. 这个项目解析模块用的是bs,会不会性能很差？
-答：本项目的瓶颈不在解析模块上，解析再快，还是会被IO请求所拖累，因为微博服务端对相同cookie的一个时间段的访问次数有限制，而且
-bs的解析速度也不算慢了。
+6. 这个项目解析模块为什么用bs而不用xpath,会不会性能很差？
+答：项目在一年半以前开始启动，那时候还没接触到xpath，所以选了bs。但是本项目的瓶颈并不在解析模块上，解析再快，还是会被IO请求
+所拖累，因为微博服务端对相同cookie的一个时间段的访问次数有限制，并且bs的解析速度也不算慢了。
 
 其它问题暂时还没发现，如果有朋友在使用中遇到问题，欢迎提issue或者直接加我微信询问，我看到的话都会回答的。
 
@@ -248,8 +256,9 @@ bs的解析速度也不算慢了。
 微博限制得比较严格，单人想获取千万级甚至亿级的数据，需要特别大的成本，主要是账号的成本，那么为何
 不把数据放共享呢？由于本项目是一个分布式的爬虫程序，所以对数据有要求的同学只需要在自己的服务器或者
 本机上跑该程序，把抓取的结果放在一个大家都可以用的地方，人多力量大，采集量自然就多，这样也方便
-了自己，方便了别人。当前这也有一些问题，最主要的就是数据如何保护，不会被别人恶意破坏。这个目前
-只是一个想法，如果反馈比较热烈，可能在功能都实现得差不多了，会搞这么一个东西，想起来还是比较有意思。
+了自己，方便了别人。并且使用者可以只用自己的worker节点执行自己关心的数据的抓取任务。当然这也有一些问题，
+最主要的就是数据如何保护，不会被别人恶意破坏。这个目前只是一个想法，如果反馈比较热烈，可能在功能都实现
+得差不多了，会搞这么一个东西，想起来还是比较有意思。
 
 ## 赞助本项目:thumbsup:
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
@@ -261,4 +270,5 @@ bs的解析速度也不算慢了。
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢网友 李* 和 西*弗斯 热心测试和提供建议
-- 感谢网友 sKeletOn 捐赠
+- 感谢网友 sKeletOn、过客 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
+而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[say thanks](https://saythanks.io/to/kennethreitz)对其表示谢意。
