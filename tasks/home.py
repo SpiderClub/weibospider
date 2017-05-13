@@ -61,8 +61,7 @@ def crawl_weibo_datas(uid):
 @app.task
 def excute_home_task():
     # 这里的策略由自己指定，可以基于已有用户做主页抓取，也可以指定一些用户,我这里直接选的种子数据库中的uid
-    #id_objs = get_home_ids()
-    uids = ['2703907413', '5938331617', '6138171929', '2315766414', '5336708875', '5575751581', '2993049293']
-    for uid in uids:
-        app.send_task('tasks.home.crawl_weibo_datas', args=(uid,), queue='home_crawler',
+    id_objs = get_home_ids()
+    for id_obj in id_objs:
+        app.send_task('tasks.home.crawl_weibo_datas', args=(id_obj.uid,), queue='home_crawler',
                       routing_key='home_info')
