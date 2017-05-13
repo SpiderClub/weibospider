@@ -19,7 +19,7 @@ def crawl_ajax_page(url):
     ajax_html = get_page(url, user_verify=False)
     ajax_wbdatas = get_home_wbdata_byajax(ajax_html)
     if not ajax_wbdatas:
-        return
+        return ''
 
     insert_weibo_datas(ajax_wbdatas)
     return ajax_html
