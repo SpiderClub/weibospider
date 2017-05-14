@@ -170,6 +170,7 @@ class TestWeiboSpider(unittest.TestCase):
         with open('tests/personhome.html', encoding='utf-8') as f:
             html = f.read()
         wbcounts = home.get_wbdata_fromweb(html)
+        print(wbcounts)
         self.assertEqual(len(wbcounts), 15)
 
     def test_ajax_home_page_data(self):
@@ -205,7 +206,7 @@ class TestWeiboSpider(unittest.TestCase):
         comment_list = comment.get_comment_list(html, '1123331211')
         self.assertEqual(len(comment_list), 15)
 
-    def test_get_next_url(self):
+    def test_get_next_comment_url(self):
         """
         测试获取下一页评论url
         :return: 
@@ -214,7 +215,12 @@ class TestWeiboSpider(unittest.TestCase):
         with open('tests/comment.html', encoding='utf-8') as f:
             html = f.read()
         url = comment.get_next_url(html)
-        print(url)
+        self.assertIn('id=', url)
+
+        with open('tests/dragajaxcomment.html', encoding='utf-8') as f:
+            html = f.read()
+        url = comment.get_next_url(html)
+        self.assertIn('id=', url)
 
 if __name__ == '__main__':
     unittest.main()
