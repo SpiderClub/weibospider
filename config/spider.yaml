@@ -28,7 +28,8 @@ redis:
     urls: 2
 
 # celery调度的blocker和backend
-brocker: redis://223.129.0.190/5
+# redis://:password@hostname:port/db_number 设置了密码就该这么连接
+broker: redis://223.129.0.190/5
 backend: redis://223.129.0.190/6
 
 

@@ -54,7 +54,7 @@ def get_max_retries():
 
 
 def get_brocker():
-    return cf.get('brocker')
+    return cf.get('broker')
 
 
 def get_backend():
