@@ -53,7 +53,11 @@ def get_page(url, user_verify=True, need_login=True):
                     else:
                         os.popen('pkill -f "celery"')
                 else:
-                    # 如果有可用账号，那么就拿来登录
+                    # 如果有可用账号，那么就拿来登录,这里用了本地调用，好像不是很合理，因为如果login queue
+                    # 不会在本机上，那么该调用就会无效但是用网络调用，如何保证不会出现在某些不常用登录地的节点
+                    # 上还有待考量，亦或者找到一个更适合的方法可以突破异地登录的限制
+                    # TODO 衡量是用网络调用还是直接调用 login.get_session()方法，这里应该不是很合理
+                    # 目前暂时不考虑节点登录出现验证码的问题， 考虑到大规模账号登录的话，需要把login_queue的节点放在账号常用地
                     crawler.info('重新获取cookie中...')
                     login.excute_login_task()
                     time.sleep(10)
