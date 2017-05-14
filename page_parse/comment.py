@@ -25,7 +25,6 @@ def get_next_url(html):
     cont = get_html_cont(html)
     if not cont:
         return ''
-
     soup = BeautifulSoup(cont, 'html.parser')
     url = ''
     if 'comment_loading' in cont:
