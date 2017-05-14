@@ -1,4 +1,5 @@
 # coding:utf-8
+from sqlalchemy import text
 from db.basic_db import db_session
 from db.models import WeiboData
 from pymysql.err import IntegrityError
@@ -33,3 +34,21 @@ def insert_weibo_datas(weibo_datas):
             insert_weibo_data(data)
     finally:
         db_session.commit()
+
+
+@db_commit_decorator
+def set_weibo_comment_crawled(mid):
+    """
+    如果存在该微博，那么就将comment_crawled字段设置为1
+    :param mid: 
+    :return: 
+    """
+    weibo_data = get_wb_by_mid(mid)
+    if weibo_data:
+        weibo_data.comment_crawled = 1
+        db_session.commit()
+
+
+@db_commit_decorator
+def get_weibo_comment_not_crawled():
+    return db_session.query(WeiboData.weibo_id).filter(text('comment_crawled=0')).all()
