@@ -1,4 +1,5 @@
 # coding:utf-8
+import time
 from logger.log import crawler
 from tasks.workers import app
 from page_parse.user import public
@@ -11,11 +12,17 @@ from page_parse.home import get_wbdata_fromweb, get_home_wbdata_byajax, get_tota
 
 # 只抓取原创微博
 home_url = 'http://weibo.com/u/{}?is_ori=1&is_tag=0&profile_ftype=1&page={}'
-ajax_url = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}&pre_page={}'
+ajax_url = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}' \
+           '&pre_page={}&__rnd={}'
 
 
 @app.task(ignore_result=True)
 def crawl_ajax_page(url):
+    """
+    返回值主要供第一次本地调用使用（获取总页数），网络调用忽略返回值
+    :param url: 
+    :return: 
+    """
     ajax_html = get_page(url, user_verify=False)
     ajax_wbdatas = get_home_wbdata_byajax(ajax_html)
     if not ajax_wbdatas:
@@ -41,8 +48,9 @@ def crawl_weibo_datas(uid):
         insert_weibo_datas(weibo_datas)
 
         domain = public.get_userdomain(html)
-        ajax_url_0 = ajax_url.format(domain, 0, domain, uid, cur_page, cur_page)
-        ajax_url_1 = ajax_url.format(domain, 1, domain, uid, cur_page, cur_page)
+        cur_time = int(time.time()*1000)
+        ajax_url_0 = ajax_url.format(domain, 0, domain, uid, cur_page, cur_page, cur_time)
+        ajax_url_1 = ajax_url.format(domain, 1, domain, uid, cur_page, cur_page, cur_time+100)
 
         if cur_page == 1:
             total_page = get_total_page(crawl_ajax_page(ajax_url_1))
