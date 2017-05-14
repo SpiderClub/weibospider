@@ -45,6 +45,10 @@ def get_max_home_page():
     return cf.get('max_home_page')
 
 
+def get_max_comment_page():
+    return cf.get('max_comment_page')
+
+
 def get_max_retries():
     return cf.get('max_retries')
 
