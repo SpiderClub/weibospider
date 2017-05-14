@@ -12,7 +12,7 @@ platforms.C_FORCE_ROOT = True
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'celery.log')
 beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'beat.log')
 
-tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home']
+tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment']
 # include的作用就是注册服务化函数
 app = Celery('weibo_task', include=tasks, broker=get_brocker(), backend=get_backend())
 
@@ -44,6 +44,11 @@ app.conf.update(
             'task': 'tasks.home.excute_home_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'home_crawler', 'routing_key': 'home_info'}
+        },
+        'comment_task': {
+            'task': 'tasks.home.excute_comment_task',
+            'schedule': timedelta(hours=10),
+            'options': {'queue': 'home_crawler', 'routing_key': 'home_info'}
         }
     },
     CELERY_QUEUES=(
@@ -52,7 +57,8 @@ app.conf.update(
         Queue('search_crawler', exchange=Exchange('search_info', type='direct'), routing_key='for_search_info'),
         Queue('fans_followers', exchange=Exchange('fans_followers', type='direct'), routing_key='for_fans_followers'),
         Queue('home_crawler', exchange=Exchange('home_crawler', type='direct'), routing_key='home_info'),
-        Queue('ajax_home_crawler', exchange=Exchange('ajax_home_crawler', type='direct'), routing_key='ajax_home_info')
+        Queue('ajax_home_crawler', exchange=Exchange('ajax_home_crawler', type='direct'), routing_key='ajax_home_info'),
+        Queue('comment_crawler', exchange=Exchange('comment_crawler', type='direct'), routing_key='comment_info')
     )
 )
 
