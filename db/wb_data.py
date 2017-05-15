@@ -39,7 +39,7 @@ def insert_weibo_datas(weibo_datas):
 @db_commit_decorator
 def set_weibo_comment_crawled(mid):
     """
-    如果存在该微博，那么就将comment_crawled字段设置为1
+    如果存在该微博，那么就将comment_crawled字段设置为1;不存在该微博，就不做任何操作
     :param mid: 
     :return: 
     """

@@ -1,7 +1,6 @@
 # coding:utf-8
 import time
 from db import wb_data
-from logger.log import crawler
 from tasks.workers import app
 from page_parse import comment
 from config import conf
@@ -19,6 +18,7 @@ def crawl_comment_by_page(mid, page_num):
     html = get_page(cur_url, user_verify=False)
     comment_datas = comment.get_comment_list(html, mid)
     save_comments(comment_datas)
+    wb_data.set_weibo_comment_crawled(mid)
     return html
 
 
@@ -37,12 +37,10 @@ def crawl_comment_page(mid):
                       routing_key='comment_page_info')
 
 
-@app.task
+@app.task(ignore_result=True)
 def excute_comment_task():
-    #weibo_datas = wb_data.get_weibo_comment_not_crawled()
-    weibo_data = '3756443234340826'
-    # for weibo_data in weibo_datas:
-    #     app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data.weibo_id,), queue='comment_crawler',
-    #                   routing_key='comment_info')
-    app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data,), queue='comment_crawler',
-                  routing_key='comment_info')
+    # 只解析了根评论，而未对根评论下的评论进行抓取，如果有需要的同学，可以适当做修改
+    weibo_datas = wb_data.get_weibo_comment_not_crawled()
+    for weibo_data in weibo_datas:
+        app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data.weibo_id,), queue='comment_crawler',
+                      routing_key='comment_info')
