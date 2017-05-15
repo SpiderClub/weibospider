@@ -4,45 +4,43 @@ from db import wb_data
 from logger.log import crawler
 from tasks.workers import app
 from page_parse import comment
+from config import conf
 from page_get.basic import get_page
 from db.weibo_comment import save_comments
-from config.conf import get_max_comment_page
 
-base_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&{}&from=singleWeiBo&__rnd={}'
 # 起始请求地址
-start_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&from=singleWeiBo&__rnd={}'
+base_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}&__rnd={}'
+
+
+@app.task(ignore_result=True)
+def crawl_comment_by_page(mid, page_num):
+    cur_time = int(time.time() * 1000)
+    cur_url = base_url.format(mid, page_num, cur_time)
+    html = get_page(cur_url, user_verify=False)
+    comment_datas = comment.get_comment_list(html, mid)
+    save_comments(comment_datas)
+    return html
 
 
 @app.task(ignore_result=True)
 def crawl_comment_page(mid):
-    limit = get_max_comment_page()
-    cur_page = 1
-    next_url = ''
-    while cur_page <= limit:
-        cur_time = int(time.time()*1000)
-        if cur_page == 1:
-            cur_url = start_url.format(mid, cur_time)
-        else:
-            cur_url = base_url.format(next_url, cur_time)
-        html = get_page(cur_url, user_verify=False)
-        comment_datas = comment.get_comment_list(html, mid)
+    limit = conf.get_max_comment_page() + 1
+    # 这里为了马上拿到返回结果，采用本地调用的方式
+    first_page = crawl_comment_by_page(mid, 1)
+    total_page = comment.get_total_page(first_page)
 
-        if not comment_datas and cur_page == 1:
-            crawler.warning('微博id为{}的微博评论未采集成功，请检查原因'.format(mid))
-            return
-        save_comments(comment_datas)
-        next_url = comment.get_next_url(html)
+    if total_page < limit:
+        limit = total_page + 1
 
-        if not next_url:
-            crawler.info('微博{}的评论采集已经完成,当前url为{}'.format(mid, cur_url))
-            return
-        cur_page += 1
+    for page_num in range(2, limit):
+        app.send_task('tasks.comment.crawl_comment_by_page', args=(mid, page_num), queue='comment_page_crawler',
+                      routing_key='comment_page_info')
 
 
 @app.task
 def excute_comment_task():
     #weibo_datas = wb_data.get_weibo_comment_not_crawled()
-    weibo_data = '4107415136481047'
+    weibo_data = '3756443234340826'
     # for weibo_data in weibo_datas:
     #     app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data.weibo_id,), queue='comment_crawler',
     #                   routing_key='comment_info')
