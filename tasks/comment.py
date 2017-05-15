@@ -21,22 +21,20 @@ def crawl_comment_page(mid):
     while cur_page <= limit:
         cur_time = int(time.time()*1000)
         if cur_page == 1:
-            url = start_url.format(mid, cur_time)
+            cur_url = start_url.format(mid, cur_time)
         else:
-            url = base_url.format(next_url, cur_time)
-        html = get_page(url, user_verify=False)
+            cur_url = base_url.format(next_url, cur_time)
+        html = get_page(cur_url, user_verify=False)
         comment_datas = comment.get_comment_list(html, mid)
 
         if not comment_datas and cur_page == 1:
             crawler.warning('微博id为{}的微博评论未采集成功，请检查原因'.format(mid))
             return
-
         save_comments(comment_datas)
-        # 由于这里每一步都要根据上一步来迭代，所以不适合采用网络调用（主要是比较麻烦）
         next_url = comment.get_next_url(html)
 
         if not next_url:
-            crawler.info('微博{}的评论采集已经完成'.format(mid))
+            crawler.info('微博{}的评论采集已经完成,当前url为{}'.format(mid, cur_url))
             return
         cur_page += 1
 
@@ -44,7 +42,7 @@ def crawl_comment_page(mid):
 @app.task
 def excute_comment_task():
     #weibo_datas = wb_data.get_weibo_comment_not_crawled()
-    weibo_data = '4079144788308403'
+    weibo_data = '4107415136481047'
     # for weibo_data in weibo_datas:
     #     app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data.weibo_id,), queue='comment_crawler',
     #                   routing_key='comment_info')
