@@ -1,5 +1,6 @@
 ## 关于本项目 :octocat:
-![](https://img.shields.io/badge/python-3.4-green.svg) ![](https://img.shields.io/badge/python-3.5-green.svg) ![](https://img.shields.io/badge/python-3.6-green.svg)
+![](https://img.shields.io/badge/python-3.4-green.svg) ![](https://img.shields.io/badge/python-3.5-green.svg) ![](https://img.shields.io/badge/python-3.6-green.svg) ![](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+[![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang) [![Crates.io](https://img.shields.io/crates/dv/rustc-serialize.svg)]()
 - 无痛分布式微博爬虫，为微博数据抓取而生，部署简单，人肉文档支持
 - 实现内容包括用户信息、用户主页所有微博、微博搜索、微博评论和微博转发关系抓取等
 - 该项目本来是我们项目组的一个子模块，作用是舆情分析。整个系统比较庞大，我只能开源自己写
