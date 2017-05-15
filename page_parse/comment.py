@@ -49,10 +49,10 @@ def get_comment_list(html, wb_id):
 
     soup = BeautifulSoup(cont, 'html.parser')
 
-    wb_comment = WeiboComment()
     comment_list = list()
     comments = soup.find_all(attrs={'node-type': 'root_comment'})
     for comment in comments:
+        wb_comment = WeiboComment()
         try:
             wb_comment.comment_cont = comment.find(attrs={'class': 'WB_text'}).text.strip()
             wb_comment.comment_id = comment['comment_id']
