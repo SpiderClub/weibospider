@@ -204,23 +204,18 @@ class TestWeiboSpider(unittest.TestCase):
         with open('tests/comment.html', encoding='utf-8') as f:
             html = f.read()
         comment_list = comment.get_comment_list(html, '1123331211')
-        self.assertEqual(len(comment_list), 15)
+        self.assertEqual(len(comment_list), 19)
 
-    def test_get_next_comment_url(self):
+    def test_get_total_comment_page(self):
         """
-        测试获取下一页评论url
+        测试获取所有评论数
         :return: 
         """
         from page_parse import comment
         with open('tests/comment.html', encoding='utf-8') as f:
             html = f.read()
-        url = comment.get_next_url(html)
-        self.assertIn('id=', url)
-
-        with open('tests/dragajaxcomment.html', encoding='utf-8') as f:
-            html = f.read()
-        url = comment.get_next_url(html)
-        self.assertIn('id=', url)
+        total_page = comment.get_total_page(html)
+        self.assertEqual(total_page, 227)
 
 if __name__ == '__main__':
     unittest.main()
