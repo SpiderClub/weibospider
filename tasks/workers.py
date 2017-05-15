@@ -3,7 +3,7 @@ import os
 from datetime import timedelta
 from celery import Celery
 from kombu import Exchange, Queue
-from config.conf import get_backend, get_brocker
+from config.conf import get_broker_or_backend
 from celery import platforms
 
 # 允许celery以root身份启动
@@ -14,7 +14,7 @@ beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs',
 
 tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment']
 # include的作用就是注册服务化函数
-app = Celery('weibo_task', include=tasks, broker=get_brocker(), backend=get_backend())
+app = Celery('weibo_task', include=tasks, broker=get_broker_or_backend(1), backend=get_broker_or_backend(2))
 
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
