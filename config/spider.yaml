@@ -24,13 +24,11 @@ redis:
     host: 223.129.0.190
     port: 6379
     password: ''
-    cookies: 1
-    urls: 2
+    cookies: 1 # 登录需要使用的cookies
+    urls: 2 # 抓取过的url
+    broker: 5 # celery的broker
+    backend: 6 # celery的backend
 
-# celery调度的blocker和backend
-# redis://:password@hostname:port/db_number 设置了密码就该这么连接
-broker: redis://223.129.0.190/5
-backend: redis://223.129.0.190/6
 
 
 

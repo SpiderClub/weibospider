@@ -53,9 +53,23 @@ def get_max_retries():
     return cf.get('max_retries')
 
 
-def get_brocker():
-    return cf.get('broker')
+def get_broker_or_backend(types):
+    """
+    :param types: 类型，1表示中间人，2表示消息后端
+    :return: 
+    """
+    redis_info = cf.get('redis')
+    host = redis_info.get('host')
+    port = redis_info.get('port')
+    password = redis_info.get('password')
+
+    if types == 1:
+        db = redis_info.get('broker')
+    else:
+        db = redis_info.get('backend')
+    url = 'redis://:{}@{}:{}/{}'.format(password, host, port, db)
+
+    return url
 
 
-def get_backend():
-    return cf.get('backend')
+
