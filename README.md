@@ -36,11 +36,14 @@
 ## TODO :dart:
 - 微博内容抓取相关
   - [x] 模拟登陆，账号请放置在[sql文件](./config/sql/spider.sql)的*login_info*表中
-  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子参见[sql文件](./config/sql/spider.sql)的*seed_ids*表
-  - [x] 微博搜索功能，搜索词由自己指定，参考[sql文件](./config/sql/spider.sql)的*keywords*表
-  - [x] 指定用户的主页：主要是微博内容，目前指定用户是基于已有的[seed_ids]((./config/sql/spider.sql))表中的用户，你也可以指定你想抓取的用户。
-  - [ ] 指定微博的评论：主要是热门微博，可以由自己指定（正在开发）
-  - [ ] 指定微博的转发情况：主要是热门微博
+  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子参见[sql文件](./config/sql/spider.sql)的*seed_ids*表。你也可以自己指定
+  想抓取的用户信息，只需要把用户对应的uid放到`seed_ids`中
+  - [x] 微博搜索功能，搜索词由自己指定，参考[sql文件](./config/sql/spider.sql)的*keywords*表。搜索词也可以自己指定。
+  - [x] 指定用户的主页：主要是原创微博内容，你也可以修改文件[home.py](./tasks/home.py)中的`home_url`和`ajax_home_url`中的`is_ori=1`为`is_all=1`来
+  抓取用户的所有微博。目前指定用户是基于已有的[seed_ids](./config/sql/spider.sql)表中的```home_crawled=0```的用户，你也可以自己指定想要抓取的用户。
+  - [x] 指定微博的评论：主要是抓取针对该微博的评论，即根评论。你可以通过修改[comment.py](./page_parse/comment.py)中的`get_comment_list()`
+  来抓取指定微博的所有评论，包括根评论和子评论。目前抓取的评论是从`weibo_data`表中选取的`comment_crawled=0`的微博，你可以指定微博mid来定制化爬取评论。
+  - [ ] 指定微博的转发情况：主要是热门微博(正在开发)
 
 - 反爬虫相关
   - [ ] 测试单机单账号访问阈值
@@ -52,7 +55,7 @@
   - [x] 验证登录状态的cookies和代理ip是否可以成功抓取：测试结果是可以使用登录后的cookie
  从别的地方进行数据采集，根据这一点，可以考虑使用代理IP，但是代理IP的质量和稳定性可能会
  有问题，可能需要找一个或者自己写一个**高可用**的代理池，这一点还**有待考察**)
-  - [ ] 验证移动端登录cookie和pc端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
+  - [ ] 验证移动端登录Cookie和PC端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
   移动端的异地模拟登陆难度比PC端要小
   - [x] 比较单IP和单账号哪个的限制更多，从而制定更加高效的数据采集方案：测试得知，经常是
  账号被封了，然后同一个IP用别的账号还能登陆，所以账号的限制比IP更加严格
@@ -62,10 +65,10 @@
   - [x] 优化代码，让程序运行更加快速和稳定：水平有限，已经优化过一次了。下一次可能
     要等一段时间了
   - [x] 修复某些时候抓取失败的问题(已添加重试机制)
-  - [x] 改成分布式爬虫(使用celery做分布式任务调度和管理)
-  - [ ] 完善文档，包括注明python版本，怎么快速**创建虚拟环境**，怎么**安装相关依赖库**；讲解**celery
-    的基本概念和用法**，为不会python的同学提供使用的可能性;讲解微博的反爬虫策略;各个```tasks```模块的作用
-    和使用方法
+  - [x] 改成分布式爬虫(使用Celery做分布式任务调度和管理)
+  - [ ] 完善文档，包括注明Python版本，怎么快速**创建虚拟环境**，怎么**安装相关依赖库**，可能会录制一个关于如何使用的视频；
+  讲解**celery的基本概念和用法**，为不会Python的同学提供使用的可能性;讲解微博的反爬虫策略;各个```tasks```模块的作用
+  和使用方法。
   - [ ] 完善代码注释，方便用户做二次开发
   - [ ] 支持Dockerfile部署项目
   - [ ] 支持单个任务执行单机或者多机，在执行单个任务(比如分析指定微博的传播)的时候使用进度条
@@ -79,43 +82,61 @@
  - 微博用户抓取任务 [user.py](./tasks/user.py)
  - 微博特定话题搜索任务 [search.py](./tasks/search.py)
  - 微博用户主页信息抓取任务 [home.py](./tasks/home.py)
+ - 微博评论抓取任务 [comment.py](./tasks/comment.py)
 
 ```
     config/
         sql/
-            spider.sql  # 项目所用表
+            spider.sql      # 项目所用表
+        __init__.py
+        conf.py             # 获取配置文件的信息
+        spider.yaml         # 配置文件信息，包括Mysql配置、Redis配置和一些抓取参数设定
     db/
         __init__.py
-        basic_db.py # 数据库元操作
-        login_info.py # 微博账号管理操作
-        models.py # sqlalchemy中用到的models
-        redis_db.py # redis相关操作，比如管理cookies和urls
-        seed_ids.py # 种子用户id管理操作
-        user.py # 用户相关操作
-    decorator/
+        basic_db.py         # 数据库元操作
+        login_info.py       # 微博账号管理操作
+        models.py           # sqlalchemy中用到的models
+        redis_db.py         # redis相关操作
+        search_words.py     # 搜索话题相关操作
+        seed_ids.py         # 种子用户id管理操作
+        user.py             # 微博用户相关操作
+        wb_data.py          # 微博数据相关操作
+        weibo_comment.py    # 微博评论相关操作
+    decorators/
         __init__.py
-        decorators.py # 项目中用到的装饰器，比如处理超时和模版解析异常
+        decorator.py        # 项目中用到的装饰器，比如超时处理、解析异常处理
     logger/
         __init__.py
-        log.py        # 日志操作
-    logs/             # 该目录用于存放日志文件
+        log.py              # 日志操作
+    logs/                   # 该目录用于存放日志文件
+        celery.log          # celery相关log(最为详细)
+        weibo.log           # 程序log
     page_get/
         __init__.py
-        basic.py      # 基本的数据抓取操作
-        user.py       # 微博用户抓取
+        basic.py            # 基本的数据抓取操作
+        user.py             # 微博用户抓取
     page_parse/
         user/
             __init__.py
-            enterprise.py # 解析服务号
-            person.py     # 解析个人用户
-            public.py     # 公共模版解析
+            enterprise.py   # 解析服务号
+            person.py       # 解析个人用户
+            public.py       # 公共模版解析，比如左边部分和上边部分代码，可通用
+        basic.py            # 微博返回内容解析，作用看是否为正常响应
+        comment.py          # 评论解析
+        home.py             # 用户主页微博数据解析
+        search.py           # 微博搜索结果解析
+        status.py           # 微博具体信息
     tasks/
         __init__.py
-        workers.py        # celery worker
-        login.py          # 模拟登陆相关任务
-        user.py           # 用户抓取相关任务
-    tests/                # 一些解析模版，没多少用
-    utils/                # 工具类
+        comment.py          # 评论抓取任务
+        home.py             # 用户主页微博抓取任务
+        login.py            # 模拟登陆相关任务
+        search.py           # 搜索相关任务
+        user.py             # 用户抓取相关任务
+        workers.py          # celery worker配置
+
+    tests/                  # 一些解析模版，主要在开发解析模块的时候使用
+    utils/                  # 工具类
     wblogin/
         __init__.py
         login.py          # 微博模拟登陆具体实现
@@ -125,63 +146,56 @@
     requirements.txt      # 项目相关依赖
 
 ```
-有的文件和模块在项目代码中存在，却没有在项目结构中呈现，那么就说明该模块或者该文件还未进行
-修改（oracle=>mysql）或者稳定性测试，实现并且测试完成后会补充
+
+有的文件和模块在项目代码中存在，却没有在项目结构中呈现，那么就**说明该模块或者该文件还未进行
+修改（oracle=>mysql）或者稳定性测试**，实现并且测试完成后会补充
 
 
 ## 配置和使用 :sparkles:
-- 考虑到Python3是趋势和一些用于学习的用户，项目运行环境为**Python3.x**
-- 项目存储后端使用**mysql**，所以需要在存储服务器上**安装mysql**
-- 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
-需要使用broker和各个分布式节点通信，项目使用的是redis，所以需要先安装[redis](https://redis.io/download)。
-注意修改redis的配置文件让它能监听除本机外的别的节点的请求，**建议给redis设置密码**，如
-果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。如果害怕遇到redis单点
-故障，可以使用redis主从配置。
-- 由于**高版本的celery不支持windows**,所以请在**类Unix系统**部署。如果实在需要在windows
-上部署的话，可以把celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
-celery最后支持的一个windows版本；**特别注意，windows平台上celery的定时功能不可用！
+
+- 环境配置
+  - 考虑到Python3是趋势和一些将该项目用于学习的用户，项目运行环境为**Python3.x**
+  - 项目存储后端使用**Mysql**，所以需要在存储服务器上**安装Mysql**,注意设置字符集编码为**utf-8**
+  - 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
+需要使用broker和各个分布式节点通信，项目使用的是Redis，所以需要先安装[Redis](https://redis.io/download)。
+注意修改Redis的配置文件让它能监听除本机外的别的节点的请求，**建议给Redis设置密码**，如
+果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。如果害怕遇到Redis单点
+故障，可以使用Redis主从配置。
+  - 由于**高版本的Celery不支持Windows**,所以请在**类Unix系统**部署。如果实在需要在windows
+上部署的话，可以把Celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
+Celery最后支持的一个windows版本；**特别注意，Windows平台上Celery的定时功能不可用！
 所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**
-- 安装相关依赖```pip install -r requirements.txt```
 
-- 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
-- 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
+- 项目相关配置
+  - 安装相关依赖```pip install -r requirements.txt```
+  - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
+  - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
 
-- 入口文件：如果有同学有修改源码的需求，那么建议从入口文件开始阅读
- - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
- - [user.py](./tasks/user.py)和[user_first.py](user_first.py):微博用户抓取程序
- - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
- - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
+- 入口文件：如果有同学有**修改源码**的需求，那么建议**从入口文件开始阅读**
+  - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
+  - [user.py](./tasks/user.py)和[user_first.py](user_first.py):微博用户抓取程序
+  - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
+  - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
+  - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
 
-- 微博登录和数据采集
- - 下面说明该项目分布式抓取的基本概念和用法
-   - 项目使用了[任务路由](http://docs.celeryproject.org/en/latest/userguide/routing.html)，
-   在```tasks/workers```中可以查看[所有的queue](./tasks/workers.py),所以需要在启动
-   worker的时候**指定分布式节点的queue**,这个queue的作用就是规定该节点能接什么任务，不会接什么任务。比如我的节点1需要做登录任务和用户信息抓取任务，那么我就
-   需要在节点1指定登录任务的queue```login_queue```和抓取用户信息的queue```user_crawler```,
-   这里启动worker的语句就应该是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1 -Ofair```。这样节点1
-   就只会执行*模拟登陆*和*用户信息*的相关任务。这样做的好处是：某些任务耗时比较多，就需要更多节点执行，有的耗时小，就不需要这么多节点，比如用户抓取，一个http请求
-   只能得到一个用户信息，而对于用户关注和粉丝抓取，一个http请求可以得到几十个关注或者粉丝用户的uid。然后再说说各个启动参数的意思：```-A```指定celery app为
-   [```tasks.workers```](./tasks/workers.py), ```-Q```指定节点1能接受的任务队列是```login_queue```和```user_crawler```，即使你对它发送抓取用户粉丝
-   和用户关注的任务(这个任务在该项目中的queue是```fans_followers```,在[tasks.workers](./tasks/workers.py)中可查看)，它也不会执行。```-l```表示的是日志等级，
-   ```--concurrency```是worker的线程数，这里规定为1，celery默认采用多线程的方式实现并发,我们也可以让它使用
-   基于异步IO的方式实现并发，具体参考[Celery Concurrency](http://docs.celeryproject.org/en/master/userguide/concurrency/eventlet.html)，
-   -Ofair```是避免让celery发生死锁。启动worker的语句需要切换到项目根目录下执行。关于celery更为详细的
-   知识请参考[celery的任务路由说明](http://docs.celeryproject.org/en/latest/userguide/routing.html)。项目中使用的所有queue和它们的
-   作用参见[WeiboSpider中的所有任务及其说明和使用](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)
 
-   - 如果是**第一次运行该项目**，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
-   login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上
-   - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
-   ```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以通过```python login_first.py```来获取worker
-   首次运行需要的cookie是必须的
-   - 通过*flower*监控节点健康状况：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555'
-   访问所有节点信息，这里的```xxxx```指的是节点的IP
 
- - 定时登录是为了维护cookie的时效性，据我实验，微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认10小时就定时登录一次。
+- 基本用法
+  - 在分布式节点上启动worker。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
+比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1 -Ofair```。
+所有的queue及作用和更多关于worker的知识请在[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)中查看
+  - 如果是**第一次运行该项目**，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
+login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上
+  - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
+```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以通过```python login_first.py```来获取worker
+首次运行需要的cookie是必须的
+  - 通过*flower*监控节点健康状况：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP
 
- - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
 
- - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加我微信（微信号:wpm_wx）询问
+- 其它
+  - 定时登录是为了维护cookie的时效性，据我实验，PC端微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认10小时就定时登录一次。
+  - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
+  - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加我微信（微信号:wpm_wx）询问
 
 
 ## 常见问题 :question:
@@ -269,6 +283,7 @@ celery最后支持的一个windows版本；**特别注意，windows平台上cele
 ## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
-- 感谢网友 李* 和 西*弗斯 热心测试和提供建议
+- 感谢网友 李*、戴** 和 西*弗斯 热心测试和提供建议
 - 感谢网友 sKeletOn、frankfff 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
 而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
+- 感谢所有`star`支持的网友
