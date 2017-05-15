@@ -134,7 +134,7 @@ class TestWeiboSpider(unittest.TestCase):
         """
         from db.search_words import get_search_keywords
         rs = get_search_keywords()
-        self.assertEqual(len(rs), 5)
+        self.assertEqual(len(rs), 10)
 
     def test_add_search_cont(self):
         """
