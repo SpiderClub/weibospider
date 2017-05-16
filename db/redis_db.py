@@ -39,3 +39,19 @@ class Urls(object):
     @classmethod
     def store_crawl_url(cls, url, result):
         cls.rd_con.set(url, result)
+
+
+class IdNames(object):
+    rd_con = redis.StrictRedis(host=redis_args.get('host'), port=redis_args.get('port'),
+                               password=redis_args.get('password'), db=redis_args.get('id_name'))
+
+    @classmethod
+    def store_id_name(cls, user_name, user_id):
+        cls.rd_con.set(user_name, user_id)
+
+    @classmethod
+    def fetch_uid_by_name(cls, user_name):
+        user_id = cls.rd_con.get(user_name)
+        if user_id:
+            return user_id.decode('utf-8')
+        return ''

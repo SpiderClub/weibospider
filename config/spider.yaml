@@ -28,6 +28,7 @@ redis:
     urls: 2 # 抓取过的url
     broker: 5 # celery的broker
     backend: 6 # celery的backend
+    id_name: 8 # user_id和对应的name，这个是为转发微博分析而存在的
 
 
 
