@@ -9,7 +9,7 @@ def get_engine():
     args = get_db_args()
     connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(args['db_type'], args['user'], args['password'],
                                                              args['host'], args['port'], args['db_name'])
-    engine = create_engine(connect_str, encoding="utf-8")
+    engine = create_engine(connect_str, encoding='utf-8')
     return engine
 
 

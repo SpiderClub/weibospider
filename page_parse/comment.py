@@ -66,6 +66,7 @@ def get_comment_list(html, wb_id):
         try:
             wb_comment.comment_cont = comment.find(attrs={'class': 'WB_text'}).text.strip()
             wb_comment.comment_id = comment['comment_id']
+            # TODO 将wb_comment.user_id加入待爬队列（seed_ids）
             wb_comment.user_id = comment.find(attrs={'class': 'WB_text'}).find('a').get('usercard')[3:]
             # todo 日期格式化
             wb_comment.create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
