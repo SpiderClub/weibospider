@@ -101,16 +101,64 @@ create table weibo.weibo_data
 	device varchar(200) default '' null comment '微博发布设备',
 	weibo_url varchar(300) not null comment '微博url',
 	create_time varchar(200) null comment '微博创建时间',
+	comment_crawled int default '0' null,
+	repost_crawled int default '0' null,
 	constraint weibo_data_id_uindex
 		unique (id),
 	constraint weibo_data_weibo_id_uindex
 		unique (weibo_id)
 )
+comment '微博数据表'
 ;
 
 create index weibo_data_weibo_id_index
 	on weibo_data (weibo_id)
 ;
+
+
+
+create index weibo_data_weibo_id_index
+	on weibo_data (weibo_id)
+;
+
+create table weibo.weibo_comment
+(
+	id int not null auto_increment comment '主键id'
+		primary key,
+	comment_id varchar(50) null comment '评论id',
+	comment_cont varchar(5000) default '' null comment '评论内容',
+	weibo_id varchar(200) null comment '微博id',
+	user_id varchar(20) null comment '用户id',
+	create_time varchar(200) null,
+	constraint weibo_comment_id_uindex
+		unique (id),
+	constraint weibo_comment_comment_id_uindex
+		unique (comment_id)
+)
+comment '微博评论表'
+;
+
+
+create table weibo.weibo_repost
+(
+	id int not null auto_increment
+		primary key,
+	user_id varchar(20) null comment '微博用户id',
+	weibo_id varchar(200) null comment '微博id',
+	parent_user_id varchar(20) null comment '上层用户id',
+	repost_time varchar(200) null comment '转发时间',
+	repost_cont varchar(5000) default '' null comment '转发内容',
+	weibo_url varchar(200) null comment '转发微博url',
+	parent_user_name varchar(200) null,
+	user_name varchar(200) null,
+	root_weibo_id varchar(200) null,
+	constraint repost_id_uindex
+		unique (id),
+	constraint weibo_repost_weibo_id_uindex
+		unique (weibo_id)
+)
+;
+
 
 
 

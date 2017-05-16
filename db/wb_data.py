@@ -52,3 +52,22 @@ def set_weibo_comment_crawled(mid):
 @db_commit_decorator
 def get_weibo_comment_not_crawled():
     return db_session.query(WeiboData.weibo_id).filter(text('comment_crawled=0')).all()
+
+
+@db_commit_decorator
+def get_weibo_repost_not_crawled():
+    # todo 多表联查，把weibo_id、user_id和user_name都查出来
+    return db_session.query(WeiboData.weibo_id).filter(text('repost_crawled=0')).all()
+
+
+@db_commit_decorator
+def set_weibo_repost_crawled(mid):
+    """
+    如果存在该微博，那么就将repost_crawled字段设置为1;不存在该微博，就不做任何操作
+    :param mid: 
+    :return: 
+    """
+    weibo_data = get_wb_by_mid(mid)
+    if weibo_data:
+        weibo_data.repost_crawled = 1
+        db_session.commit()

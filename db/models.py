@@ -70,6 +70,7 @@ class WeiboData(Base):
     weibo_url = Column(String(300))
     create_time = Column(String(200))
     comment_crawled = Column(INTEGER, default=0)
+    repost_crawled = Column(INTEGER, default=0)
 
 
 class KeywordsWbdata(Base):
@@ -92,3 +93,26 @@ class WeiboComment(Base):
 
     def __repr__(self):
         return 'weibo_id:{},comment_id:{},comment_cont:{}'.format(self.weibo_id, self.comment_id, self.comment_cont)
+
+
+class WeiboRepost(Base):
+    # 微博转发信息
+    __tablename__ = 'weibo_repost'
+    id = Column(INTEGER, primary_key=True, autoincrement=True)
+    user_id = Column(String(20))
+    user_name = Column(String(200))
+    weibo_id = Column(String(200))
+    parent_user_id = Column(String(20))
+    repost_time = Column(String(200))
+    repost_cont = Column(String(20), default='')
+    weibo_url = Column(String(200))
+    parent_user_name = Column(String(200))
+    root_weibo_id = Column(String(200))
+
+    def __repr__(self):
+        return 'user_id:{},user_name:{},parent_user_id:{},parent_user_name:{}, weibo_url:{},weibo_id:{},' \
+               'repost_time:{},repost_cont:{}'.format(self.user_id, self.user_name, self.parent_user_id,
+                                                      self.parent_user_name, self.weibo_url, self.weibo_id,
+                                                      self.repost_time, self.repost_cont)
+
+
