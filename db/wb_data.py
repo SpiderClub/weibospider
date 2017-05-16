@@ -49,12 +49,10 @@ def set_weibo_comment_crawled(mid):
         db_session.commit()
 
 
-@db_commit_decorator
 def get_weibo_comment_not_crawled():
     return db_session.query(WeiboData.weibo_id).filter(text('comment_crawled=0')).all()
 
 
-@db_commit_decorator
 def get_weibo_repost_not_crawled():
     return db_session.query(WeiboData.weibo_id, WeiboData.uid).filter(text('repost_crawled=0')).all()
 
