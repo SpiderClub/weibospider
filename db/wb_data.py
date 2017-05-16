@@ -56,8 +56,7 @@ def get_weibo_comment_not_crawled():
 
 @db_commit_decorator
 def get_weibo_repost_not_crawled():
-    # todo 多表联查，把weibo_id、user_id和user_name都查出来
-    return db_session.query(WeiboData.weibo_id).filter(text('repost_crawled=0')).all()
+    return db_session.query(WeiboData.weibo_id, WeiboData.uid).filter(text('repost_crawled=0')).all()
 
 
 @db_commit_decorator
