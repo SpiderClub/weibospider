@@ -101,7 +101,7 @@ class WeiboRepost(Base):
     id = Column(INTEGER, primary_key=True, autoincrement=True)
     user_id = Column(String(20))
     user_name = Column(String(200))
-    weibo_id = Column(String(200))
+    weibo_id = Column(String(200), unique=True)
     parent_user_id = Column(String(20))
     repost_time = Column(String(200))
     repost_cont = Column(String(20), default='')
@@ -110,8 +110,8 @@ class WeiboRepost(Base):
     root_weibo_id = Column(String(200))
 
     def __repr__(self):
-        return 'user_id:{},user_name:{},parent_user_id:{},parent_user_name:{}, weibo_url:{},weibo_id:{},' \
-               'repost_time:{},repost_cont:{}'.format(self.user_id, self.user_name, self.parent_user_id,
+        return 'id:{},user_id:{},user_name:{},parent_user_id:{},parent_user_name:{}, weibo_url:{},weibo_id:{},' \
+               'repost_time:{},repost_cont:{}'.format(self.id, self.user_id, self.user_name, self.parent_user_id,
                                                       self.parent_user_name, self.weibo_url, self.weibo_id,
                                                       self.repost_time, self.repost_cont)
 

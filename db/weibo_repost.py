@@ -1,23 +1,17 @@
 # coding:utf-8
 from db.basic_db import db_session
 from db.models import WeiboRepost
-from pymysql.err import IntegrityError
 from decorators.decorator import db_commit_decorator
 
 
+# TODO 弄清楚"pymysql.err.IntegrityError"捕捉不了的原因
 @db_commit_decorator
 def save_reposts(repost_list):
-    print('正在存储数据')
-    try:
-        db_session.add_all(repost_list)
-    except IntegrityError:
-        for data in repost_list:
-            r = get_repost_by_rid(data.weibo_id)
-            if r:
-                continue
-            save_repost(data)
-    finally:
-        db_session.commit()
+    for repost in repost_list:
+        r = get_repost_by_rid(repost.weibo_id)
+        if not r:
+            save_repost(repost)
+    db_session.commit()
 
 
 @db_commit_decorator
