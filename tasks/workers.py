@@ -28,7 +28,7 @@ app.conf.update(
     CELERYBEAT_SCHEDULE={
         'login_task': {
             'task': 'tasks.login.excute_login_task',
-            'schedule': timedelta(hours=10),
+            'schedule': timedelta(hours=20),
             'options': {'queue': 'login_queue', 'routing_key': 'for_login'}
         },
         'user_task': {
