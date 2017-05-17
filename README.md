@@ -25,7 +25,7 @@
 比如不同```domain```不同用户的解析策略、不同```domain```不同用户的主页分析策略等
 - 稳定！项目可以长期稳定运行。
   - 为了保证程序能长期稳定运行，数据所有的网络请求都是通过抓包手动分析的，未用任何自动化工具，
-  包括模拟登陆！从另一个方面来说，速度也是比较有保证的（主要还是看账号）
+  包括模拟登陆！从另一个方面来说，抓取速度也是比较有保证的（主要还是看账号数量）
   - 通过合理的阈值设定，账号可以保证安全
   - 即使账号不可用或者登陆失败，项目都对其做了处理（智能冻结账号，出错重试等），以保证每次请求都是有效的，并及时把错误反馈给用户
   - 通过大量的异常检测和处理，几乎捕获了所有的解析和抓取异常。编写了大量的解析代码来获取足够全面的信息
@@ -45,7 +45,7 @@
   抓取用户的所有微博。目前指定用户是基于已有的[seed_ids](./config/sql/spider.sql)表中的```home_crawled=0```的用户，你也可以自己指定想要抓取的用户。
   - [x] 指定微博的评论：主要是抓取针对该微博的评论，即根评论。你可以通过修改[comment.py](./page_parse/comment.py)中的`get_comment_list()`
   来抓取指定微博的所有评论，包括根评论和子评论。目前抓取的评论是从`weibo_data`表中选取的`comment_crawled=0`的微博，你可以指定微博mid来定制化爬取评论。
-  - [ ] 指定微博的转发情况：主要是热门微博(正在开发)
+  - [x] 指定微博的转发情况：主要是热门微博的转发信息
 
 - 反爬虫相关
   - [ ] 测试单机单账号访问阈值
@@ -57,8 +57,8 @@
   - [x] 验证登录状态的cookies和代理ip是否可以成功抓取：测试结果是可以使用登录后的cookie
  从别的地方进行数据采集，根据这一点，可以考虑使用代理IP，但是代理IP的质量和稳定性可能会
  有问题，可能需要找一个或者自己写一个**高可用**的代理池，这一点还**有待考察**)
-  - [ ] 验证移动端登录Cookie和PC端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
-  移动端的异地模拟登陆难度比PC端要小
+  - [x] 验证移动端登录Cookie和PC端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
+  移动端的异地模拟登陆难度比PC端要小。目前异地账号使用打码平台进行验证码识别，并未采用移动端的方式登录
   - [x] 比较单IP和单账号哪个的限制更多，从而制定更加高效的数据采集方案：测试得知，经常是
  账号被封了，然后同一个IP用别的账号还能登陆，所以账号的限制比IP更加严格
 
@@ -133,6 +133,7 @@
         comment.py          # 评论抓取任务
         home.py             # 用户主页微博抓取任务
         login.py            # 模拟登陆相关任务
+        repost.py           # 转发信息抓取相关任务
         search.py           # 搜索相关任务
         user.py             # 用户抓取相关任务
         workers.py          # celery worker配置
@@ -143,7 +144,7 @@
         __init__.py
         login.py          # 微博模拟登陆具体实现
     headers.py            # 请求头，主要是UA
-    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以第一次需要手动登陆
+    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以**第一次需要手动登**
     test_wbspider.py      # 没什么用的单元测试
     requirements.txt      # 项目相关依赖
 
@@ -170,7 +171,10 @@ Celery最后支持的一个windows版本；**特别注意，Windows平台上Cele
 
 - 项目相关配置
   - 安装相关依赖```pip install -r requirements.txt```
-  - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置
+  - 打开[配置文件](./config/spider.yaml)修改数据库和微博账号相关配置。如果你的账号不是常用地登录
+  的话（比如通过淘宝购买），登录会出现验证码，目前本项目通过打码平台进行验证码识别，选择的打码平台
+  是[云打码](http://www.yundama.com/)，你需要在[spider.yaml](./config/spider.yaml)中**设置云打码平台你所注册
+  的用户名和密码**，一块钱大概可以识别160个验证码。也可以选择别的打码平台，又好用的欢迎推荐 T.T
   - 打开[sql文件](./config/sql/spider.sql)查看并使用建表语句
 
 - 入口文件：如果有同学有**修改源码**的需求，那么建议**从入口文件开始阅读**
@@ -179,7 +183,7 @@ Celery最后支持的一个windows版本；**特别注意，Windows平台上Cele
   - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
   - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
   - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
-
+  - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):转发信息抓取
 
 
 - 基本用法
@@ -190,12 +194,13 @@ Celery最后支持的一个windows版本；**特别注意，Windows平台上Cele
 login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上
   - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
 ```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以通过```python login_first.py```来获取worker
-首次运行需要的cookie是必须的
+首次运行需要的cookie是必须的.如果你想马上启动其他任务，而非等第一次定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动后就执行用户抓取任务，那么就通过
+```python user_first.py```来执行
   - 通过*flower*监控节点健康状况：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP
 
 
 - 其它
-  - 定时登录是为了维护cookie的时效性，据我实验，PC端微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认10小时就定时登录一次。
+  - 定时登录是为了维护cookie的时效性，据我实验，PC端微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认20小时就定时登录一次。
   - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
   - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加我微信（微信号:wpm_wx）询问
 
@@ -213,13 +218,17 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 如果在linux上面搭redis的话，当我们修改了```redis.conf```文件后，我们在启动redis的时候也**需要指定redis.conf
 文件**，启动之前，最好把```redis-server```加入到环境变量中。比如我的```redis.conf```放在```/etc/redis```中，
 那么我可以通过先切换到```/etc/redis```目录，再通过```redis-server redis.conf```来启动redis server，也可以
-直接```redis-server /etc/redis/redis.conf```来启动，前提是 **redis-server**文件需要在环境变量中
+直接```redis-server /etc/redis/redis.conf```来启动，前提是 **redis-server**文件需要在环境变量中.另外，还得
+注意一点，如果是centos的话，redis3.2.7可能会在`make&&make install` 阶段报错，建议下载redis3.2.8
 
 3. 这个项目的模拟登陆和抓取的时候是怎么处理验证码的啊？
-答：这个项目并没有处理验证码，如果要从工程化的角度来解决微博的验证码的问题，研发成本太高了。但是可以通过一些打码平台，来
-解决验证码问题。我们现在做的和要做的工作是如何规避验证码，比如模拟登陆的时候尽量在账号常用地登录，还有一个点就是测试微博
-的容忍边界，小于它的阈值做采集就不容易被封（不过速度很慢），毕竟按规矩来被封的风险要小得多。如果有图形图像识别的牛人解决了
-验证码的问题，欢迎提PR，帮助更多人。
+答：这个项目~~并没有处理验证码~~在**模拟登陆阶段会判断账号是否需要验证码**，对于需要验证码的账号，通过打码平台识别验证码进行
+操作，我选择的是[云打码](http://www.yundama.com/)（另外一个微博爬虫项目作者推荐的,发现确实好用）；对于微博账号抓取的时
+候被封出现的验证码，目前的处理是从数据库和redis中删除该账号对应的信息，因为要复现登录后被封需要一些时间来测试，等项目功能方
+面的代码实现得差不多了，可能会考虑这个问题，毕竟验证码的成本比账号低。
+
+另外，我们应该尽量规避验证码，比如模拟登陆的时候尽量在账号常用地登录，还有一个点就是测试微博的容忍边界，小于它的阈值做采集
+就不容易被封（不过速度很慢），毕竟按规矩来被封的风险要小得多。如果有图形图像识别的牛人解决了验证码的问题，欢迎提PR，帮助更多人。
 
 4. 这个项目能在windows上执行吗？
 答：window上可以执行worker节点，beat节点是不可以的，因为windows不支持crontab。如果要混用windows和linux，那么一定
@@ -286,6 +295,6 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢网友 李*、戴** 和 西*弗斯 热心测试和提供建议
-- 感谢网友 sKeletOn、frankfff 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
+- 感谢网友 sKeletOn、frankfff、大志 捐赠,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
 而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
 - 感谢所有`star`支持的网友
