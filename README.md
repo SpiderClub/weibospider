@@ -1,6 +1,6 @@
 ## 关于本项目 :octocat:
 [![](https://img.shields.io/badge/python-3.4-green.svg)](https://www.python.org/download/releases/3.4.0/) [![](https://img.shields.io/badge/python-3.5-green.svg)](https://www.python.org/downloads/release/python-352/)
-[![](https://img.shields.io/badge/python-3.6-green.svg)](https://www.python.org/downloads/release/python-360/) ![](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+[![](https://img.shields.io/badge/python-3.6-green.svg)](https://www.python.org/downloads/release/python-360/) [![](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 - 实现内容包括用户信息、用户主页所有微博、微博搜索、微博评论和微博转发关系抓取等
 - 该项目本来是我们项目组的一个子模块，作用是舆情分析。整个系统比较庞大，我只能开源自己写
