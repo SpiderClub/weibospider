@@ -72,4 +72,9 @@ def get_broker_or_backend(types):
     return url
 
 
+def get_code_username():
+    return cf.get('yundama_username')
 
+
+def get_code_password():
+    return cf.get('yundama_passwd')

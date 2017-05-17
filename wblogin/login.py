@@ -1,16 +1,40 @@
 # -*-coding:utf-8 -*-
 import re
+import rsa
+import math
 import time
+import random
 import base64
 import binascii
 from urllib.parse import quote_plus
 import requests
-import rsa
+from config import conf
 from headers import headers
+from db.redis_db import Cookies
+from utils import code_verification
 from page_parse.basic import is_403
 from logger.log import crawler, other
 from db.login_info import freeze_account
-from db.redis_db import Cookies
+
+
+verify_code_path = './pincode.png'
+index_url = "http://weibo.com/login.php"
+yundama_username = conf.get_code_username()
+yundama_password = conf.get_code_password()
+
+
+def get_pincode_url(pcid):
+    size = 0
+    url = "http://login.sina.com.cn/cgi/pin.php"
+    pincode_url = '{}?r={}&s={}&p={}'.format(url, math.floor(random.random() * 100000000), size, pcid)
+    return pincode_url
+
+
+def get_img(url):
+    resp = requests.get(url, headers=headers, stream=True)
+    with open(verify_code_path, 'wb') as f:
+        for chunk in resp.iter_content(1000):
+            f.write(chunk)
 
 
 def get_encodename(name):
@@ -95,7 +119,21 @@ def get_session(name, password):
         'vsnf': '1',
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
+    need_pin = sever_data['showpin']
+    if need_pin == 1:
+        # 你也可以改为手动填写验证码
+        if not yundama_username:
+            raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
+        pcid = sever_data['pcid']
+        data['pcid'] = pcid
+        img_url = get_pincode_url(pcid)
+        get_img(img_url)
+        verify_code = code_verification.code_verificate(yundama_username, yundama_password, verify_code_path)
+        data['door'] = verify_code
+
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+
+    # todo 区分不同登录错误，比如验证码错误和密码错误
     url = get_redirect(data, post_url, session)
 
     if url != '':
