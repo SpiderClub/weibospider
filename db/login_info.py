@@ -10,7 +10,12 @@ def get_login_info():
 
 
 @db_commit_decorator
-def freeze_account(name):
+def freeze_account(name, rs):
+    """
+    :param name: 账户名
+    :param rs: 0表示被封，1表示正常，2表示账号密码不匹配
+    :return: 
+    """
     account = db_session.query(LoginInfo).filter(LoginInfo.name == name).first()
-    account.enable = 0
+    account.enable = rs
     db_session.commit()

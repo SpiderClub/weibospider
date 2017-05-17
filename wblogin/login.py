@@ -68,8 +68,9 @@ def get_password(password, servertime, nonce, pubkey):
 
 
 # 使用post提交加密后的所有数据,并且获得下一次需要get请求的地址
-def get_redirect(data, post_url, session):
+def get_redirect(name, data, post_url, session):
     """
+    :param name: 登录用户名
     :param data: 需要提交的数据，可以通过抓包来确定部分不变的
     :param post_url: post地址
     :param session:
@@ -77,6 +78,17 @@ def get_redirect(data, post_url, session):
     """
     logining_page = session.post(post_url, data=data, headers=headers)
     login_loop = logining_page.content.decode("GBK")
+
+    # 如果是账号密码不正确，那么就将该字段置为2
+    if 'retcode=101' in login_loop:
+        crawler.error('账号{}的密码不正确'.format(name))
+        freeze_account(name, 2)
+        return ''
+
+    # todo  如果是验证码不可用，由于识别错误可以不扣除积分，所以这里可以适当改进，调用云打码的api返回
+    if 'retcode=2070' in login_loop:
+        crawler.error('输入的验证码不正确')
+        return ''
     if '正在登录' or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
         return re.findall(pa, login_loop)[0]
@@ -134,7 +146,7 @@ def get_session(name, password):
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     # todo 区分不同登录错误，比如验证码错误和密码错误
-    url = get_redirect(data, post_url, session)
+    url = get_redirect(name, data, post_url, session)
 
     if url != '':
         rs_cont = session.get(url, headers=headers)
