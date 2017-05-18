@@ -1,6 +1,7 @@
 import json
 import time
 import requests
+from logger.log import other
 
 
 class YDMHttp:
@@ -123,7 +124,11 @@ def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_ke
     yundama_obj = YDMHttp(name, passwd, app_id, app_key)
     cur_uid = yundama_obj.login()
     print('uid: %s' % cur_uid)
+
     rest = yundama_obj.balance()
+    # todo  这里应该找一种更加合理的方法提示用户
+    if rest <= 0:
+        other.warning('云打码已经欠费了，请及时充值')
     print('balance: %s' % rest)
 
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
