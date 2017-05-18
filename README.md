@@ -165,6 +165,7 @@
 注意修改Redis的配置文件让它能监听除本机外的别的节点的请求，**建议给Redis设置密码**，如
 果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。如果害怕遇到Redis单点
 故障，可以使用Redis主从配置。
+  - 更新：由于部分朋友对redis的配置特别生疏，我专门写了一篇文章，请点击[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)查看
   - 由于**高版本的Celery不支持Windows**,所以请在**类Unix系统**部署。如果实在需要在windows
 上部署的话，可以把Celery版本降为3.1.25: ```pip install celery==3.1.25```，这是
 Celery最后支持的一个windows版本；**特别注意，Windows平台上Celery的定时功能不可用！
