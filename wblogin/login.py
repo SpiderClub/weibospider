@@ -17,6 +17,7 @@ from logger.log import crawler, other
 from db.login_info import freeze_account
 
 
+# todo 这里如果是多个账号并发登录，那么验证码可能会被覆盖思考一种对应的方式
 verify_code_path = './pincode.png'
 index_url = "http://weibo.com/login.php"
 yundama_username = conf.get_code_username()
@@ -96,7 +97,7 @@ def get_redirect(name, data, post_url, session):
         return ''
 
 
-def do_login(name, password):
+def do_login(name, password, need_verify):
     session = requests.Session()
     su = get_encodename(name)
 
@@ -130,12 +131,14 @@ def do_login(name, password):
         'vsnf': '1',
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
-    need_pin = sever_data['showpin']
 
     yundama_obj = None
     cid = ''
-    if need_pin == 1:
-        # 你也可以改为手动填写验证码
+
+    # 你也可以改为手动填写验证码
+    # 之所以会有need_verify这个字段，是因为某些账号虽然可能不正常，但是它在预登陆的时候会返回pincode=0,而实际上却是需要验证码的
+    # 所以这里通过用户自己控制
+    if need_verify:
         if not yundama_username:
             raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
         pcid = sever_data['pcid']
@@ -153,13 +156,12 @@ def do_login(name, password):
 
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
-def get_session(name, password):
+def get_session(name, password, need_verify):
     url, yundama_obj, cid, session = do_login(name, password)
-
     # 打码出错处理
     while url == 'pinerror' and yundama_obj is not None:
         yundama_obj.report_error(cid)
-        url, yundama_obj, cid, session = do_login(name, password)
+        url, yundama_obj, cid, session = do_login(name, password, need_verify)
 
     if url != '':
         rs_cont = session.get(url, headers=headers)

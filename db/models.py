@@ -10,6 +10,7 @@ class LoginInfo(Base):
     name = Column(String(100))
     password = Column(String(200))
     enable = Column(INTEGER, default=1)
+    need_verify = Column(INTEGER, default=1)
 
 
 class User(Base):

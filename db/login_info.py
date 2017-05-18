@@ -6,7 +6,8 @@ from decorators.decorator import db_commit_decorator
 
 
 def get_login_info():
-    return db_session.query(LoginInfo.name, LoginInfo.password, LoginInfo.enable).filter(text('enable=1')).all()
+    return db_session.query(LoginInfo.name, LoginInfo.password, LoginInfo.enable, LoginInfo.need_verify).\
+        filter(text('enable=1')).all()
 
 
 @db_commit_decorator
