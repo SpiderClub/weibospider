@@ -74,7 +74,7 @@ def get_redirect(name, data, post_url, session):
     :param data: 需要提交的数据，可以通过抓包来确定部分不变的
     :param post_url: post地址
     :param session:
-    :return: 服务器返回的下一次需要请求的url
+    :return: 服务器返回的下一次需要请求的url,如果打码出错，返回特定字符串好做特殊处理
     """
     logining_page = session.post(post_url, data=data, headers=headers)
     login_loop = logining_page.content.decode("GBK")
@@ -85,10 +85,10 @@ def get_redirect(name, data, post_url, session):
         freeze_account(name, 2)
         return ''
 
-    # todo  如果是验证码不可用，由于识别错误可以不扣除积分，所以这里可以适当改进，调用云打码的api返回
     if 'retcode=2070' in login_loop:
         crawler.error('输入的验证码不正确')
-        return ''
+        return 'pinerror'
+
     if '正在登录' or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
         return re.findall(pa, login_loop)[0]
@@ -96,8 +96,7 @@ def get_redirect(name, data, post_url, session):
         return ''
 
 
-# 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
-def get_session(name, password):
+def do_login(name, password):
     session = requests.Session()
     su = get_encodename(name)
 
@@ -132,6 +131,9 @@ def get_session(name, password):
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
     need_pin = sever_data['showpin']
+
+    yundama_obj = None
+    cid = ''
     if need_pin == 1:
         # 你也可以改为手动填写验证码
         if not yundama_username:
@@ -140,13 +142,24 @@ def get_session(name, password):
         data['pcid'] = pcid
         img_url = get_pincode_url(pcid)
         get_img(img_url)
-        verify_code = code_verification.code_verificate(yundama_username, yundama_password, verify_code_path)
+        verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+                                                                          verify_code_path)
         data['door'] = verify_code
 
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
-    # todo 区分不同登录错误，比如验证码错误和密码错误
     url = get_redirect(name, data, post_url, session)
+    return url, yundama_obj, cid, session
+
+
+# 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
+def get_session(name, password):
+    url, yundama_obj, cid, session = do_login(name, password)
+
+    # 打码出错处理
+    while url == 'pinerror' and yundama_obj is not None:
+        yundama_obj.report_error(cid)
+        url, yundama_obj, cid, session = do_login(name, password)
 
     if url != '':
         rs_cont = session.get(url, headers=headers)
@@ -161,6 +174,7 @@ def get_session(name, password):
                 check_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
                 resp = session.get(check_url, headers=headers)
 
+                # 通过实验，目前发现未经过手机验证的账号是救不回来了...
                 if is_403(resp.text):
                     other.error('账号{}已被冻结'.format(name))
                     crawler.warning('账号{}已经被冻结'.format(name))

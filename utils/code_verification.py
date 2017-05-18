@@ -88,9 +88,27 @@ class YDMHttp:
         res = requests.post(url, files=files, data=fields)
         return res.text
 
+    def report_error(self, cid):
+        data = {
+            'method': 'report',
+            'username': self.username,
+            'password': self.password,
+            'appid': self.appid,
+            'appkey': self.appkey,
+            'flag': 0,
+            'cid': cid
+        }
 
-def code_verificate(name, passwd, file_name, app_id=3510, app_key='7281f8452aa559cdad6673684aa8f575',
-                    code_type=1005, time_out=60):
+        response = self.request(data)
+        if response:
+            if response['ret']:
+                return response['ret']
+        else:
+            return -9001
+
+
+def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_key='7281f8452aa559cdad6673684aa8f575',
+                    time_out=60):
     """
     :param name: 云打码注册用户名，这是普通用户注册，而非开发者用户注册名
     :param passwd: 用户密码
@@ -111,7 +129,7 @@ def code_verificate(name, passwd, file_name, app_id=3510, app_key='7281f8452aa55
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
     cid, result = yundama_obj.decode(file_name, code_type, time_out)
     print('cid: %s, result: %s' % (cid, result))
-    return result
+    return result, yundama_obj, cid
 
 
 if __name__ == '__main__':
