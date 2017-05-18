@@ -180,7 +180,7 @@ def get_session(name, password, need_verify):
                 if is_403(resp.text):
                     other.error('账号{}已被冻结'.format(name))
                     crawler.warning('账号{}已经被冻结'.format(name))
-                    freeze_account(name)
+                    freeze_account(name, 0)
                     return None
                 other.info('本次登陆账号为:{}'.format(name))
                 Cookies.store_cookies(name, session.cookies.get_dict())

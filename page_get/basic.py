@@ -73,7 +73,7 @@ def get_page(url, user_verify=True, need_login=True):
 
                 if "$CONFIG['islogin'] = '0'" in resp.text:
                     crawler.warning('账号{}出现异常'.format(name_cookies[0]))
-                    freeze_account(name_cookies[0])
+                    freeze_account(name_cookies[0], 0)
                     Cookies.delete_cookies(name_cookies[0])
                     continue
             else:
@@ -91,7 +91,7 @@ def get_page(url, user_verify=True, need_login=True):
             if user_verify:
                 if 'unfreeze' in resp.url or 'accessdeny' in resp.url or is_403(page):
                     crawler.warning('账号{}已经被冻结'.format(name_cookies[0]))
-                    freeze_account(name_cookies[0])
+                    freeze_account(name_cookies[0], 0)
                     Cookies.delete_cookies(name_cookies[0])
                     count += 1
                     continue
