@@ -85,6 +85,7 @@
  - 微博特定话题搜索任务 [search.py](./tasks/search.py)
  - 微博用户主页信息抓取任务 [home.py](./tasks/home.py)
  - 微博评论抓取任务 [comment.py](./tasks/comment.py)
+ - 微博转发抓取任务 [repost.py](./tasks/repost.py)
 
 ```
     config/
