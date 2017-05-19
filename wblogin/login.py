@@ -157,7 +157,7 @@ def do_login(name, password, need_verify):
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
 def get_session(name, password, need_verify):
-    url, yundama_obj, cid, session = do_login(name, password)
+    url, yundama_obj, cid, session = do_login(name, password,need_verify)
     # 打码出错处理
     while url == 'pinerror' and yundama_obj is not None:
         yundama_obj.report_error(cid)
