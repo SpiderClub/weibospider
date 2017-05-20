@@ -5,9 +5,11 @@ from db.basic_db import metadata
 
 # 登陆帐号表 login_info
 login_info = Table("login_info", metadata, 
+        Column("id", INTEGER, primary_key=True, autoincrement=True),
         Column("name", String(100)),
         Column("password", String(200)),
-        Column("enable", INTEGER, default=1)
+        Column("enable", INTEGER, default=1),
+        Column("need_verify", INTEGER, default=1)
         )
 
 # 用户表 wbuser
@@ -46,7 +48,7 @@ seed_ids = Table('seed_ids', metadata,
 
 
 # 关键词搜索表 keywords
-key_words = Table('keywords', metadata,
+keywords = Table('keywords', metadata,
         Column("id", INTEGER, primary_key=True, autoincrement=True),
         Column("keyword", String(200), unique=True),
         Column("enable", INTEGER, default=1),
@@ -67,6 +69,7 @@ weibo_data = Table('weibo_data', metadata,
         Column("weibo_url", String(300)),
         Column("create_time", String(200)),
         Column("comment_crawled", INTEGER, default=0),
+        Column("repost_crawled", INTEGER, default=0),
         )
 
 
@@ -88,3 +91,16 @@ weibo_comment = Table('weibo_comment', metadata,
         Column("create_time", String(200)),
         )
 
+# 微博转发评论
+weibo_repost = Table("weibo_repost", metadata,
+        Column("id", INTEGER, primary_key=True, autoincrement=True),
+        Column("user_id", String(20)),
+        Column("user_name", String(200)),
+        Column("weibo_id", String(200), unique=True),
+        Column("parent_user_id", String(20)),
+        Column("repost_time", String(200)),
+        Column("repost_cont", String(20), default=''),
+        Column("weibo_url", String(200)),
+        Column("parent_user_name", String(200)),
+        Column("root_weibo_id", String(200)),
+        )
