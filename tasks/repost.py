@@ -65,5 +65,6 @@ def excute_repost_task():
     crawler.info('本次一共有{}条微博需要抓取转发信息'.format(len(weibo_datas)))
 
     for weibo_data in weibo_datas:
+        wb_data.set_weibo_repost_crawled(weibo_data.weibo_id)
         app.send_task('tasks.repost.crawl_repost_page', args=(weibo_data.weibo_id, weibo_data.uid),
                       queue='repost_crawler', routing_key='repost_info')
