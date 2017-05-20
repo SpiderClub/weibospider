@@ -46,7 +46,7 @@ def get_page(url, user_verify=True, need_login=True):
                 # 这里建议不要尝试登陆账号，因为账号登陆有成本和IP限制
 
             if name_cookies == latest_name_cookies:
-                count += 1 # 只有一个账号的时候会陷入死循环，但是这个账号已经获取信息失败，所以多次尝试后退出比较合理
+                count += 1 # 只有一个账号或没有账号的时候会陷入死循环，但是这个账号已经获取信息失败，所以多次尝试后退出比较合理
                 continue
 
             latest_name_cookies = name_cookies
