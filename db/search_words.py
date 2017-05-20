@@ -6,7 +6,7 @@ from decorators.decorator import db_commit_decorator
 
 
 def get_search_keywords():
-    return db_session.query(KeyWords.keyword).filter(text('enable=1')).all()
+    return db_session.query(KeyWords.keyword, KeyWords.id).filter(text('enable=1')).all()
 
 
 @db_commit_decorator

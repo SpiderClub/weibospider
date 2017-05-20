@@ -6,3 +6,4 @@ test.py
 __pycache__/
 logs
 celerybeat-schedule.db
+pincode.png

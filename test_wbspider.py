@@ -208,7 +208,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_get_total_comment_page(self):
         """
-        测试获取所有评论数
+        测试获取所有评论页数
         :return: 
         """
         from page_parse import comment
@@ -216,6 +216,27 @@ class TestWeiboSpider(unittest.TestCase):
             html = f.read()
         total_page = comment.get_total_page(html)
         self.assertEqual(total_page, 227)
+
+    def test_get_total_repost_page(self):
+        """
+        测试获取所有转发页数
+        :return: 
+        """
+        from page_parse import repost
+        with open('tests/repost.html', encoding='utf-8') as f:
+            html = f.read()
+        total_page = repost.get_total_page(html)
+        self.assertEqual(total_page, 1580)
+
+    def test_get_total_comment_to_crawl(self):
+        from db import wb_data
+        weibo_datas = wb_data.get_weibo_comment_not_crawled()
+        print(len(weibo_datas))
+
+    def test_get_name(self):
+        from db.redis_db import IdNames
+        print(IdNames.fetch_uid_by_name('腐剧基地'))
+
 
 if __name__ == '__main__':
     unittest.main()

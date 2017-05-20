@@ -24,7 +24,7 @@ def db_commit_decorator(func):
     @wraps(func)
     def session_commit(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         except Exception as e:
             storage.error('数据库操作失败，具体信息是{}'.format(e))
             db_session.rollback()

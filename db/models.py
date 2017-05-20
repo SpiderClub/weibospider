@@ -41,3 +41,16 @@ class WeiboComment(Base):
 
     def __repr__(self):
         return 'weibo_id:{},comment_id:{},comment_cont:{}'.format(self.weibo_id, self.comment_id, self.comment_cont)
+
+
+class WeiboRepost(Base):
+    # 微博转发信息
+    __table__ = weibo_repost
+
+    def __repr__(self):
+        return 'id:{},user_id:{},user_name:{},parent_user_id:{},parent_user_name:{}, weibo_url:{},weibo_id:{},' \
+               'repost_time:{},repost_cont:{}'.format(self.id, self.user_id, self.user_name, self.parent_user_id,
+                                                      self.parent_user_name, self.weibo_url, self.weibo_id,
+                                                      self.repost_time, self.repost_cont)
+
+

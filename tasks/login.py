@@ -7,8 +7,8 @@ from tasks.workers import app
 
 
 @app.task(ignore_result=True)
-def login_task(name, password):
-    login.get_session(name, password)
+def login_task(name, password, need_verify):
+    login.get_session(name, password, need_verify)
 
 
 def batch_login():
@@ -17,7 +17,7 @@ def batch_login():
     """
     infos = login_info.get_login_info()
     for info in infos:
-        login_task(info.name, info.password)
+        login_task(info.name, info.password, info.need_verify)
 
 
 # worker设置并发数为1，所以可以通过sleep()限制不同账号登录速度
@@ -26,7 +26,7 @@ def excute_login_task():
     infos = login_info.get_login_info()
     log.crawler.info('本轮模拟登陆开始')
     for info in infos:
-        app.send_task('tasks.login.login_task', args=(info.name, info.password), queue='login_queue',
+        app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
                       routing_key='for_login')
         time.sleep(10)
 

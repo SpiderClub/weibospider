@@ -1,3 +1,4 @@
+# -*-coding:utf-8 -*-
 import re
 import json
 from bs4 import BeautifulSoup
@@ -64,29 +65,18 @@ def get_weibo_info_detail(each, html):
         wb_data.device = ''
 
     try:
-        if '转发' in str(each):
-            wb_data.repost_num = 0
-        else:
-            wb_data.repost_num = int(each.find(attrs={'action-type': 'fl_forward'}).find_all('em')[1].text)
-    except Exception as e:
-        parser.error('本次解析转发数出现异常，具体是{}'.format(e))
+        wb_data.repost_num = int(each.find(attrs={'action-type': 'fl_forward'}).find_all('em')[1].text)
+    except Exception:
         wb_data.repost_num = 0
     try:
-        if '评论' in str(each):
-            wb_data.comment_num = 0
-        else:
-            wb_data.comment_num = int(each.find(attrs={'action-type': 'fl_comment'}).find_all('em')[1].text)
-    except Exception as e:
-        parser.error('本次解析评论数出现异常，具体是{}'.format(e))
+        wb_data.comment_num = int(each.find(attrs={'action-type': 'fl_comment'}).find_all('em')[1].text)
+    except Exception:
         wb_data.comment_num = 0
     try:
-        if '赞' in str(each):
-            wb_data.praise_num = 0
-        else:
-            wb_data.praise_num = int(each.find(attrs={'action-type': 'fl_like'}).find_all('em')[1].text)
-    except Exception as e:
-        parser.error('本次解析点赞数出现异常，具体是{}'.format(e))
+        wb_data.praise_num = int(each.find(attrs={'action-type': 'fl_like'}).find_all('em')[1].text)
+    except Exception:
         wb_data.praise_num = 0
+    print(wb_data.praise_num)
     return wb_data
 
 
