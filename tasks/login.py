@@ -1,5 +1,7 @@
 # coding:utf-8
 import time
+
+from db.redis_db import Cookies
 from logger import log
 from wblogin import login
 from db import login_info
@@ -27,8 +29,9 @@ def excute_login_task():
     infos = login_info.get_login_info()
     log.crawler.info('本轮模拟登陆开始')
     for info in infos:
-        app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
-                      routing_key='for_login')
-        time.sleep(10)
+        if not Cookies.check_login_task(info.name):
+            app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
+                          routing_key='for_login')
+            time.sleep(10)
 
 
