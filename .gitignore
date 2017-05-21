@@ -1,8 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 test.py
 .idea
-.env
-*.pyc
 __pycache__/
 logs
 celerybeat-schedule.db

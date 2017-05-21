@@ -1,5 +1,4 @@
 # -*-coding:utf-8 -*-
-from sqlalchemy import Column, INTEGER, String
 from db.basic_db import Base
 from db.tables import *
 

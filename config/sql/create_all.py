@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-#-*- coding=utf-8 -*-
-
-from db.basic_db import metadata
+# -*- coding=utf-8 -*-
 from db.tables import *
+from db.basic_db import metadata
+
 
 def create_all_table():
     metadata.create_all()
