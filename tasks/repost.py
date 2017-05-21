@@ -18,6 +18,8 @@ def crawl_repost_by_page(mid, page_num):
     cur_url = base_url.format(mid, page_num)
     html = get_page(cur_url, user_verify=False)
     repost_datas = repost.get_repost_list(html, mid)
+    if page_num == 1:
+        wb_data.set_weibo_repost_crawled(mid)
     return html, repost_datas
 
 
@@ -25,7 +27,6 @@ def crawl_repost_by_page(mid, page_num):
 def crawl_repost_page(mid, uid):
     limit = get_max_repost_page() + 1
     first_repost_data = crawl_repost_by_page(mid, 1)
-    wb_data.set_weibo_repost_crawled(mid)
     total_page = repost.get_total_page(first_repost_data[0])
     repost_datas = first_repost_data[1]
 
@@ -65,6 +66,5 @@ def excute_repost_task():
     crawler.info('本次一共有{}条微博需要抓取转发信息'.format(len(weibo_datas)))
 
     for weibo_data in weibo_datas:
-        wb_data.set_weibo_repost_crawled(weibo_data.weibo_id)
         app.send_task('tasks.repost.crawl_repost_page', args=(weibo_data.weibo_id, weibo_data.uid),
                       queue='repost_crawler', routing_key='repost_info')
