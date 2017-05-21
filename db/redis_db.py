@@ -1,8 +1,8 @@
 # coding:utf-8
+import datetime
 import json
 import redis
 from config.conf import get_redis_args
-
 
 redis_args = get_redis_args()
 
@@ -13,24 +13,34 @@ class Cookies(object):
 
     @classmethod
     def store_cookies(cls, name, cookies):
-        pickled_cookies = json.dumps(cookies)
-        cls.rd_con.set(name, pickled_cookies)
-        # 为cookie设置过期时间，防止某些账号登录失败，还会获取到失效cookie
-        cls.rd_con.expire(name, 20 * 60 * 60)
+        pickled_cookies = json.dumps(
+            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp()})
+        cls.rd_con.hset('account', name, pickled_cookies)
+        cls.rd_con.lpush('account_queue', name)
 
     @classmethod
     def fetch_cookies(cls):
-        cookies_count = len(cls.rd_con.keys())
-        if cookies_count:
-            random_name = cls.rd_con.randomkey()
-            return random_name.decode('utf-8'), json.loads(cls.rd_con.get(random_name).decode('utf-8')), cookies_count
-        else:
-            return None, cookies_count
+        for i in range(cls.rd_con.llen('account_queue')):
+            name = cls.rd_con.rpop('account_queue').decode('utf-8')
+            if name:
+                j_account = cls.rd_con.hget('account', name).decode('utf-8')
+                if j_account:
+                    cls.rd_con.lpush('account_queue', name)  # 当账号不存在时，这个name也会清除，并取下一个name
+                    account = json.loads(j_account)
+                    loginTime = datetime.datetime.fromtimestamp(account['loginTime'])
+                    if datetime.datetime.now() - loginTime > datetime.timedelta(hours=20):
+                        cls.rd_con.hdel('account', name)
+                        continue  # 丢弃这个过期账号,account_queue会在下次访问的时候被清除,这里不清除是因为分布式的关系
+                    return name, account['cookies']
+            else:
+                return None
 
     @classmethod
     def delete_cookies(cls, name):
-        cls.rd_con.delete(name)
+        cls.rd_con.hdel('account',name)
         return True
+
+
 
 
 class Urls(object):
