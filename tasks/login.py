@@ -18,6 +18,7 @@ def batch_login():
     infos = login_info.get_login_info()
     for info in infos:
         login_task(info.name, info.password, info.need_verify)
+        time.sleep(10)
 
 
 # worker设置并发数为1，所以可以通过sleep()限制不同账号登录速度
