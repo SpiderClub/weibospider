@@ -1,5 +1,6 @@
 # -*-coding:utf-8 -*-
 import re
+import os
 import rsa
 import math
 import time
@@ -18,7 +19,7 @@ from db.login_info import freeze_account
 
 
 # todo 这里如果是多个账号并发登录，那么验证码可能会被覆盖思考一种对应的方式
-verify_code_path = './pincode.png'
+verify_code_path = './{}.png'
 index_url = "http://weibo.com/login.php"
 yundama_username = conf.get_code_username()
 yundama_password = conf.get_code_password()
@@ -31,11 +32,18 @@ def get_pincode_url(pcid):
     return pincode_url
 
 
-def get_img(url):
+def get_img(url, name):
+    """
+    :param url: 验证码url
+    :param name: 登录名，这里用登录名作为验证码的文件名，是为了防止并发登录的时候同名验证码图片被覆盖
+    :return: 
+    """
+    pincode_name = verify_code_path.format(name)
     resp = requests.get(url, headers=headers, stream=True)
-    with open(verify_code_path, 'wb') as f:
+    with open(pincode_name, 'wb') as f:
         for chunk in resp.iter_content(1000):
             f.write(chunk)
+    return pincode_name
 
 
 def get_encodename(name):
@@ -144,10 +152,12 @@ def do_login(name, password, need_verify):
         pcid = sever_data['pcid']
         data['pcid'] = pcid
         img_url = get_pincode_url(pcid)
-        get_img(img_url)
+        pincode_name = get_img(img_url, name)
         verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
-                                                                          verify_code_path)
+                                                                          pincode_name)
         data['door'] = verify_code
+
+        os.remove(pincode_name)
 
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 

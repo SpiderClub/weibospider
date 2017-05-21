@@ -37,6 +37,5 @@ def excute_login_task():
             if not rs:
                 app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
                               routing_key='for_login')
-                time.sleep(10)
 
 
