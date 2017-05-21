@@ -18,7 +18,8 @@ def crawl_comment_by_page(mid, page_num):
     html = get_page(cur_url, user_verify=False)
     comment_datas = comment.get_comment_list(html, mid)
     save_comments(comment_datas)
-    wb_data.set_weibo_comment_crawled(mid)
+    if page_num == 1:
+        wb_data.set_weibo_comment_crawled(mid)
     return html
 
 
