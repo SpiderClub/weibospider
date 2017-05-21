@@ -186,7 +186,6 @@ Celery最后支持的一个windows版本；**特别注意，Windows平台上Cele
   - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
   - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
   - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):转发信息抓取
-  - [login_local.py](login_local.py):单机登陆微博账号脚本
 
 - 基本用法
   - 在分布式节点上启动worker。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
