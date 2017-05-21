@@ -26,7 +26,7 @@ excp_interal = get_excp_interal()
 @timeout_decorator
 def get_page(url, user_verify=True, need_login=True):
     """
-    :param url: 待出现
+    :param url: 待抓取url
     :param user_verify: 是否为可能出现验证码的页面(ajax连接不会出现验证码，如果是请求微博或者用户信息可能出现验证码)，否为抓取转发的ajax连接
     :param need_login: 抓取页面是否需要登录，这样做可以减小一些账号的压力
     :return: 返回请求的数据，如果出现404或者403,或者是别的异常，都返回空字符串
@@ -38,15 +38,28 @@ def get_page(url, user_verify=True, need_login=True):
     while count < max_retries:
 
         if need_login:
-            # 每次重试的时候都换cookies,并且和上次不同
-            name_cookies = Cookies.fetch_cookies()
+            # 每次重试的时候都换cookies,并且和上次不同,如果只有一个账号，那么就允许相同
+            name_cookies, cookies_count = Cookies.fetch_cookies()
             
             if name_cookies is None:
                 crawler.warning('cookie池中不存在cookie，正在检查是否有可用账号')
-                # 这里建议不要尝试登陆账号，因为账号登陆有成本和IP限制
+                rs = get_login_info()
 
-            if name_cookies == latest_name_cookies:
-                count += 1 # 只有一个账号或没有账号的时候会陷入死循环，但是这个账号已经获取信息失败，所以多次尝试后退出比较合理
+                # 选择状态正常的账号进行登录，账号都不可用就停掉celery worker
+                if len(rs) == 0:
+                    crawler.error('账号均不可用，请检查账号健康状况')
+                    # 杀死所有关于celery的进程
+                    if 'win32' in sys.platform:
+                        os.popen('taskkill /F /IM "celery*"')
+                    else:
+                        os.popen('pkill -f "celery"')
+                else:
+                    crawler.info('重新获取cookie中...')
+                    login.excute_login_task()
+                    time.sleep(10)
+
+            # 只有cookies总数大于1的时候才会在每次重试的时候切换不同cookie
+            if cookies_count > 1 and name_cookies == latest_name_cookies:
                 continue
 
             latest_name_cookies = name_cookies
