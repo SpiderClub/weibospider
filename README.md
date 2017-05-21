@@ -9,8 +9,6 @@
 *从单机到分布式迁移*都做了大量的工作和反复测试，花了我绝大部分业余的时间。
 - 本项目不会承诺每天能抓到多少数据，因为**数据量的大小很大程度上取决于用户可用微博账户的数量**
 - 与该项目类似的项目大概有[SinaSpider](https://github.com/LiuXingMing/SinaSpider),[weibo_terminater](https://github.com/jinfagang/weibo_terminater)。
-前者是一个基于```scrapy```的项目，爬的是移动版微博用户信息，质量还不错；后者嘛，还是留给用户
-自己判断吧。
 
 ## 你可以用它来干嘛 :u6709:
 - **爬虫进阶学习**，对于需要学习Python进阶和爬虫的同学来说，都可以读读源码
