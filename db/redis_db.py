@@ -27,8 +27,8 @@ class Cookies(object):
                 if j_account:
                     cls.rd_con.lpush('account_queue', name)  # 当账号不存在时，这个name也会清除，并取下一个name
                     account = json.loads(j_account)
-                    loginTime = datetime.datetime.fromtimestamp(account['loginTime'])
-                    if datetime.datetime.now() - loginTime > datetime.timedelta(hours=20):
+                    login_time = datetime.datetime.fromtimestamp(account['loginTime'])
+                    if datetime.datetime.now() - login_time > datetime.timedelta(hours=20):
                         cls.rd_con.hdel('account', name)
                         continue  # 丢弃这个过期账号,account_queue会在下次访问的时候被清除,这里不清除是因为分布式的关系
                     return name, account['cookies']
@@ -39,8 +39,6 @@ class Cookies(object):
     def delete_cookies(cls, name):
         cls.rd_con.hdel('account',name)
         return True
-
-
 
 
 class Urls(object):

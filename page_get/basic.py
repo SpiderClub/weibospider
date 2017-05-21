@@ -21,7 +21,6 @@ excp_interal = get_excp_interal()
 
 
 # 每次抓取都从redis中随机取一个cookie以降低被封号的危险，但是还没验证不同ip对账号的影响
-# todo 验证代理ip使用cookie访问用户信息会不会出现验证码
 @timeout(200)
 @timeout_decorator
 def get_page(url, user_verify=True, need_login=True):
@@ -33,13 +32,12 @@ def get_page(url, user_verify=True, need_login=True):
     """
     crawler.info('本次抓取的url为{url}'.format(url=url))
     count = 0
-    latest_name_cookies = None
 
     while count < max_retries:
 
         if need_login:
             # 每次重试的时候都换cookies,并且和上次不同,如果只有一个账号，那么就允许相同
-            name_cookies, cookies_count = Cookies.fetch_cookies()
+            name_cookies = Cookies.fetch_cookies()
             
             if name_cookies is None:
                 crawler.warning('cookie池中不存在cookie，正在检查是否有可用账号')
@@ -57,12 +55,6 @@ def get_page(url, user_verify=True, need_login=True):
                     crawler.info('重新获取cookie中...')
                     login.excute_login_task()
                     time.sleep(10)
-
-            # 只有cookies总数大于1的时候才会在每次重试的时候切换不同cookie
-            if cookies_count > 1 and name_cookies == latest_name_cookies:
-                continue
-
-            latest_name_cookies = name_cookies
 
         try:
             if need_login:
