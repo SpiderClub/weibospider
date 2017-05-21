@@ -1,6 +1,8 @@
 # coding:utf-8
 import datetime
 import json
+import re
+
 import redis
 from config.conf import get_redis_args
 
@@ -10,6 +12,9 @@ redis_args = get_redis_args()
 class Cookies(object):
     rd_con = redis.StrictRedis(host=redis_args.get('host'), port=redis_args.get('port'),
                                password=redis_args.get('password'), db=redis_args.get('cookies'))
+
+    rd_con_broker = redis.StrictRedis(host=redis_args.get('host'), port=redis_args.get('port'),
+                                      password=redis_args.get('password'), db=redis_args.get('broker'))
 
     @classmethod
     def store_cookies(cls, name, cookies):
@@ -37,8 +42,21 @@ class Cookies(object):
 
     @classmethod
     def delete_cookies(cls, name):
-        cls.rd_con.hdel('account',name)
+        cls.rd_con.hdel('account', name)
         return True
+
+    @classmethod
+    def check_login_task(cls, name):
+        for i in range(cls.rd_con_broker.llen('login_queue')):
+            login_task = cls.rd_con_broker.lindex('login_queue', i)
+            if login_task:
+                login_task = json.loads(login_task.decode('utf-8'))
+                tname = re.match(r"\('(.*?)',.*\)",login_task['headers']['argsrepr']).groups()
+                if tname[0] == name:
+                    return True
+            else:
+                break
+        return False
 
 
 class Urls(object):
