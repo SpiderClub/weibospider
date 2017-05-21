@@ -29,9 +29,14 @@ def excute_login_task():
     infos = login_info.get_login_info()
     log.crawler.info('本轮模拟登陆开始')
     for info in infos:
-        if not Cookies.check_login_task(info.name):
-            app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
-                          routing_key='for_login')
-            time.sleep(10)
+        try:
+            rs = Cookies.check_login_task(info.name)
+        except KeyError:
+            log.crawler.warning('请检查是否已经启动worker及指定了login_queue')
+        else:
+            if not rs:
+                app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
+                              routing_key='for_login')
+                time.sleep(10)
 
 

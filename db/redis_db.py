@@ -51,7 +51,7 @@ class Cookies(object):
             login_task = cls.rd_con_broker.lindex('login_queue', i)
             if login_task:
                 login_task = json.loads(login_task.decode('utf-8'))
-                tname = re.match(r"\('(.*?)',.*\)",login_task['headers']['argsrepr']).groups()
+                tname = re.match(r"\('(.*?)',.*\)", login_task['headers']['argsrepr']).groups()
                 if tname[0] == name:
                     return True
             else:
