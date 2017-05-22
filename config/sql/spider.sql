@@ -1,17 +1,15 @@
-create table weibo.login_info
+create table weibo.keywords
 (
 	id int not null auto_increment
 		primary key,
-	name varchar(100) null,
-	password varchar(200) not null,
-	enable int default '1' not null,
-	need_verify int default '1' null,
-	constraint login_info_id_uindex
+	keyword varchar(200) not null comment '搜索关键词',
+	enable int default '1' null comment '搜索关键词是否需要使用',
+	constraint keywords_id_uindex
 		unique (id),
-	constraint login_info_name_uindex
-		unique (name)
+	constraint keywords_keyword_uindex
+		unique (keyword)
 )
-comment '微博登录账号数据表'
+comment '搜索关键词表'
 ;
 
 
