@@ -176,7 +176,9 @@
 
 - 项目相关配置
   - 安装相关依赖```pip install -r requirements.txt```，这里需要注意一点：由于**高版本的Celery不支持Windows**,所以请在**类Unix系统**部署。如果实在需要在windows上部署的话，可以把Celery版本
-  降为3.1.25: ```pip install celery==3.1.25```，这是Celery最后支持的一个windows版本；**特别注意，Windows平台上Celery的定时功能不可用！所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**
+  降为3.1.25: ```pip install celery==3.1.25```，这是Celery最后支持的一个windows版本；**特别注意，Windows平台上Celery的定时功能不可用！所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**.
+  对Python虚拟环境了解的朋友可以使用 `source env.sh`，直接创建项目需要的虚拟环境和安装相关依赖。注意如果Python发行版是`anaconda`而非Python官网下载的发行版，那么需要修改`env.sh`文件中的 `pip install virtualenv`
+  为`conda install virtualenv`.虚拟环境默认安装在项目根目录，文件夹是`.env`
   - 打开[配置文件](./config/spider.yaml)修改数据库相关配置。如果你的账号不是常用地登录
   的话（比如通过淘宝购买），登录会出现验证码，目前本项目通过打码平台进行验证码识别，选择的打码平台
   是[云打码](http://www.yundama.com/)，你需要在[spider.yaml](./config/spider.yaml)中**设置云打码平台你所注册
