@@ -12,6 +12,6 @@ source ${VENV}/bin/activate
 
 export PYTHONPATH=${PROJ_DIR}
 export PROJ_DIR
-export PATH=${PATH}:${PROJ_DIR}/bin
+export PATH=${PATH}:${VENV}/bin
 
 pip install -r requirements.txt
