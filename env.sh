@@ -15,5 +15,3 @@ export PROJ_DIR
 export PATH=${PATH}:${PROJ_DIR}/bin
 
 pip install -r requirements.txt
-
-python create_all.py
