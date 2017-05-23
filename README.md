@@ -151,11 +151,19 @@
     wblogin/
         __init__.py
         login.py          # 微博模拟登陆具体实现
+    env.sh                # 创建虚拟环境相关的文件
+    create_all.py         # 创建数据库相关的语句
     headers.py            # 请求头，主要是UA
-    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以**第一次需要手动登**
     test_wbspider.py      # 没什么用的单元测试
     requirements.txt      # 项目相关依赖
-
+    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以**第一次需要手动登**，并且需要保证数据表`login_info`中已经插入了可用微博登陆账号
+    search_first.py       # 如果想快速启动微博搜索任务，可以在定时任务运行之前运行该文件，前提是数据表`keywords`中已有数据
+    comment_first.py      # 如果想快速启动评论抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`weibo_data`中已有数据
+    home_first.py         # 如果想快速启动用户主页微博抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`wbuser`中已有数据
+    repost_first.py       # 如果想快速启动微博转发抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`weibo_data`中已有数据
+    LICENSE
+    .gitignore
+    .gitattributes
 ```
 
 有的文件和模块在项目代码中存在，却没有在项目结构中呈现，那么就**说明该模块或者该文件还未进行
