@@ -46,8 +46,8 @@
   - [x] 指定微博的转发情况：主要是热门微博的转发信息
 
 - 反爬虫相关
-  - [ ] 测试单机单账号访问阈值
-  - [ ] 测试单机多账号访问效果
+  - [x] 测试单机单账号访问阈值，这个问题和下面一个问题可以参考 [issue#17](https://github.com/ResolveWang/WeiboSpider/issues/17)和[issue#18](https://github.com/ResolveWang/WeiboSpider/issues/18)
+  - [x] 测试单机多账号访问效果
   - [ ] 验证不同模块，微博系统的容忍度是否相同
   - [ ] 验证UA头使用百度、Google等搜索引擎的时候请求是否放宽了：先通过寻找哪些内容是不用
  登录就能查看的，这一点主要是从移动端找，因为PC端限制更加严格，然后伪装UA测试请求量。在这个
@@ -303,7 +303,7 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 ## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
-- 感谢提PR和issue的同学
+- 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)同学，为本项目做了大量的贡献
 - 感谢所有捐赠的网友,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
 而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
 - 感谢所有`star`支持的网友
