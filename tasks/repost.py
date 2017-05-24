@@ -64,10 +64,7 @@ def crawl_repost_page(mid, uid):
 def excute_repost_task():
     # 以当前微博为源微博进行分析，不向上溯源，如果有同学需要向上溯源，需要自己判断一下该微博是否是根微博
     weibo_datas = wb_data.get_weibo_repost_not_crawled()
-    count = 0
     for weibo_data in weibo_datas:
-        weibo_data = weibo_data
         app.send_task('tasks.repost.crawl_repost_page', args=(weibo_data.weibo_id, weibo_data.uid),
                       queue='repost_crawler', routing_key='repost_info')
-        count += 1
-    crawler.info('本次一共有{}条微博需要抓取转发信息'.format(count))
+    crawler.info('本次一共有{}条微博需要抓取转发信息'.format(len(weibo_datas)))

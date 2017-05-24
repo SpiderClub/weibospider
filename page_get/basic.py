@@ -87,11 +87,11 @@ def get_page(url, user_verify=True, need_login=True):
 
                 if 'verifybmobile' in resp.url:
                     crawler.warning('账号{}功能被锁定，需要手机解锁'.format(name_cookies[0]))
-                    # 功能锁定,可能是优先级较高的任务无法执行或者账号被封，建议login_info表增加一个账号质量的字段
+        
                     freeze_account(name_cookies[0], -1)
                     Cookies.delete_cookies(name_cookies[0])
                     continue
-					
+
                 if not is_complete(page):
                     count += 1
                     continue
