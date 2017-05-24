@@ -46,8 +46,8 @@
   - [x] 指定微博的转发情况：主要是热门微博的转发信息
 
 - 反爬虫相关
-  - [ ] 测试单机单账号访问阈值
-  - [ ] 测试单机多账号访问效果
+  - [x] 测试单机单账号访问阈值，这个问题和下面一个问题可以参考 [issue#17](https://github.com/ResolveWang/WeiboSpider/issues/17)和[issue#18](https://github.com/ResolveWang/WeiboSpider/issues/18)
+  - [x] 测试单机多账号访问效果
   - [ ] 验证不同模块，微博系统的容忍度是否相同
   - [ ] 验证UA头使用百度、Google等搜索引擎的时候请求是否放宽了：先通过寻找哪些内容是不用
  登录就能查看的，这一点主要是从移动端找，因为PC端限制更加严格，然后伪装UA测试请求量。在这个
@@ -151,11 +151,19 @@
     wblogin/
         __init__.py
         login.py          # 微博模拟登陆具体实现
+    env.sh                # 创建虚拟环境相关的文件
+    create_all.py         # 创建数据库相关的语句
     headers.py            # 请求头，主要是UA
-    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以**第一次需要手动登**
     test_wbspider.py      # 没什么用的单元测试
     requirements.txt      # 项目相关依赖
-
+    login_first.py        # 由于celery的定时器会有一定时间的间隔，所以**第一次需要手动登**，并且需要保证数据表`login_info`中已经插入了可用微博登陆账号
+    search_first.py       # 如果想快速启动微博搜索任务，可以在定时任务运行之前运行该文件，前提是数据表`keywords`中已有数据
+    comment_first.py      # 如果想快速启动评论抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`weibo_data`中已有数据
+    home_first.py         # 如果想快速启动用户主页微博抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`wbuser`中已有数据
+    repost_first.py       # 如果想快速启动微博转发抓取任务，可以在定时任务执行之前运行该文件，前提是数据表`weibo_data`中已有数据
+    LICENSE
+    .gitignore
+    .gitattributes
 ```
 
 有的文件和模块在项目代码中存在，却没有在项目结构中呈现，那么就**说明该模块或者该文件还未进行
@@ -303,7 +311,7 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 ## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
-- 感谢提PR和issue的同学
+- 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)同学，为本项目做了大量的贡献
 - 感谢所有捐赠的网友,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
 而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
 - 感谢所有`star`支持的网友
