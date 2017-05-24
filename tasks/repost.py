@@ -37,7 +37,6 @@ def crawl_repost_page(mid, uid):
 
     if total_page < limit:
         limit = total_page + 1
-    # todo 这里需要衡量是否有用网络调用的必要性
     for page_num in range(2, limit):
         # app.send_task('tasks.comment.crawl_comment_by_page', args=(mid, page_num), queue='comment_page_crawler',
         #               routing_key='comment_page_info')
