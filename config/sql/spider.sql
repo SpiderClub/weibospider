@@ -32,6 +32,7 @@ create table weibo.login_info
 	name varchar(100) null,
 	password varchar(200) not null,
 	enable int default '1' not null,
+	need_verify int default '1' null,
 	constraint login_info_id_uindex
 		unique (id),
 	constraint login_info_name_uindex
@@ -39,6 +40,7 @@ create table weibo.login_info
 )
 comment '微博登录账号数据表'
 ;
+
 
 create table weibo.seed_ids
 (
