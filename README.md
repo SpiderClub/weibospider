@@ -173,6 +173,9 @@
 
 ## 配置和使用 :sparkles:
 
+
+### 配置
+
 - 环境配置:小白和新手请直接查看[这里](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
   - 考虑到Python3是趋势和一些将该项目用于学习的用户，项目运行环境为**Python3.x**
   - 项目存储后端使用**Mysql**，所以需要在存储服务器上**安装Mysql**,注意设置字符集编码为**utf-8**
@@ -183,15 +186,22 @@
 故障，可以使用Redis主从配置。
 
 - 项目相关配置
-  - 安装相关依赖```pip install -r requirements.txt```，这里需要注意一点：由于**高版本的Celery不支持Windows**,所以请在**类Unix系统**部署。如果实在需要在windows上部署的话，可以把Celery版本
-  降为3.1.25: ```pip install celery==3.1.25```，这是Celery最后支持的一个windows版本；**特别注意，Windows平台上Celery的定时功能不可用！所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**.
+  - 安装相关依赖```pip install -r requirements.txt```，这里celery版本用的3.1.25，目的是**兼容windows用户**，**如果你是linux或者mac用户，那么建议celery版本升级成4**。
+  **特别注意，Windows平台上Celery的定时功能不可用！所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**.
   - 对Python虚拟环境了解的朋友可以使用 `source env.sh`，直接创建项目需要的虚拟环境和安装相关依赖。注意如果Python发行版是`anaconda`而非Python官网下载的发行版，那么需要修改`env.sh`文件中的 `pip install virtualenv`
-  为`conda install virtualenv`.虚拟环境默认安装在项目根目录，文件夹是`.env`
+  为`conda install virtualenv`.虚拟环境默认安装在项目根目录，文件夹是`.env`。通过该方式就不需要执行`pip install -r requirements.txt`了，shell脚本已经为你做了这一步了。
   - 打开[配置文件](./config/spider.yaml)修改数据库相关配置。如果你的账号不是常用地登录
   的话（比如通过淘宝购买），登录会出现验证码，目前本项目通过打码平台进行验证码识别，选择的打码平台
   是[云打码](http://www.yundama.com/)，你需要在[spider.yaml](./config/spider.yaml)中**设置云打码平台你所注册
-  的用户名和密码**，一块钱大概可以识别160个验证码。也可以选择别的打码平台，又好用的欢迎推荐 T.T
+  的用户名和密码**并进行适当充值。一块钱大概可以识别160个验证码。也可以选择别的打码平台，又好用的欢迎推荐 T.T
   - 在项目根目录下，运行`python create_all.py`创建该项目需要的表
+
+
+到此，整个关于项目配置的工作就完成了
+
+------------------
+
+### 使用
 
 - 入口文件：如果有同学有**修改源码**的需求，那么建议**从入口文件开始阅读**
   - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
@@ -201,28 +211,29 @@
   - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
   - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):转发信息抓取
 
-- 基本用法
-  - 在分布式节点上启动worker。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
-比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info --concurrency=1 -Ofair```。
-所有的queue及作用和更多关于worker的知识请在[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)中查看
-  - 如果是**第一次运行该项目**，为了让抓取任务能马上执行，需要在任意一个节点上，切换到项目根目录执行```python
-login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上
-  - 在其中一个分布式节点上，切换到项目根目录，再启动beat任务(beat只启动一个，否则会重复执行定时任务)：
-```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以通过```python login_first.py```来获取worker
-首次运行需要的cookie是必须的.如果你想马上启动其他任务，而非等第一次定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动后就执行用户抓取任务，那么就通过
+- 基本用法：请按照**启动worker=>运行login_first.py=> 启动定时任务或者别的任务**这个顺序进行
+  - **在分布式节点上启动worker**。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
+比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info -c 1 -Ofair```。如果不指定，
+即运行`celery -A tasks.workers worker -l info -c 1`，那么所有任务都可以在该节点实现。所有的queue及作用和更多关于worker的知识请
+在[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)中查看
+  - 如果是**第一次运行该项目**，为了在抓取任务运行之前能有cookies，需要在任意一个节点上，切换到项目根目录执行```python
+login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上或者未指定 `-Q`的节点上
+  - 在其中一个分布式节点上，切换到项目根目录，再启动定时任务(beat只启动一个，否则会重复执行定时任务)：
+```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以第二步要通过```python login_first.py```来获取worker
+首次运行需要的cookie.如果你想马上启动其他任务，而非等定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动和login_first.py执行后就执行用户抓取任务，那么就通过
 ```python user_first.py```来执行
-  - 通过*flower*监控节点健康状况：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP.
+  - **通过*flower*监控节点健康状况**：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP.
 如果需要让外网访问，可以这样`celery -A tasks.workers flower --address=0.0.0.0 --port=5555`
 
 
 - 其它
   - 定时登录是为了维护cookie的时效性，据我实验，PC端微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认20小时就定时登录一次。
   - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
-  - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加我微信（微信号:wpm_wx）询问
+  - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加QQ群（群号是:499500161, 暗号是：微博爬虫）询问，目前群里用户比较少，有问题我必回！
 
 
 ## 常见问题 :question:
-1. 问：项目部署好复杂啊，我可以单机而不是单节点运行吗？
+1. 问：项目部署好复杂啊，我也没有多台机器，我可以单机而不是单节点运行吗？
 答：可以通过单机运行，单机运行的话，需要对代码做少许修改。主要修改方法是找到你需要的功能的
 入口文件，然后跟着改，需要改的地方是```@app.task```这些函数的代码。以登录为例，如果需要
 单机登录的话，那么就先到[login模块](./tasks/login.py)中把```send_task()```这条语句
