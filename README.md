@@ -37,7 +37,8 @@
 
 ## TODO :dart:
 - 微博内容抓取相关
-  - [x] 模拟登陆，账号请放置在[sql文件](./config/sql/spider.sql)的*login_info*表中
+  - [x] 模拟登陆，账号请放置在[sql文件](./config/sql/spider.sql)的*login_info*表中,如果账号不需要验证码就能登录，请将`need_verify`字段设置为0，否则就设置为1，并且在[云打码](http://www.yundama.com/)
+  官网注册一个云打码用户账号，并进行适当充值
   - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子参见[sql文件](./config/sql/spider.sql)的*seed_ids*表。你也可以自己指定
   想抓取的用户信息，只需要把用户对应的uid放到`seed_ids`中
   - [x] 微博搜索功能，搜索词由自己指定，参考[sql文件](./config/sql/spider.sql)的*keywords*表。搜索词也可以自己指定。
