@@ -176,7 +176,7 @@
 
 ### 配置
 
-**如果搭建项目环境比较困难，可以查看演示视频**
+**如果搭建项目环境比较困难，可以查看演示视频(链接: https://pan.baidu.com/s/1eSy2qzw 密码: ypn5)**
 
 - 环境配置:小白和新手请直接查看[这里](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
   - 考虑到Python3是趋势和一些将该项目用于学习的用户，项目运行环境为**Python3.x**
