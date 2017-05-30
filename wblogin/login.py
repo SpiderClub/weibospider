@@ -179,28 +179,20 @@ def get_session(name, password, need_verify):
 
         u_pattern = r'"uniqueid":"(.*)",'
         m = re.search(u_pattern, login_info)
-        if m:
-            if m.group(1):
-                # 任意验证一个页面看能否访问，使用这个方法验证比较依赖外部条件，但是没找到更好的方式(有的情况下，
-                # 账号存在问题，但是可以访问自己的主页，所以通过自己的主页验证账号是否正常不恰当)
-                check_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
-                resp = session.get(check_url, headers=headers)
-
-                # 通过实验，目前发现未经过手机验证的账号是救不回来了...
-                if is_403(resp.text):
-                    other.error('账号{}已被冻结'.format(name))
-                    crawler.warning('账号{}已经被冻结'.format(name))
-                    freeze_account(name, 0)
-                    return None
-                other.info('本次登陆账号为:{}'.format(name))
-                Cookies.store_cookies(name, session.cookies.get_dict())
-                return session
-            else:
-                other.error('本次账号{}登陆失败'.format(name))
-                return None
-        else:
-            other.error('本次账号{}登陆失败'.format(name))
-            return None
-    else:
-        other.error('本次账号{}登陆失败'.format(name))
-        return None
+        if m and m.group(1):
+             # 任意验证一个页面看能否访问，使用这个方法验证比较依赖外部条件，但是没找到更好的方式(有的情况下，
+             # 账号存在问题，但是可以访问自己的主页，所以通过自己的主页验证账号是否正常不恰当)
+             check_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
+             resp = session.get(check_url, headers=headers)
+             # 通过实验，目前发现未经过手机验证的账号是救不回来了...
+             if is_403(resp.text):
+                 other.error('账号{}已被冻结'.format(name))
+                 crawler.warning('账号{}已经被冻结'.format(name))
+                 freeze_account(name, 0)
+                 return None
+             other.info('本次登陆账号为:{}'.format(name))
+             Cookies.store_cookies(name, session.cookies.get_dict())
+             return session
+         
+    other.error('本次账号{}登陆失败'.format(name))
+    return None
