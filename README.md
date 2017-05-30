@@ -69,9 +69,9 @@
     要等一段时间了
   - [x] 修复某些时候抓取失败的问题(已添加重试机制)
   - [x] 改成分布式爬虫(使用Celery做分布式任务调度和管理)
-  - [ ] 完善文档，包括注明Python版本，怎么快速**创建虚拟环境**，怎么**安装相关依赖库**，可能会录制一个关于如何使用的视频；
-  讲解**celery的基本概念和用法**，为不会Python的同学提供使用的可能性;讲解微博的反爬虫策略;各个```tasks```模块的作用
-  和使用方法。
+  - [x] 完善文档，包括怎么快速**创建虚拟环境**，怎么**安装相关依赖库**，怎么**使用该项目**(请查看演示视频(链接: https://pan.baidu.com/s/1kVHUWGv 密码: ydhs))；
+  讲解**celery的基本概念和用法**（请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki);讲解微博的反爬虫策略;各个```tasks```模块的作用
+  和使用方法（请查看wiki中关`1task queue`的[说明](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)）。
   - [ ] 寻找能解决redis单点故障的方案
   - [ ] 完善代码注释，方便用户做二次开发
   - [ ] 支持Dockerfile部署项目
