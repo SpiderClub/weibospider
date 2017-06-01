@@ -46,17 +46,9 @@ class Cookies(object):
         return True
 
     @classmethod
-    def check_login_task(cls, name):
-        for i in range(cls.rd_con_broker.llen('login_queue')):
-            login_task = cls.rd_con_broker.lindex('login_queue', i)
-            if login_task:
-                login_task = json.loads(login_task.decode('utf-8'))
-                tname = re.match(r"\('(.*?)',.*\)", login_task['headers']['argsrepr']).groups()
-                if tname[0] == name:
-                    return True
-            else:
-                break
-        return False
+    def check_login_task(cls):
+        if cls.rd_con_broker.llen('login_queue') > 0:
+            cls.rd_con_broker.delete('login_queue')
 
 
 class Urls(object):

@@ -27,15 +27,11 @@ def batch_login():
 @app.task(ignore_result=True)
 def excute_login_task():
     infos = login_info.get_login_info()
+    # 每次登陆前清楚所有堆积的登录任务
+    Cookies.check_login_task()
     log.crawler.info('本轮模拟登陆开始')
     for info in infos:
-        try:
-            rs = Cookies.check_login_task(info.name)
-        except KeyError:
-            log.crawler.warning('请检查是否已经启动worker及指定了login_queue')
-        else:
-            if not rs:
-                app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify), queue='login_queue',
-                              routing_key='for_login')
+        app.send_task('tasks.login.login_task', args=(info.name, info.password, info.need_verify),
+                      queue='login_queue', routing_key='for_login')
 
 
