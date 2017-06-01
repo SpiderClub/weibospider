@@ -18,7 +18,6 @@ from logger.log import crawler, other
 from db.login_info import freeze_account
 
 
-# todo 这里如果是多个账号并发登录，那么验证码可能会被覆盖思考一种对应的方式
 verify_code_path = './{}.png'
 index_url = "http://weibo.com/login.php"
 yundama_username = conf.get_code_username()
