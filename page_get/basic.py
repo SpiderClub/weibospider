@@ -36,7 +36,7 @@ def get_page(url, user_verify=True, need_login=True):
     while count < max_retries:
 
         if need_login:
-            # 每次重试的时候都换cookies,并且和上次不同,如果只有一个账号，那么就允许相同
+            # 通过队列获取账号的cookie
             name_cookies = Cookies.fetch_cookies()
             
             if name_cookies is None:
@@ -55,6 +55,7 @@ def get_page(url, user_verify=True, need_login=True):
                     crawler.info('重新获取cookie中...')
                     login.excute_login_task()
                     time.sleep(10)
+                    continue
 
         try:
             if need_login:
