@@ -21,7 +21,7 @@ class TestWeiboSpider(unittest.TestCase):
             raise Exception('未获取到登陆信息')
 
         info = random.choice(infos)
-        sc = get_session(info.name, info.password)
+        sc = get_session(info.name, info.password, info.need_verify)
 
         if sc:
             print('登陆成功')
