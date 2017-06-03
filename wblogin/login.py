@@ -18,7 +18,7 @@ from logger.log import crawler, other
 from db.login_info import freeze_account
 
 
-verify_code_path = './{}.png'
+verify_code_path = './{}{}.png'
 index_url = "http://weibo.com/login.php"
 yundama_username = conf.get_code_username()
 yundama_password = conf.get_code_password()
@@ -31,13 +31,14 @@ def get_pincode_url(pcid):
     return pincode_url
 
 
-def get_img(url, name):
+def get_img(url, name, retry_count):
     """
     :param url: 验证码url
     :param name: 登录名，这里用登录名作为验证码的文件名，是为了防止并发登录的时候同名验证码图片被覆盖
+    :param retry_count: 登录重试次数
     :return: 
     """
-    pincode_name = verify_code_path.format(name)
+    pincode_name = verify_code_path.format(name, retry_count)
     resp = requests.get(url, headers=headers, stream=True)
     with open(pincode_name, 'wb') as f:
         for chunk in resp.iter_content(1000):
@@ -97,6 +98,10 @@ def get_redirect(name, data, post_url, session):
         crawler.error('输入的验证码不正确')
         return 'pinerror'
 
+    if 'retcode=4049' in login_loop:
+        crawler.warning('账号{}登录需要验证码'.format(name))
+        return 'login_need_pincode'
+
     if '正在登录' or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
         return re.findall(pa, login_loop)[0]
@@ -104,15 +109,51 @@ def get_redirect(name, data, post_url, session):
         return ''
 
 
-def do_login(name, password, need_verify):
-    session = requests.Session()
-    su = get_encodename(name)
+def login_no_pincode(name, password, server_data, session):
+    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
-    sever_data = get_server_data(su, session)
-    servertime = sever_data["servertime"]
-    nonce = sever_data['nonce']
-    rsakv = sever_data["rsakv"]
-    pubkey = sever_data["pubkey"]
+    servertime = server_data["servertime"]
+    nonce = server_data['nonce']
+    rsakv = server_data["rsakv"]
+    pubkey = server_data["pubkey"]
+    sp = get_password(password, servertime, nonce, pubkey)
+
+    # 提交的数据可以根据抓包获得
+    data = {
+        'encoding': 'UTF-8',
+        'entry': 'weibo',
+        'from': '',
+        'gateway': '1',
+        'nonce': nonce,
+        'pagerefer': "",
+        'prelt': 67,
+        'pwencode': 'rsa2',
+        "returntype": "META",
+        'rsakv': rsakv,
+        'savestate': '7',
+        'servertime': servertime,
+        'service': 'miniblog',
+        'sp': sp,
+        'sr': '1920*1080',
+        'su': get_encodename(name),
+        'useticket': '1',
+        'vsnf': '1',
+        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+    }
+
+    rs = get_redirect(name, data, post_url, session)
+
+    return rs, None, '', session
+
+
+def login_by_pincode(name, password, session, server_data, retry_count):
+    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+
+    servertime = server_data["servertime"]
+    nonce = server_data['nonce']
+    rsakv = server_data["rsakv"]
+    pubkey = server_data["pubkey"]
+    pcid = server_data['pcid']
 
     sp = get_password(password, servertime, nonce, pubkey)
 
@@ -133,44 +174,195 @@ def do_login(name, password, need_verify):
         'service': 'miniblog',
         'sp': sp,
         'sr': '1920*1080',
-        'su': su,
+        'su': get_encodename(name),
         'useticket': '1',
         'vsnf': '1',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
+        'pcid': pcid
     }
 
-    yundama_obj = None
-    cid = ''
+    if not yundama_username:
+        raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
+    img_url = get_pincode_url(pcid)
+    pincode_name = get_img(img_url, name, retry_count)
+    verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+                                                                      pincode_name)
+    data['door'] = verify_code
 
-    # 你也可以改为手动填写验证码
-    # 之所以会有need_verify这个字段，是因为某些账号虽然可能不正常，但是它在预登陆的时候会返回pincode=0,而实际上却是需要验证码的
-    # 所以这里通过用户自己控制
-    if need_verify:
-        if not yundama_username:
-            raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
-        pcid = sever_data['pcid']
-        data['pcid'] = pcid
-        img_url = get_pincode_url(pcid)
-        pincode_name = get_img(img_url, name)
-        verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
-                                                                          pincode_name)
-        data['door'] = verify_code
+    #os.remove(pincode_name)
 
-        os.remove(pincode_name)
+    rs = get_redirect(name, data, post_url, session)
+    return rs, yundama_obj, cid, session
 
-    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
-    url = get_redirect(name, data, post_url, session)
-    return url, yundama_obj, cid, session
+def do_login(name, password):
+    # retry_count = 0
+    # post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+    #
+    # session = requests.Session()
+    # su = get_encodename(name)
+    #
+    # sever_data = get_server_data(su, session)
+    # servertime = sever_data["servertime"]
+    # nonce = sever_data['nonce']
+    # rsakv = sever_data["rsakv"]
+    # pubkey = sever_data["pubkey"]
+    # show_pin = sever_data['showpin']
+    # pcid = sever_data['pcid']
+    #
+    # sp = get_password(password, servertime, nonce, pubkey)
+    #
+    # # 提交的数据可以根据抓包获得
+    # data = {
+    #     'encoding': 'UTF-8',
+    #     'entry': 'weibo',
+    #     'from': '',
+    #     'gateway': '1',
+    #     'nonce': nonce,
+    #     'pagerefer': "",
+    #     'prelt': 67,
+    #     'pwencode': 'rsa2',
+    #     "returntype": "META",
+    #     'rsakv': rsakv,
+    #     'savestate': '7',
+    #     'servertime': servertime,
+    #     'service': 'miniblog',
+    #     'sp': sp,
+    #     'sr': '1920*1080',
+    #     'su': su,
+    #     'useticket': '1',
+    #     'vsnf': '1',
+    #     'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+    # }
+    #
+    # yundama_obj = None
+    # cid = ''
+    #
+    # data['pcid'] = pcid
+    #
+    # # 判断是否需要验证码
+    # #if show_pin:
+    #
+    # if not yundama_username:
+    #     raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
+    # img_url = get_pincode_url(pcid)
+    # pincode_name = get_img(img_url, name, retry_count)
+    # verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+    #                                                                   pincode_name)
+    # data['door'] = verify_code
+    #
+    # os.remove(pincode_name)
+    #
+    # rs = get_redirect(name, data, post_url, session)
+
+    # # 登录重试
+    # if rs == 'login_need_pincode':
+    #     retry_count += 1
+    #     # 重新登录
+    #     print('本次登录需要验证码')
+    #     sever_data = get_server_data(su, session)
+    #     servertime = sever_data["servertime"]
+    #     nonce = sever_data['nonce']
+    #     rsakv = sever_data["rsakv"]
+    #     pubkey = sever_data["pubkey"]
+    #     pcid = sever_data['pcid']
+    #
+    #     sp = get_password(password, servertime, nonce, pubkey)
+    #
+    #     # 提交的数据可以根据抓包获得
+    #     data = {
+    #         'encoding': 'UTF-8',
+    #         'entry': 'weibo',
+    #         'from': '',
+    #         'gateway': '1',
+    #         'nonce': nonce,
+    #         'pagerefer': "",
+    #         'prelt': 67,
+    #         'pwencode': 'rsa2',
+    #         "returntype": "META",
+    #         'rsakv': rsakv,
+    #         'savestate': '7',
+    #         'servertime': servertime,
+    #         'service': 'miniblog',
+    #         'sp': sp,
+    #         'sr': '1920*1080',
+    #         'su': su,
+    #         'useticket': '1',
+    #         'vsnf': '1',
+    #         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+    #     }
+    #     img_url = get_pincode_url(pcid)
+    #     pincode_name = get_img(img_url, name, retry_count)
+    #     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+    #                                                                       pincode_name)
+    #     data['door'] = verify_code
+    #     print('retry_count：{}的验证码为{}'.format(retry_count, verify_code))
+    #     #os.remove(pincode_name)
+    #
+    #     rs = get_redirect(name, data, post_url, session)
+
+    # while rs == 'pinerror':
+    #     retry_count += 1
+    #     sever_data = get_server_data(su, session)
+    #     servertime = sever_data["servertime"]
+    #     nonce = sever_data['nonce']
+    #     rsakv = sever_data["rsakv"]
+    #     pubkey = sever_data["pubkey"]
+    #     pcid = sever_data['pcid']
+    #
+    #     sp = get_password(password, servertime, nonce, pubkey)
+    #
+    #     # 提交的数据可以根据抓包获得
+    #     data = {
+    #         'encoding': 'UTF-8',
+    #         'entry': 'weibo',
+    #         'from': '',
+    #         'gateway': '1',
+    #         'nonce': nonce,
+    #         'pagerefer': "",
+    #         'prelt': 67,
+    #         'pwencode': 'rsa2',
+    #         "returntype": "META",
+    #         'rsakv': rsakv,
+    #         'savestate': '7',
+    #         'servertime': servertime,
+    #         'service': 'miniblog',
+    #         'sp': sp,
+    #         'sr': '1920*1080',
+    #         'su': su,
+    #         'useticket': '1',
+    #         'vsnf': '1',
+    #         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+    #     }
+    #     # 重新打码并且重新登录
+    #     img_url = get_pincode_url(pcid)
+    #     pincode_name = get_img(img_url, name, retry_count)
+    #     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+    #                                                                       pincode_name)
+    #     data['door'] = verify_code
+    #     print('retry_count：{}的验证码为{}'.format(retry_count, verify_code))
+    #     #os.remove(pincode_name)
+    #     # 暂时注释掉
+    #     #yundama_obj.report_error(cid)
+    #
+    #     rs = get_redirect(name, data, post_url, session)
+
+    session = requests.Session()
+    su = get_encodename(name)
+    server_data = get_server_data(su, session)
+    if server_data['showpin']:
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count=0)
+    else:
+        rs, yundama_obj, cid, session = login_no_pincode(name, password, server_data, session)
+        if rs == 'login_need_pincode':
+            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count=0)
+
+    return rs, yundama_obj, cid, session
 
 
 # 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
-def get_session(name, password, need_verify):
-    url, yundama_obj, cid, session = do_login(name, password, need_verify)
-    # 打码出错处理
-    while url == 'pinerror' and yundama_obj is not None:
-        yundama_obj.report_error(cid)
-        url, yundama_obj, cid, session = do_login(name, password, need_verify)
+def get_session(name, password):
+    url, yundama_obj, cid, session = do_login(name, password)
 
     if url != '':
         rs_cont = session.get(url, headers=headers)
