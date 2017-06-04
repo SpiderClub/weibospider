@@ -122,20 +122,16 @@ def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_ke
     :return: 验证码结果
     """
     yundama_obj = YDMHttp(name, passwd, app_id, app_key)
-    cur_uid = yundama_obj.login()
-    print('uid: %s' % cur_uid)
+    yundama_obj.login()
 
     rest = yundama_obj.balance()
-    # todo  这里应该找一种更加合理的方法提示用户
     if rest <= 0:
         raise Exception('云打码已经欠费了，请及时充值')
     if rest <= 100:
-        other.warning('云打码余额已不多，请注意')
-    print('balance: %s' % rest)
+        other.warning('云打码余额已不多，请注意及时充值')
 
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
     cid, result = yundama_obj.decode(file_name, code_type, time_out)
-    print('cid: %s, result: %s' % (cid, result))
     return result, yundama_obj, cid
 
 
