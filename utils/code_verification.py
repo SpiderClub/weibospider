@@ -128,7 +128,7 @@ def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_ke
     rest = yundama_obj.balance()
     # todo  这里应该找一种更加合理的方法提示用户
     if rest <= 0:
-        other.warning('云打码已经欠费了，请及时充值')
+        raise Exception('云打码已经欠费了，请及时充值')
     if rest <= 100:
         other.warning('云打码余额已不多，请注意')
     print('balance: %s' % rest)
