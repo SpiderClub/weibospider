@@ -188,192 +188,43 @@ def login_by_pincode(name, password, session, server_data, retry_count):
     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
                                                                       pincode_name)
     data['door'] = verify_code
-
-    #os.remove(pincode_name)
-
     rs = get_redirect(name, data, post_url, session)
 
+    os.remove(pincode_name)
     return rs, yundama_obj, cid, session
 
 
+def login_retry(name, password, session, ydm_obj, cid, rs='pinerror', retry_count=0):
+    while rs == 'pinerror':
+        ydm_obj.report_error(cid)
+        retry_count += 1
+        session = requests.Session()
+        su = get_encodename(name)
+        server_data = get_server_data(su, session)
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
+    return rs, ydm_obj, cid, session
+
+
 def do_login(name, password):
-    # retry_count = 0
-    # post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
-    #
-    # session = requests.Session()
-    # su = get_encodename(name)
-    #
-    # sever_data = get_server_data(su, session)
-    # servertime = sever_data["servertime"]
-    # nonce = sever_data['nonce']
-    # rsakv = sever_data["rsakv"]
-    # pubkey = sever_data["pubkey"]
-    # show_pin = sever_data['showpin']
-    # pcid = sever_data['pcid']
-    #
-    # sp = get_password(password, servertime, nonce, pubkey)
-    #
-    # # 提交的数据可以根据抓包获得
-    # data = {
-    #     'encoding': 'UTF-8',
-    #     'entry': 'weibo',
-    #     'from': '',
-    #     'gateway': '1',
-    #     'nonce': nonce,
-    #     'pagerefer': "",
-    #     'prelt': 67,
-    #     'pwencode': 'rsa2',
-    #     "returntype": "META",
-    #     'rsakv': rsakv,
-    #     'savestate': '7',
-    #     'servertime': servertime,
-    #     'service': 'miniblog',
-    #     'sp': sp,
-    #     'sr': '1920*1080',
-    #     'su': su,
-    #     'useticket': '1',
-    #     'vsnf': '1',
-    #     'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
-    # }
-    #
-    # yundama_obj = None
-    # cid = ''
-    #
-    # data['pcid'] = pcid
-    #
-    # # 判断是否需要验证码
-    # #if show_pin:
-    #
-    # if not yundama_username:
-    #     raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
-    # img_url = get_pincode_url(pcid)
-    # pincode_name = get_img(img_url, name, retry_count)
-    # verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
-    #                                                                   pincode_name)
-    # data['door'] = verify_code
-    #
-    # os.remove(pincode_name)
-    #
-    # rs = get_redirect(name, data, post_url, session)
-
-    # # 登录重试
-    # if rs == 'login_need_pincode':
-    #     retry_count += 1
-    #     # 重新登录
-    #     print('本次登录需要验证码')
-    #     sever_data = get_server_data(su, session)
-    #     servertime = sever_data["servertime"]
-    #     nonce = sever_data['nonce']
-    #     rsakv = sever_data["rsakv"]
-    #     pubkey = sever_data["pubkey"]
-    #     pcid = sever_data['pcid']
-    #
-    #     sp = get_password(password, servertime, nonce, pubkey)
-    #
-    #     # 提交的数据可以根据抓包获得
-    #     data = {
-    #         'encoding': 'UTF-8',
-    #         'entry': 'weibo',
-    #         'from': '',
-    #         'gateway': '1',
-    #         'nonce': nonce,
-    #         'pagerefer': "",
-    #         'prelt': 67,
-    #         'pwencode': 'rsa2',
-    #         "returntype": "META",
-    #         'rsakv': rsakv,
-    #         'savestate': '7',
-    #         'servertime': servertime,
-    #         'service': 'miniblog',
-    #         'sp': sp,
-    #         'sr': '1920*1080',
-    #         'su': su,
-    #         'useticket': '1',
-    #         'vsnf': '1',
-    #         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
-    #     }
-    #     img_url = get_pincode_url(pcid)
-    #     pincode_name = get_img(img_url, name, retry_count)
-    #     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
-    #                                                                       pincode_name)
-    #     data['door'] = verify_code
-    #     print('retry_count：{}的验证码为{}'.format(retry_count, verify_code))
-    #     #os.remove(pincode_name)
-    #
-    #     rs = get_redirect(name, data, post_url, session)
-
-    # while rs == 'pinerror':
-    #     retry_count += 1
-    #     sever_data = get_server_data(su, session)
-    #     servertime = sever_data["servertime"]
-    #     nonce = sever_data['nonce']
-    #     rsakv = sever_data["rsakv"]
-    #     pubkey = sever_data["pubkey"]
-    #     pcid = sever_data['pcid']
-    #
-    #     sp = get_password(password, servertime, nonce, pubkey)
-    #
-    #     # 提交的数据可以根据抓包获得
-    #     data = {
-    #         'encoding': 'UTF-8',
-    #         'entry': 'weibo',
-    #         'from': '',
-    #         'gateway': '1',
-    #         'nonce': nonce,
-    #         'pagerefer': "",
-    #         'prelt': 67,
-    #         'pwencode': 'rsa2',
-    #         "returntype": "META",
-    #         'rsakv': rsakv,
-    #         'savestate': '7',
-    #         'servertime': servertime,
-    #         'service': 'miniblog',
-    #         'sp': sp,
-    #         'sr': '1920*1080',
-    #         'su': su,
-    #         'useticket': '1',
-    #         'vsnf': '1',
-    #         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
-    #     }
-    #     # 重新打码并且重新登录
-    #     img_url = get_pincode_url(pcid)
-    #     pincode_name = get_img(img_url, name, retry_count)
-    #     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
-    #                                                                       pincode_name)
-    #     data['door'] = verify_code
-    #     print('retry_count：{}的验证码为{}'.format(retry_count, verify_code))
-    #     #os.remove(pincode_name)
-    #     # 暂时注释掉
-    #     #yundama_obj.report_error(cid)
-    #
-    #     rs = get_redirect(name, data, post_url, session)
-
     session = requests.Session()
     su = get_encodename(name)
     server_data = get_server_data(su, session)
-    retry_count = 0
 
     if server_data['showpin']:
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
-        while rs == 'pinerror':
-            retry_count += 1
-            session = requests.Session()
-            su = get_encodename(name)
-            server_data = get_server_data(su, session)
-            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0)
+        if rs == 'pinerror':
+            rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid)
+
     else:
         rs, yundama_obj, cid, session = login_no_pincode(name, password, session, server_data)
         if rs == 'login_need_pincode':
             session = requests.Session()
             su = get_encodename(name)
             server_data = get_server_data(su, session)
-            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
-            while rs == 'pinerror':
-                retry_count += 1
-                session = requests.Session()
-                su = get_encodename(name)
-                server_data = get_server_data(su, session)
-                rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
+            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0)
+
+            if rs == 'pinerror':
+                rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid)
 
     return rs, yundama_obj, cid, session
 
