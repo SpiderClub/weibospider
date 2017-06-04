@@ -109,7 +109,7 @@ def get_redirect(name, data, post_url, session):
         return ''
 
 
-def login_no_pincode(name, password, server_data, session):
+def login_no_pincode(name, password, session, server_data):
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
@@ -192,6 +192,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
     #os.remove(pincode_name)
 
     rs = get_redirect(name, data, post_url, session)
+
     return rs, yundama_obj, cid, session
 
 
@@ -350,12 +351,29 @@ def do_login(name, password):
     session = requests.Session()
     su = get_encodename(name)
     server_data = get_server_data(su, session)
+    retry_count = 0
+
     if server_data['showpin']:
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count=0)
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
+        while rs == 'pinerror':
+            retry_count += 1
+            session = requests.Session()
+            su = get_encodename(name)
+            server_data = get_server_data(su, session)
+            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
     else:
-        rs, yundama_obj, cid, session = login_no_pincode(name, password, server_data, session)
+        rs, yundama_obj, cid, session = login_no_pincode(name, password, session, server_data)
         if rs == 'login_need_pincode':
-            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count=0)
+            session = requests.Session()
+            su = get_encodename(name)
+            server_data = get_server_data(su, session)
+            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
+            while rs == 'pinerror':
+                retry_count += 1
+                session = requests.Session()
+                su = get_encodename(name)
+                server_data = get_server_data(su, session)
+                rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
 
     return rs, yundama_obj, cid, session
 
@@ -371,14 +389,12 @@ def get_session(name, password):
         u_pattern = r'"uniqueid":"(.*)",'
         m = re.search(u_pattern, login_info)
         if m and m.group(1):
-            # 任意验证一个页面看能否访问，使用这个方法验证比较依赖外部条件，但是没找到更好的方式(有的情况下，
-            # 账号存在问题，但是可以访问自己的主页，所以通过自己的主页验证账号是否正常不恰当)
-            check_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
+            # 访问微博官方账号看是否正常
+            check_url = 'http://weibo.com/2671109275/about'
             resp = session.get(check_url, headers=headers)
             # 通过实验，目前发现未经过手机验证的账号是救不回来了...
             if is_403(resp.text):
                 other.error('账号{}已被冻结'.format(name))
-                crawler.warning('账号{}已经被冻结'.format(name))
                 freeze_account(name, 0)
                 return None
             other.info('本次登陆账号为:{}'.format(name))
