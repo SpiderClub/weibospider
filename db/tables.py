@@ -8,7 +8,6 @@ login_info = Table("login_info", metadata,
                    Column("name", String(100), unique=True),
                    Column("password", String(200)),
                    Column("enable", INTEGER, default=1, server_default='1'),
-                   Column("need_verify", INTEGER, default=1, server_default='1')
                    )
 
 # 用户表 wbuser
