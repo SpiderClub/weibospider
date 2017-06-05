@@ -76,7 +76,6 @@ def get_weibo_info_detail(each, html):
         wb_data.praise_num = int(each.find(attrs={'action-type': 'fl_like'}).find_all('em')[1].text)
     except Exception:
         wb_data.praise_num = 0
-    print(wb_data.praise_num)
     return wb_data
 
 
