@@ -199,9 +199,20 @@
   - 在项目根目录下，运行`python create_all.py`创建该项目需要的表
 
 
-到此，整个关于项目配置的工作就完成了
+---
 
-------------------
+上面其实已经介绍完整个项目的配置流程了.如果大家对docker比较熟悉，也可以使用基于docker的方式进行部署。
+如果大家有使用docker的经验，估计也不用我多说了吧，只是要注意一点，构建镜像的时候需要在项目的根目录，因为在构建
+镜像的过程中会拷贝`WeiboSpider`整个项目，目前用的硬编码，除了挂载可以灵活一点也没找到别的办法。镜像构建语句可以
+是
+> docker build -f WeiboSpider/Dockerfile -t resolvewang/weibospider:v1.0 .
+
+构建好镜像后运行容器默认是接受所有任务路由，如果只接收部分，直接覆盖`CMD`的命令即可，比如我只想执行login任务，那么
+> docker run --name resolvewang/weibospider:v1.0 celery -A tasks.workers -Q login_queue worker -l info -c 1
+
+又比如通过docker启动定时器
+> docker run --name spiderbeater resolvewang/weibospider:v1.0 celery beat -A tasks.workers -l info
+
 
 ### 使用
 
