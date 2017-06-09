@@ -55,11 +55,13 @@ def get_weibo_info(each, html):
         try:
             feed_action = each.find(attrs={'class': 'feed_action'})
             create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['date']
-            create_time = int(create_time)/1000  # 时间戳单位不同
-            create_time = datetime.fromtimestamp(create_time)
-
-            wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
-
+            if create_time:
+                create_time = int(create_time) / 1000  # 时间戳单位不同
+                create_time = datetime.fromtimestamp(create_time)
+                wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
+            else:
+                wb_data.create_time = ''  # TODO : date 属性为空(ㄒoㄒ)，看来解析中文字串日期最为稳妥，就是各种格式比较烦
+            
         except Exception as why:
             parser.error('解析feed_action出错,出错原因:{},页面源码是{}'.format(why, html))
             wb_data.device = ''
