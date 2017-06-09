@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from logger.log import parser
 from db.models import WeiboData
 from decorators.decorator import parse_decorator
-
+from datetime import datetime
 
 user_pattern = r'id=(\d+)&u'
 
@@ -56,7 +56,6 @@ def get_weibo_info(each, html):
             feed_action = each.find(attrs={'class': 'feed_action'})
             create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['date']
             create_time = int(create_time)/1000  # 时间戳单位不同
-            from datetime import datetime
             create_time = datetime.fromtimestamp(create_time)
 
             wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
