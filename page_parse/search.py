@@ -77,6 +77,7 @@ def get_weibo_info(each, html):
             wb_data.device = ''
 
         else:
+            feed_infos = feed_action.find_all('li')
             try:
                 wb_data.repost_num = get_feed_info(feed_infos,'转发')
             except (AttributeError, ValueError):
