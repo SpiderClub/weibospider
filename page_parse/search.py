@@ -25,7 +25,17 @@ def _search_page_parse(html):
                 return m2.group(1).encode('utf-8', 'ignore').decode('unicode-escape', 'ignore').replace('\\', '')
     return ''
 
+def get_feed_info(feed_infos,goal):
+    info_num = None
+    for info in feed_infos:
+        if goal in info.text:
+            info_num = info.text.replace(goal, '')
+            break
+    if info_num is None:
+        parser.error('解析出现意外模板:{}'.format(feed_infos))
+    return int(info_num)
 
+	
 @parse_decorator(5)
 def get_weibo_info(each, html):
     wb_data = WeiboData()
@@ -68,11 +78,11 @@ def get_weibo_info(each, html):
 
         else:
             try:
-                wb_data.repost_num = int(feed_action.find(attrs={'action-type': 'feed_list_forward'}).find('em').text)
+                wb_data.repost_num = get_feed_info(feed_infos,'转发')
             except (AttributeError, ValueError):
                 wb_data.repost_num = 0
             try:
-                wb_data.comment_num = int(feed_action.find(attrs={'action-type': 'feed_list_comment'}).find('em').text)
+                wb_data.comment_num = get_feed_info(feed_infos,'评论')
             except (AttributeError, ValueError):
                 wb_data.comment_num = 0
             try:
