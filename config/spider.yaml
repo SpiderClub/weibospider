@@ -26,6 +26,7 @@ redis:
     host: 223.129.0.190
     port: 6379
     password: ''
+    share_host_count: 5 # 设置一个账号可以由几个主机共享
     cookies: 1 # 登录需要使用的cookies
     urls: 2 # 抓取过的url
     broker: 5 # celery的broker
