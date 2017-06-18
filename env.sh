@@ -2,7 +2,14 @@ PROJ_DIR=`pwd`
 VENV=${PROJ_DIR}/.env
 PROJ_NAME=WeiboSpider
 
-pip3 install virtualenv
+# if your python release is not anaconda or cpython, please change the code below
+ANACONDA_EXISTS=`which conda`
+
+if [ -e ${ANACONDA_EXISTS} ];then
+    conda install virtualenv -yq
+else
+    pip3 install virtualenv -yq
+fi
 
 if [ ! -e ${VENV} ];then
     virtualenv --prompt "(${PROJ_NAME})" ${VENV} -p  python3
