@@ -1,16 +1,17 @@
 # coding:utf-8
 import datetime
 import json
-import re
 
 import redis
-from config.conf import get_redis_args
+from config.conf import get_redis_args, get_share_host_count
 from logger.log import crawler
 import socket
 
 redis_args = get_redis_args()
+share_host_count = get_share_host_count()
 
 
+# todo 考虑并发条件下的cookie存取
 class Cookies(object):
     rd_con = redis.StrictRedis(host=redis_args.get('host'), port=redis_args.get('port'),
                                password=redis_args.get('password'), db=redis_args.get('cookies'))
@@ -27,18 +28,20 @@ class Cookies(object):
 
     @classmethod
     def push_in_queue(cls, name):
+        # 在节点数和任务执行较快的情况下，并不能保证队列中无重复名字。如果账号已在队列，则不重复存储
         for i in range(cls.rd_con.llen('account_queue')):
             tn = cls.rd_con.lindex('account_queue', i)
             if tn:
                 if tn == name:
-                    return  # 简单的筛选一下，在节点数和任务执行较快的情况下，并不能保证队列中无重复名字
+                    return
         cls.rd_con.rpush('account_queue', name)
 
     @classmethod
     def fetch_cookies(cls):
         # cookies记录被使用的主机数目，当超过上限，则将其放至队尾，未超过则获取并记录
+        # todo 这里用hostname来标识不同主机其实是有小问题的，比如不同ip主机名可能相同
         hostname = socket.gethostname()
-        # 首先尝试获取本机已经占有的cookies
+        # 如果redis中已有相关主机的cookie，则直接取出来
         my_cookies_name = cls.rd_con.hget('host', hostname)
         if my_cookies_name:
             my_cookies = cls.rd_con.hget('account', my_cookies_name)
@@ -48,9 +51,11 @@ class Cookies(object):
             else:
                 cls.delete_cookies(my_cookies_name)
 
+        # 如果没有或者过期，则从队列中阻塞获取一个新的cookies
+        # 不阻塞在账户少的时候，可能会出现不同主机重复登陆的情况，阻塞之后，原来尝试登陆代码就无效了,需要的话可以设置超时解决
+        # 另外阻塞的一个好处是，任务不会在账号出问题的时候被刷没了
         while True:
-            # 失败则从队列中 阻塞 获取一个新的cookies (不阻塞在账户少的时候，会出现重复登陆的情况，但是这里阻塞之后，原来实现中的尝试登陆代码就无效了,需要的话可以设置超时解决)
-            # 另外阻塞的一个好处是，任务不会在账号出问题的时候被刷没了
+            # todo notify the users or retry login
             name = cls.rd_con.blpop('account_queue')[1].decode('utf-8')
             if name:
                 j_account = cls.rd_con.hget('account', name)
@@ -58,24 +63,25 @@ class Cookies(object):
                 if cls.check_cookies_timeout(j_account):
                     cls.delete_cookies(name)
                     continue
-                    # 取下一个,删除当前账号
+
                 j_account = j_account.decode('utf-8')
-                # 为该cookies标记该主机使用
+                # account-host对应关系（一对多）
                 hosts = cls.rd_con.hget('cookies_host', name)
                 if not hosts:
-                    hosts = {}
+                    hosts = dict()
                 else:
                     hosts = hosts.decode('utf-8')
                     hosts = json.loads(hosts)
                 hosts[hostname] = 1
                 cls.rd_con.hset('cookies_host', name, json.dumps(hosts))
 
-                # 该主机记录该cookies
+                # host-account对应关系（一对一）
                 account = json.loads(j_account)
                 cls.rd_con.hset('host', hostname, name)
 
-                if len(hosts) < redis_args.get('share_host_count'):  # 指一个cookie可以共享的主机数目
-                    cls.rd_con.lpush('account_queue', name)  # 塞回头部
+                # 塞回头部，下次继续使用
+                if len(hosts) < share_host_count:
+                    cls.rd_con.lpush('account_queue', name)
                 return name, account['cookies']
 
     @classmethod
