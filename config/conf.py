@@ -78,3 +78,7 @@ def get_code_username():
 
 def get_code_password():
     return cf.get('yundama_passwd')
+
+
+def get_share_host_count():
+    return cf.get('share_host_count')
