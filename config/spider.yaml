@@ -17,6 +17,7 @@ yundama_passwd: ''             # 云打码密码
 mode: normal
 # 如果模式是quick，请设置一个cookie可以同时被多少个IP共享，微博系统目前支持一个cookie同时能够在5台主机上共享
 share_host_count: 5
+cookie_expire_time: 23         # 微博cookie过期时间，默认是23小时（目前PC端cookie最多维持24小时）
 
 
 

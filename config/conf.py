@@ -80,5 +80,13 @@ def get_code_password():
     return cf.get('yundama_passwd')
 
 
+def get_running_mode():
+    return cf.get('mode')
+
+
 def get_share_host_count():
     return cf.get('share_host_count')
+
+
+def get_cookie_expire_time():
+    return cf.get('cookie_expire_time')
