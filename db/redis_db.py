@@ -1,14 +1,21 @@
 # coding:utf-8
-import datetime
 import json
+import socket
+import datetime
 
 import redis
-from config.conf import get_redis_args, get_share_host_count
 from logger.log import crawler
-import socket
+from config.conf import (
+    get_redis_args,
+    get_share_host_count,
+    get_running_mode,
+    get_cookie_expire_time
+)
 
+mode = get_running_mode()
 redis_args = get_redis_args()
 share_host_count = get_share_host_count()
+cookie_expire_time = get_cookie_expire_time()
 
 
 # todo 考虑并发条件下的cookie存取
@@ -23,7 +30,7 @@ class Cookies(object):
     def store_cookies(cls, name, cookies):
         pickled_cookies = json.dumps(
             {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp()})
-        cls.rd_con.hset('account', name, pickled_cookies)  
+        cls.rd_con.hset('account', name, pickled_cookies)
         cls.push_in_queue(name)
 
     @classmethod
@@ -38,6 +45,32 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies(cls):
+        # todo 阻塞过后通过email通知用户
+        if mode == 'normal':
+            return cls.fetch_cookies_of_normal()
+
+        else:
+            return cls.fetch_cookies_of_quick()
+
+    @classmethod
+    def fetch_cookies_of_normal(cls):
+        # 轮询可用账号
+        for i in range(cls.rd_con.llen('account_queue')):
+            name = cls.rd_con.blpop('account_queue').decode('utf-8')
+            # 这里判断name是否存在，是因为在抓取过程中可能cookie被封，从account_queue取出的account
+            # 可能是已经不存在于account中的name了
+            j_account = cls.rd_con.hget('account', name).decode('utf-8')
+            if j_account:
+                if cls.check_cookies_timeout(j_account):
+                    cls.delete_cookies(name)
+                    continue
+                cls.rd_con.rpush('account_queue', name)
+                account = json.loads(j_account)
+                return name, account['cookies']
+        return None
+
+    @classmethod
+    def fetch_cookies_of_quick(cls):
         # cookies记录被使用的主机数目，当超过上限，则将其放至队尾，未超过则获取并记录
         # todo 这里用hostname来标识不同主机其实是有小问题的，比如不同ip主机名可能相同
         hostname = socket.gethostname()
@@ -51,13 +84,12 @@ class Cookies(object):
             else:
                 cls.delete_cookies(my_cookies_name)
 
-        # 如果没有或者过期，则从队列中阻塞获取一个新的cookies
-        # 不阻塞在账户少的时候，可能会出现不同主机重复登陆的情况，阻塞之后，原来尝试登陆代码就无效了,需要的话可以设置超时解决
-        # 另外阻塞的一个好处是，任务不会在账号出问题的时候被刷没了
         while True:
-            # todo notify the users or retry login
-            name = cls.rd_con.blpop('account_queue')[1].decode('utf-8')
-            if name:
+            try:
+                name = cls.rd_con.blpop('account_queue')[1].decode('utf-8')
+            except AttributeError:
+                return None
+            else:
                 j_account = cls.rd_con.hget('account', name)
 
                 if cls.check_cookies_timeout(j_account):
@@ -87,22 +119,14 @@ class Cookies(object):
     @classmethod
     def delete_cookies(cls, name):
         cls.rd_con.hdel('account', name)
-        cls.rd_con.hdel('cookies_host', name)
+        if mode == 'quick':
+            cls.rd_con.hdel('cookies_host', name)
         return True
 
     @classmethod
     def check_login_task(cls):
         if cls.rd_con_broker.llen('login_queue') > 0:
             cls.rd_con_broker.delete('login_queue')
-
-    @classmethod
-    def fresh_login_queue(cls, num):
-
-        for key in cls.rd_con.hkeys('account'):
-            if cls.rd_con.llen('account_queue') > num:
-                break  # 保持cookies池数量
-            cls.push_in_queue(key)
-        print('队列总包含{}个可使用cookies'.format(cls.rd_con.llen('account_queue')))
 
     @classmethod
     def check_cookies_timeout(cls, cookies):
@@ -112,8 +136,7 @@ class Cookies(object):
             cookies = cookies.decode('utf-8')
         cookies = json.loads(cookies)
         login_time = datetime.datetime.fromtimestamp(cookies['loginTime'])
-        if datetime.datetime.now() - login_time > datetime.timedelta(hours=20):
-            # 删除过期cookies
+        if datetime.datetime.now() - login_time > datetime.timedelta(hours=cookie_expire_time):
             crawler.warning('一个账号已过期')
             return True
         return False
