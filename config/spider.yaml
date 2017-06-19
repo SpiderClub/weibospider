@@ -11,10 +11,18 @@ max_repost_page: 2000          # 转发信息最多抓取多少页
 max_retries: 5                 # 抓取失败重试次数
 yundama_username: ''           # 云打码用户名,如果登录账号全是在常用地登录，则不需要填写
 yundama_passwd: ''             # 云打码密码
+# 数据采集，分为normal和quick两种，默认采用normal
+# 前者用于对数据量追求不大而是需要定时采集某些数据的情况
+# 后者应用于需要做大规模数据采集的情况，这种情况下一个账号运行两到三个小时应该会被封
+mode: normal
+# 如果模式是quick，请设置一个cookie可以同时被多少个IP共享，微博系统目前支持一个cookie同时能够在5台主机上共享
+share_host_count: 5
+cookie_expire_time: 23         # 微博cookie过期时间，默认是23小时（目前PC端cookie最多维持24小时）
+
 
 
 db:
-    host: 223.129.0.190
+    host: 127.0.0.1
     port: 3306
     user: root
     password: 123456
@@ -23,10 +31,10 @@ db:
 
 # 保存登录的cookies
 redis:
-    host: 223.129.0.190
+    host: 127.0.0.1
     port: 6379
     password: ''
-    cookies: 1 # 登录需要使用的cookies
+    cookies: 1 # cookie存取
     urls: 2 # 抓取过的url
     broker: 5 # celery的broker
     backend: 6 # celery的backend
