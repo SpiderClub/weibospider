@@ -232,6 +232,8 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 ```python user_first.py```来执行
   - **通过*flower*监控节点健康状况**：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP.
 如果需要让外网访问，可以这样`celery -A tasks.workers flower --address=0.0.0.0 --port=5555`
+  - 程序默认以普通模式运行，如果想改成极速模式，请修改[配置文件](./config/spider.yaml)中`mode`的值为`quick`。关于极速和普通模式的区别，
+  请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E5%BE%AE%E5%8D%9A%E7%88%AC%E8%99%AB%E7%9A%84%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%80%9F%E6%A8%A1%E5%BC%8F)
 
 
 - 其它
