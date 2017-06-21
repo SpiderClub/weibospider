@@ -237,6 +237,10 @@ class TestWeiboSpider(unittest.TestCase):
         from db.redis_db import IdNames
         print(IdNames.fetch_uid_by_name('腐剧基地'))
 
+    def test_send_email(self):
+        from utils.email_warning import send_email
+        send_email()
+
 
 if __name__ == '__main__':
     unittest.main()

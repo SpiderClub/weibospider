@@ -90,3 +90,7 @@ def get_share_host_count():
 
 def get_cookie_expire_time():
     return cf.get('cookie_expire_time')
+
+
+def get_email_args():
+    return cf.get('email')

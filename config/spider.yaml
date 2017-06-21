@@ -9,8 +9,6 @@ max_home_page: 35              # 主页微博最多抓取页数
 max_comment_page: 2000         # 每条微博最大抓取的评论页数（注意不是评论数）
 max_repost_page: 2000          # 转发信息最多抓取多少页
 max_retries: 5                 # 抓取失败重试次数
-yundama_username: ''           # 云打码用户名,如果登录账号全是在常用地登录，则不需要填写
-yundama_passwd: ''             # 云打码密码
 # 数据采集，分为normal和quick两种，默认采用normal
 # 前者用于对数据量追求不大而是需要定时采集某些数据的情况
 # 后者应用于需要做大规模数据采集的情况，这种情况下一个账号运行两到三个小时应该会被封
@@ -19,6 +17,9 @@ mode: normal
 share_host_count: 5
 cookie_expire_time: 23         # 微博cookie过期时间，默认是23小时（目前PC端cookie最多维持24小时）
 
+
+yundama_username: ''           # 云打码用户名,如果登录账号全是在常用地登录，则不需要填写
+yundama_passwd: ''             # 云打码密码
 
 
 db:
@@ -40,6 +41,13 @@ redis:
     backend: 6 # celery的backend
     id_name: 8 # user_id和对应的name，这个是为转发微博分析而存在的
 
-
-
+# 通过邮箱进行报警
+email:
+    server: smtp.sina.com   # 注意邮箱服务器要开启stmp服务
+    port: 587
+    from: sendingemailaccount
+    password: youremailpasswd
+    to: receivingemailaccount
+    subject: 分布式微博爬虫警告
+    warning_info: 微博爬虫已经停止工作，请检查原因
 
