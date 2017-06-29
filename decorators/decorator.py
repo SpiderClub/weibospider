@@ -67,10 +67,11 @@ def timeout(seconds):
     def crwal_decorator(func):
         def _new_func(oldfunc, result, oldfunc_args, oldfunc_kwargs):
             result.append(oldfunc(*oldfunc_args, **oldfunc_kwargs))
-
-        def _(*args, **kwargs):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
             result = []
-            new_kwargs = {  # create new args for _new_func, because we want to get the func return val to result list
+            # create new args for _new_func, because we want to get the func return val to result list
+            new_kwargs = {
                 'oldfunc': func,
                 'result': result,
                 'oldfunc_args': args,
@@ -93,10 +94,6 @@ def timeout(seconds):
                     return result[0]
                 else:
                     return ''
-
-        _.__name__ = func.__name__
-
-        _.__doc__ = func.__doc__
-        return _
+        return wrapper
 
     return crwal_decorator
