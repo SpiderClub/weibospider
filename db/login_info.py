@@ -13,8 +13,8 @@ def get_login_info():
 @db_commit_decorator
 def freeze_account(name, rs):
     """
-    :param name: 账户名
-    :param rs: 0表示被封，1表示正常，2表示账号密码不匹配
+    :param name: login account
+    :param rs: 0 stands for banned，1 stands for normal，2 stands for name or password is invalid
     :return: 
     """
     account = db_session.query(LoginInfo).filter(LoginInfo.name == name).first()

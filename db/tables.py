@@ -2,7 +2,7 @@
 from sqlalchemy import Table, Column, INTEGER, String
 from db.basic_db import metadata
 
-# 登陆帐号表 login_info
+# login table
 login_info = Table("login_info", metadata,
                    Column("id", INTEGER, primary_key=True, autoincrement=True),
                    Column("name", String(100), unique=True),
@@ -10,9 +10,8 @@ login_info = Table("login_info", metadata,
                    Column("enable", INTEGER, default=1, server_default='1'),
                    )
 
-# 用户表 wbuser
+# weibo user info
 wbuser = Table("wbuser", metadata,
-               # 这里需要设置默认值，否则空的话可能会存储None，可能会引发未catch的异常
                Column("id", INTEGER, primary_key=True, autoincrement=True),
                Column("uid", String(20), unique=True),
                Column("name", String(200), default='', server_default=''),
@@ -34,7 +33,7 @@ wbuser = Table("wbuser", metadata,
                Column("head_img", String(500), default='', server_default=''),
                )
 
-# 种子用户表 seed_ids
+# seed ids for user crawling
 seed_ids = Table('seed_ids', metadata,
                  Column("id", INTEGER, primary_key=True, autoincrement=True),
                  Column("uid", String(20), unique=True),
@@ -43,7 +42,7 @@ seed_ids = Table('seed_ids', metadata,
                  Column("home_crawled", INTEGER, default=0, server_default='0'),
                  )
 
-# 关键词搜索表 keywords
+# search keywords table
 keywords = Table('keywords', metadata,
                  Column("id", INTEGER, primary_key=True, autoincrement=True),
                  Column("keyword", String(200), unique=True),
@@ -67,14 +66,14 @@ weibo_data = Table('weibo_data', metadata,
                    Column("repost_crawled", INTEGER, default=0, server_default='0'),
                    )
 
-# 微博信息关键词联系表 keywords_wbdata
+# keywords and weibodata relationship
 keywords_wbdata = Table('keywords_wbdata', metadata,
                         Column("id", INTEGER, primary_key=True, autoincrement=True),
                         Column("keyword_id", INTEGER),
                         Column("wb_id", String(200)),
                         )
 
-# 微博评论表
+# comment table
 weibo_comment = Table('weibo_comment', metadata,
                       Column("id", INTEGER, primary_key=True, autoincrement=True),
                       Column("comment_id", String(50)),
@@ -84,7 +83,7 @@ weibo_comment = Table('weibo_comment', metadata,
                       Column("create_time", String(200)),
                       )
 
-# 微博转发评论
+# repost table
 weibo_repost = Table("weibo_repost", metadata,
                      Column("id", INTEGER, primary_key=True, autoincrement=True),
                      Column("user_id", String(20)),

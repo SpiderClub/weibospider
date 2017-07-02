@@ -4,7 +4,7 @@ from db.models import WeiboRepost
 from decorators.decorator import db_commit_decorator
 
 
-# TODO 弄清楚"pymysql.err.IntegrityError"捕捉不了的原因
+# TODO find out the reason why the code can't catch "pymysql.err.IntegrityError"
 @db_commit_decorator
 def save_reposts(repost_list):
     for repost in repost_list:
@@ -21,9 +21,4 @@ def save_repost(repost):
 
 
 def get_repost_by_rid(rid):
-    """
-    根据转发微博id获取该转发微博信息
-    :param rid: 转发微博id
-    :return: 
-    """
     return db_session.query(WeiboRepost).filter(WeiboRepost.weibo_id == rid).first()

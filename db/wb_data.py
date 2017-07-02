@@ -7,16 +7,11 @@ from decorators.decorator import db_commit_decorator
 
 @db_commit_decorator
 def insert_weibo_data(weibo_data):
-    # 存入数据的时候从更高一层判断是否会重复，不在该层做判断
     db_session.add(weibo_data)
     db_session.commit()
 
 
 def get_wb_by_mid(mid):
-    """
-    :param mid: 微博id
-    :return: 
-    """
     return db_session.query(WeiboData).filter(WeiboData.weibo_id == mid).first()
 
 
@@ -31,11 +26,6 @@ def insert_weibo_datas(weibo_datas):
 
 @db_commit_decorator
 def set_weibo_comment_crawled(mid):
-    """
-    如果存在该微博，那么就将comment_crawled字段设置为1;不存在该微博，就不做任何操作
-    :param mid: 
-    :return: 
-    """
     weibo_data = get_wb_by_mid(mid)
     if weibo_data:
         weibo_data.comment_crawled = 1
@@ -52,11 +42,6 @@ def get_weibo_repost_not_crawled():
 
 @db_commit_decorator
 def set_weibo_repost_crawled(mid):
-    """
-    如果存在该微博，那么就将repost_crawled字段设置为1;不存在该微博，就不做任何操作
-    :param mid: 
-    :return: 
-    """
     weibo_data = get_wb_by_mid(mid)
     if weibo_data:
         weibo_data.repost_crawled = 1
