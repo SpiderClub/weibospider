@@ -33,9 +33,9 @@ def get_pincode_url(pcid):
 
 def get_img(url, name, retry_count):
     """
-    :param url: 验证码url
-    :param name: 登录名，这里用登录名作为验证码的文件名，是为了防止并发登录的时候同名验证码图片被覆盖
-    :param retry_count: 登录重试次数
+    :param url: url for verification code
+    :param name: login account
+    :param retry_count: retry number for getting verfication code
     :return: 
     """
     pincode_name = verify_code_path.format(name, retry_count)
@@ -47,13 +47,13 @@ def get_img(url, name, retry_count):
 
 
 def get_encodename(name):
-    # 如果用户名是手机号，那么需要转为字符串才能继续操作
+    # name must be string
     username_quote = quote_plus(str(name))
     username_base64 = base64.b64encode(username_quote.encode("utf-8"))
     return username_base64.decode("utf-8")
 
 
-# 预登陆获得 servertime, nonce, pubkey, rsakv
+# prelogin for servertime, nonce, pubkey, rsakv
 def get_server_data(su, session):
     pre_url = "http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
     pre_url = pre_url + su + "&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)&_="
@@ -65,41 +65,33 @@ def get_server_data(su, session):
     return sever_data
 
 
-# 这一段用户加密密码，需要参考加密文件
 def get_password(password, servertime, nonce, pubkey):
     rsa_publickey = int(pubkey, 16)
-    key = rsa.PublicKey(rsa_publickey, 65537)  # 创建公钥,
-    message = str(servertime) + '\t' + str(nonce) + '\n' + str(password)  # 拼接明文js加密文件中得到
+    key = rsa.PublicKey(rsa_publickey, 65537)
+    message = str(servertime) + '\t' + str(nonce) + '\n' + str(password)
     message = message.encode("utf-8")
-    passwd = rsa.encrypt(message, key)  # 加密
-    passwd = binascii.b2a_hex(passwd)  # 将加密信息转换为16进制。
+    passwd = rsa.encrypt(message, key)
+    passwd = binascii.b2a_hex(passwd)
     return passwd
 
 
-# 使用post提交加密后的所有数据,并且获得下一次需要get请求的地址
+# post data and get the next url
 def get_redirect(name, data, post_url, session):
-    """
-    :param name: 登录用户名
-    :param data: 需要提交的数据，可以通过抓包来确定部分不变的
-    :param post_url: post地址
-    :param session:
-    :return: 服务器返回的下一次需要请求的url,如果打码出错，返回特定字符串好做特殊处理
-    """
     logining_page = session.post(post_url, data=data, headers=headers)
     login_loop = logining_page.content.decode("GBK")
 
-    # 如果是账号密码不正确，那么就将该字段置为2
+    # if name or password is wrong, set the value to 2
     if 'retcode=101' in login_loop:
-        crawler.error('账号{}的密码不正确'.format(name))
+        crawler.error('invalid password for {}, please ensure your account and password'.format(name))
         freeze_account(name, 2)
         return ''
 
     if 'retcode=2070' in login_loop:
-        crawler.error('输入的验证码不正确')
+        crawler.error('invalid verification code')
         return 'pinerror'
 
     if 'retcode=4049' in login_loop:
-        crawler.warning('账号{}登录需要验证码'.format(name))
+        crawler.warning('account {} need verification for login'.format(name))
         return 'login_need_pincode'
 
     if '正在登录' or 'Signing in' in login_loop:
@@ -118,7 +110,6 @@ def login_no_pincode(name, password, session, server_data):
     pubkey = server_data["pubkey"]
     sp = get_password(password, servertime, nonce, pubkey)
 
-    # 提交的数据可以根据抓包获得
     data = {
         'encoding': 'UTF-8',
         'entry': 'weibo',
@@ -157,7 +148,6 @@ def login_by_pincode(name, password, session, server_data, retry_count):
 
     sp = get_password(password, servertime, nonce, pubkey)
 
-    # 提交的数据可以根据抓包获得
     data = {
         'encoding': 'UTF-8',
         'entry': 'weibo',
@@ -182,7 +172,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
     }
 
     if not yundama_username:
-        raise Exception('由于本次登录需要验证码，请配置顶部位置云打码的用户名{}和及相关密码'.format(yundama_username))
+        raise Exception('login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
     pincode_name = get_img(img_url, name, retry_count)
     verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
@@ -229,7 +219,6 @@ def do_login(name, password):
     return rs, yundama_obj, cid, session
 
 
-# 获取成功登陆返回的信息,包括用户id等重要信息,返回登陆session,存储cookies到redis
 def get_session(name, password):
     url, yundama_obj, cid, session = do_login(name, password)
 
@@ -240,17 +229,17 @@ def get_session(name, password):
         u_pattern = r'"uniqueid":"(.*)",'
         m = re.search(u_pattern, login_info)
         if m and m.group(1):
-            # 访问微博官方账号看是否正常
+            # check if account is valid
             check_url = 'http://weibo.com/2671109275/about'
             resp = session.get(check_url, headers=headers)
-            # 通过实验，目前发现未经过手机验证的账号是救不回来了...
+
             if is_403(resp.text):
-                other.error('账号{}已被冻结'.format(name))
+                other.error('account {} has been forbidden'.format(name))
                 freeze_account(name, 0)
                 return None
-            other.info('本次登陆账号为:{}'.format(name))
+            other.info('The login account is {}'.format(name))
             Cookies.store_cookies(name, session.cookies.get_dict())
             return session
          
-    other.error('本次账号{}登陆失败'.format(name))
+    other.error('login failed for {}'.format(name))
     return None

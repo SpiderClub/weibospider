@@ -18,7 +18,7 @@ share_host_count = get_share_host_count()
 cookie_expire_time = get_cookie_expire_time()
 
 
-# todo 考虑并发条件下的cookie存取
+# todo consider the concurrency when fetching or storing cookies
 class Cookies(object):
     rd_con = redis.StrictRedis(host=redis_args.get('host'), port=redis_args.get('port'),
                                password=redis_args.get('password'), db=redis_args.get('cookies'))
@@ -35,7 +35,7 @@ class Cookies(object):
 
     @classmethod
     def push_in_queue(cls, name):
-        # 在节点数和任务执行较快的情况下，并不能保证队列中无重复名字。如果账号已在队列，则不重复存储
+        # if the concurrency is large, we can't guarantee there are no reduplicate values
         for i in range(cls.rd_con.llen('account_queue')):
             tn = cls.rd_con.lindex('account_queue', i)
             if tn:
@@ -45,7 +45,7 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies(cls):
-        # todo 阻塞过后通过email通知用户
+        # todo send user a email if it's been blocked
         if mode == 'normal':
             return cls.fetch_cookies_of_normal()
 
@@ -54,11 +54,11 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies_of_normal(cls):
-        # 轮询可用账号
+        # look for available accounts
         for i in range(cls.rd_con.llen('account_queue')):
             name = cls.rd_con.blpop('account_queue').decode('utf-8')
-            # 这里判断name是否存在，是因为在抓取过程中可能cookie被封，从account_queue取出的account
-            # 可能是已经不存在于account中的name了
+            # during the crawling, some cookies can be banned
+            # some account fetched from account_queue can be unavailable
             j_account = cls.rd_con.hget('account', name).decode('utf-8')
             if j_account:
                 if cls.check_cookies_timeout(j_account):
@@ -71,14 +71,16 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies_of_quick(cls):
-        # cookies记录被使用的主机数目，当超过上限，则将其放至队尾，未超过则获取并记录
-        # todo 这里用hostname来标识不同主机其实是有小问题的，比如不同ip主机名可能相同
+        # record one cookie used by how many host,
+        # if the number is bigger than share_host_count，put it to the end of the queue
+        # else just fetch and use it
+        # todo there are some problems using hostname to mark different hosts because hostname can be the same
         hostname = socket.gethostname()
-        # 如果redis中已有相关主机的cookie，则直接取出来
         my_cookies_name = cls.rd_con.hget('host', hostname)
         if my_cookies_name:
             my_cookies = cls.rd_con.hget('account', my_cookies_name)
-            if not cls.check_cookies_timeout(my_cookies):  # 没有占用或cookies过期则取一个新的
+            # if cookies is expired, fetch a new one
+            if not cls.check_cookies_timeout(my_cookies):
                 my_cookies = json.loads(my_cookies.decode('utf-8'))
                 return my_cookies_name, my_cookies['cookies']
             else:
@@ -97,7 +99,7 @@ class Cookies(object):
                     continue
 
                 j_account = j_account.decode('utf-8')
-                # account-host对应关系（一对多）
+                # one account maps many hosts（one to many）
                 hosts = cls.rd_con.hget('cookies_host', name)
                 if not hosts:
                     hosts = dict()
@@ -107,11 +109,11 @@ class Cookies(object):
                 hosts[hostname] = 1
                 cls.rd_con.hset('cookies_host', name, json.dumps(hosts))
 
-                # host-account对应关系（一对一）
+                # one host maps one account (one to one)
                 account = json.loads(j_account)
                 cls.rd_con.hset('host', hostname, name)
 
-                # 塞回头部，下次继续使用
+                # push the cookie to the head
                 if len(hosts) < share_host_count:
                     cls.rd_con.lpush('account_queue', name)
                 return name, account['cookies']
@@ -137,7 +139,7 @@ class Cookies(object):
         cookies = json.loads(cookies)
         login_time = datetime.datetime.fromtimestamp(cookies['loginTime'])
         if datetime.datetime.now() - login_time > datetime.timedelta(hours=cookie_expire_time):
-            crawler.warning('一个账号已过期')
+            crawler.warning('the account has been expired')
             return True
         return False
 

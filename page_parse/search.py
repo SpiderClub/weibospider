@@ -25,6 +25,7 @@ def _search_page_parse(html):
                 return m2.group(1).encode('utf-8', 'ignore').decode('unicode-escape', 'ignore').replace('\\', '')
     return ''
 
+
 def get_feed_info(feed_infos,goal):
     info_num = None
     for info in feed_infos:
@@ -35,7 +36,7 @@ def get_feed_info(feed_infos,goal):
         parser.error('解析出现意外模板:{}'.format(feed_infos))
     return int(info_num)
 
-	
+
 @parse_decorator(5)
 def get_weibo_info(each, html):
     wb_data = WeiboData()

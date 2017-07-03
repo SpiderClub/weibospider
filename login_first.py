@@ -2,5 +2,5 @@
 from tasks import login
 
 if __name__ == '__main__':
-    # 由于celery的定时器有延迟，所以第一次需要手动
+    # you should exeute this file, because celery timer wiill execute login delayed
     login.excute_login_task()
