@@ -46,13 +46,14 @@ redis:
     backend: 6                   # backed for celery
     id_name: 8                   # user id and names，for repost info analysis
 
-# 通过邮箱进行报警
+# warning by email
 email:
-    server: smtp.sina.com   # 注意邮箱服务器要开启stmp服务
+    # your email must open smtp & pop3 service
+    server: smtp.sina.com
     port: 587
-    from: sendingemailaccount
-    password: youremailpasswd
-    to: receivingemailaccount
-    subject: 分布式微博爬虫警告
-    warning_info: 微博爬虫已经停止工作，请检查原因
+    from: xxxxxxxxxxx@sina.com #sendingemailaccount
+    password: xxxxx            #youremailpasswd
+    to: xxxx                   #receivingemailaccount
+    subject: Warning Of Weibo Spider
+    warning_info: Please find out the reason why the spider stops working
 
