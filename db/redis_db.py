@@ -37,7 +37,7 @@ class Cookies(object):
     def push_in_queue(cls, name):
         # if the concurrency is large, we can't guarantee there are no reduplicate values
         for i in range(cls.rd_con.llen('account_queue')):
-            tn = cls.rd_con.lindex('account_queue', i)
+            tn = cls.rd_con.lindex('account_queue', i).decode('utf-8')
             if tn:
                 if tn == name:
                     return
@@ -47,9 +47,11 @@ class Cookies(object):
     def fetch_cookies(cls):
         # todo send user a email if it's been blocked
         if mode == 'normal':
+            crawler.info("it's running in normal mode")
             return cls.fetch_cookies_of_normal()
 
         else:
+            crawler.info("it's running in quick mode")
             return cls.fetch_cookies_of_quick()
 
     @classmethod

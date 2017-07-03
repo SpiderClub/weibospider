@@ -1,5 +1,4 @@
 # coding:utf-8
-import os
 import sys
 import time
 import requests
@@ -29,7 +28,7 @@ def get_page(url, user_verify=True, need_login=True):
     :param need_login: 抓取页面是否需要登录，这样做可以减小一些账号的压力
     :return: 返回请求的数据，如果出现404或者403,或者是别的异常，都返回空字符串
     """
-    crawler.info('本次抓取的url为{url}'.format(url=url))
+    crawler.info('the crawling url is {url}'.format(url=url))
     count = 0
 
     while count < max_retries:
@@ -37,18 +36,16 @@ def get_page(url, user_verify=True, need_login=True):
             name_cookies = Cookies.fetch_cookies()
 
             if name_cookies is None:
-                crawler.warning('cookie池中不存在cookie，请检查账号是否正常')
-                other.warning('正在关闭爬虫程序...')
-                if 'win32' in sys.platform:
-                    os.popen('taskkill /F /IM "celery*"')
-                else:
-                    os.popen('pkill -f "celery"')
+                crawler.warning('no cookies in cookies pool, please find out the reason')
+                other.warning('this process is sleeping...')
+                # todo fix the bug of killing celery worker self
+                time.sleep(24*60*60)
         try:
             if need_login:
                 resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=time_out, verify=False)
 
                 if "$CONFIG['islogin'] = '0'" in resp.text:
-                    crawler.warning('账号{}出现异常'.format(name_cookies[0]))
+                    crawler.warning('account {} has been banned'.format(name_cookies[0]))
                     freeze_account(name_cookies[0], 0)
                     Cookies.delete_cookies(name_cookies[0])
                     continue
