@@ -85,7 +85,7 @@ def get_profile(user_id):
     user = get_user_by_uid(user_id)
 
     if user:
-        storage.info('ID为{id}的用户信息已经存在于数据库中'.format(id=user_id))
+        storage.info('user {id} has already crawled'.format(id=user_id))
         set_seed_crawled(user_id, 1)
     else:
         user = get_url_from_web(user_id)
