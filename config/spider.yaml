@@ -1,7 +1,7 @@
 # coding:utf-8
 time_out: 200                  # timeout for crawling and storing user info
-min_crawl_interal: 8           # min interal of http request
-max_crawl_interal: 11          # max interal of http request
+min_crawl_interal: 20           # min interal of http request
+max_crawl_interal: 25          # max interal of http request
 excp_interal: 5*60             # time for sleeping when crawling raises exceptions
 
 # TODO set a default value for max_value of crawling
@@ -19,7 +19,7 @@ yundama_passwd: ''             # password for yundama
 # the value of mode can be normal or quick.
 # In noraml mode, it will be more stable, while in quick mode, the crawling speed will
 # be much faster, and the weibo account almostly will be banned
-mode: noraml
+mode: normal
 # the max number of each cookie can be shared
 # if you choose quick mode, your cookie will be used util it's banned
 share_host_count: 5
@@ -31,7 +31,7 @@ cookie_expire_time: 23
 db:
     host: 127.0.0.1
     port: 3306
-    user: root
+    user: weibospider
     password: 123456
     db_name: weibo
     db_type: mysql
@@ -39,7 +39,7 @@ db:
 redis:
     host: 127.0.0.1
     port: 6379
-    password: ''
+    password: weibospider
     cookies: 1                   # store and fetch cookies
     urls: 2                      # store fetched urls and results
     broker: 5                    # broker for celery
