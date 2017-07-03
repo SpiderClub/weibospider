@@ -1,12 +1,14 @@
 # coding:utf-8
-import sys
+import os
 import time
+import signal
 import requests
 from headers import headers
 from db.redis_db import Urls
 from db.redis_db import Cookies
 from logger.log import crawler, other
 from db.login_info import freeze_account
+from utils.email_warning import send_email
 from page_parse.basic import is_403, is_404, is_complete
 from decorators.decorator import timeout_decorator, timeout
 from config.conf import get_timeout, get_crawl_interal, get_excp_interal, get_max_retries
@@ -22,11 +24,10 @@ excp_interal = get_excp_interal()
 @timeout_decorator
 def get_page(url, user_verify=True, need_login=True):
     """
-    :param url: 待抓取url
-    :param user_verify: 是否为可能出现验证码的页面(ajax连接不会出现验证码，如果是请求微博或者用户信息可能出现验证码)，
-    否为抓取转发的ajax连接
-    :param need_login: 抓取页面是否需要登录，这样做可以减小一些账号的压力
-    :return: 返回请求的数据，如果出现404或者403,或者是别的异常，都返回空字符串
+    :param url: url to be crawled
+    :param user_verify: if it's ajax url, the value is False, else True
+    :param need_login: if the url is need to login, the value is True, else False
+    :return: return '' if exception happens or status_code != 200
     """
     crawler.info('the crawling url is {url}'.format(url=url))
     count = 0
@@ -38,8 +39,8 @@ def get_page(url, user_verify=True, need_login=True):
             if name_cookies is None:
                 crawler.warning('no cookies in cookies pool, please find out the reason')
                 other.warning('this process is sleeping...')
-                # todo fix the bug of killing celery worker self
-                time.sleep(24*60*60)
+                send_email()
+                os.kill(os.getppid(), signal.SIGTERM)
         try:
             if need_login:
                 resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=time_out, verify=False)
@@ -58,19 +59,20 @@ def get_page(url, user_verify=True, need_login=True):
             else:
                 continue
 
-            # 每次抓取过后程序sleep的时间，降低封号危险
+            # slow down to aviod being banned
             time.sleep(interal)
 
             if user_verify:
                 if 'unfreeze' in resp.url or 'accessdeny' in resp.url or 'userblock' in resp.url or is_403(page):
-                    crawler.warning('账号{}已经被冻结'.format(name_cookies[0]))
+                    crawler.warning('account {} has been banned'.format(name_cookies[0]))
                     freeze_account(name_cookies[0], 0)
                     Cookies.delete_cookies(name_cookies[0])
                     count += 1
                     continue
 
                 if 'verifybmobile' in resp.url:
-                    crawler.warning('账号{}功能被锁定，需要手机解锁'.format(name_cookies[0]))
+                    crawler.warning('account {} has been locked，you should use your phone to unlock it'.
+                                    format(name_cookies[0]))
         
                     freeze_account(name_cookies[0], -1)
                     Cookies.delete_cookies(name_cookies[0])
@@ -81,11 +83,11 @@ def get_page(url, user_verify=True, need_login=True):
                     continue
 
                 if is_404(page):
-                    crawler.warning('url为{url}的连接不存在'.format(url=url))
+                    crawler.warning('{url} seems to be 404'.format(url=url))
                     return ''
 
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, AttributeError) as e:
-            crawler.warning('抓取{}出现异常，具体信息是{}'.format(url, e))
+            crawler.warning('excepitons happens when crawling {}，specific infos are {}'.format(url, e))
             count += 1
             time.sleep(excp_interal)
 
@@ -93,7 +95,7 @@ def get_page(url, user_verify=True, need_login=True):
             Urls.store_crawl_url(url, 1)
             return page
 
-    crawler.warning('抓取{}已达到最大重试次数，请在redis的失败队列中查看该url并检查原因'.format(url))
+    crawler.warning('max tries for {}，check the url in redis db2'.format(url))
     Urls.store_crawl_url(url, 0)
     return ''
 
