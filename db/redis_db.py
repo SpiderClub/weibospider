@@ -47,18 +47,16 @@ class Cookies(object):
     def fetch_cookies(cls):
         # todo send user a email if it's been blocked
         if mode == 'normal':
-            crawler.info("it's running in normal mode")
             return cls.fetch_cookies_of_normal()
 
         else:
-            crawler.info("it's running in quick mode")
             return cls.fetch_cookies_of_quick()
 
     @classmethod
     def fetch_cookies_of_normal(cls):
         # look for available accounts
         for i in range(cls.rd_con.llen('account_queue')):
-            name = cls.rd_con.blpop('account_queue').decode('utf-8')
+            name = cls.rd_con.lpop('account_queue').decode('utf-8')
             # during the crawling, some cookies can be banned
             # some account fetched from account_queue can be unavailable
             j_account = cls.rd_con.hget('account', name).decode('utf-8')
@@ -90,7 +88,7 @@ class Cookies(object):
 
         while True:
             try:
-                name = cls.rd_con.blpop('account_queue')[1].decode('utf-8')
+                name = cls.rd_con.lpop('account_queue').decode('utf-8')
             except AttributeError:
                 return None
             else:
