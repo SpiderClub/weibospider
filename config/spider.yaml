@@ -32,7 +32,7 @@ db:
     host: 127.0.0.1
     port: 3306
     user: weibospider
-    password: 123456
+    password: Weibo@Spider
     db_name: weibo
     db_type: mysql
 
@@ -48,12 +48,12 @@ redis:
 
 # warning by email
 email:
-    # your email must open smtp & pop3 service
+    # your email must open smtp & pop3 service, here use sina email server
     server: smtp.sina.com
     port: 587
-    from: xxxxxxxxxxx@sina.com #sendingemailaccount
-    password: xxxxx            #youremailpasswd
-    to: xxxx                   #receivingemailaccount
+    from: xxxxx  #sendingemailaccount
+    password: xxxx        #youremailpasswd
+    to: xxxxx        #receivingemailaccount
     subject: Warning Of Weibo Spider
     warning_info: Please find out the reason why the spider stops working
 
