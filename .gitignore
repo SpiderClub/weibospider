@@ -4,4 +4,4 @@ __pycache__/
 logs
 celerybeat-schedule.db
 .env
-
+*.pyc
