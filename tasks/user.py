@@ -46,4 +46,3 @@ def excute_user_task():
             app.send_task('tasks.user.crawl_person_infos', args=(seed.uid,), queue='user_crawler',
                           routing_key='for_user_info')
 
-
