@@ -48,12 +48,12 @@ redis:
 
 # warning by email
 email:
-    # your email must open smtp & pop3 service, here use sina email server
+    # your email must open smtp & pop3 service
     server: smtp.sina.com
     port: 587
-    from: xxxxx  #sendingemailaccount
-    password: xxxx        #youremailpasswd
-    to: xxxxx        #receivingemailaccount
+    from: w1796246076@sina.com   #sendingemailaccount
+    password: pmaixq1314         #youremailpasswd
+    to: 18708103033@139.com      #bind 139 email,so your phone will receive the warning message
     subject: Warning Of Weibo Spider
     warning_info: Please find out the reason why the spider stops working
 
