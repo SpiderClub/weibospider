@@ -2,5 +2,5 @@
 from tasks import login
 
 if __name__ == '__main__':
-    # you should exeute this file, because celery timer wiill execute login delayed
+    # you should execute this file, because celery timer will execute login delayed
     login.excute_login_task()
