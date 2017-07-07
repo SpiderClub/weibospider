@@ -23,7 +23,7 @@ def get_total_page(html):
     try:
         page_count = json.loads(html, encoding='utf-8').get('data', '').get('page', '').get('totalpage', 1)
     except Exception as e:
-        parser.error('获取总也面出错，具体错误是{}'.format(e))
+        parser.error('Errors occurred when parsing total page of repost，specification is {}'.format(e))
         page_count = 1
 
     return page_count
@@ -32,10 +32,10 @@ def get_total_page(html):
 @parse_decorator(2)
 def get_repost_list(html, mid):
     """
-       获取转发列表
-       :param html: 
-       :param mid:
-       :return: 
+       Get repost details
+       :param html: page source
+       :param mid: weibo mid
+       :return: list of repost infos
        """
     cont = get_html_cont(html)
     if not cont:
@@ -62,25 +62,25 @@ def get_repost_list(html, mid):
             parents = repost.find(attrs={'class': 'WB_text'}).find(attrs={'node-type': 'text'})
             wb_repost.root_weibo_id = mid
 
-            # 把当前转发的用户id和用户名存储到redis中，作为中间结果
+            # Save the current repost user's name and id as the middle result
             IdNames.store_id_name(wb_repost.user_name, wb_repost.user_id)
 
             if not parents:
                 wb_repost.parent_user_name = ''
             else:
                 try:
-                    # 第一个即是最上层用户，由于拿不到上层用户的uid，只能拿昵称，但是昵称可以修改，所以入库前还是得把uid拿到
+                    # We can't get the parent's uid, We can get the parent's nickname, but the name can be changed
                     temp = parents.find(attrs={'extra-data': 'type=atname'})
                     if temp:
                         wb_repost.parent_user_name = temp.get('usercard')[5:]
                     else:
                         wb_repost.parent_user_name = ''
                 except Exception as e:
-                    parser.error('解析上层用户名发生错误，具体信息是{}'.format(e))
+                    parser.error("error occurred when parsing the parent's name ，the detail is {}".format(e))
                     wb_repost.parent_user_name = ''
 
         except Exception as e:
-            parser.error('解析评论失败，具体信息是{}'.format(e))
+            parser.error('repost parse error occurred，the detail is {}'.format(e))
         else:
             repost_list.append(wb_repost)
 
