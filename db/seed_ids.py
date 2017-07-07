@@ -7,16 +7,16 @@ from decorators.decorator import db_commit_decorator
 
 def get_seed_ids():
     """
-    获取所有个人信息需要被抓取的用户id
-    :return: 
+    Get all user id to be crawled
+    :return: user ids
     """
     return db_session.query(SeedIds.uid).filter(text('is_crawled=0')).all()
 
 
 def get_home_ids():
     """
-    获取所有主页需要被抓取的用户id
-    :return: 
+    Get all user id who's home pages need to be crawled
+    :return: user ids
     """
     return db_session.query(SeedIds.uid).filter(text('home_crawled=0')).all()
 
@@ -24,9 +24,8 @@ def get_home_ids():
 @db_commit_decorator
 def set_seed_crawled(uid, result):
     """
-    该表适用于用户抓取相关逻辑
-    :param uid: 被抓取用户id
-    :param result: 抓取结果
+    :param uid: user id that is crawled
+    :param result: crawling result
     :return: None
     """
     seed = db_session.query(SeedIds).filter(SeedIds.uid == uid).first()
@@ -45,7 +44,6 @@ def get_seed_by_id(uid):
 
 @db_commit_decorator
 def insert_seeds(ids):
-    # 批量插入，遇到重复则跳过
     db_session.execute(SeedIds.__table__.insert().prefix_with('IGNORE'), [{'uid': i} for i in ids])
     db_session.commit()
 
@@ -53,8 +51,8 @@ def insert_seeds(ids):
 @db_commit_decorator
 def set_seed_other_crawled(uid):
     """
-    存在则更新，不存在则插入
-    :param uid: 用户id
+    update it if user id already exists, else insert
+    :param uid: user id
     :return: None
     """
     seed = get_seed_by_id(uid)
@@ -69,8 +67,7 @@ def set_seed_other_crawled(uid):
 @db_commit_decorator
 def set_seed_home_crawled(uid):
     """
-    这里适配了直接指定uid和从数据库seed_ids表中读uid的情况
-    :param uid: 用户id
+    :param uid: user id
     :return: None
     """
     seed = get_seed_by_id(uid)
