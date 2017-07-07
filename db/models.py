@@ -47,3 +47,10 @@ class WeiboRepost(Base):
 class UserRelation(Base):
     __table__ = user_relation
 
+    def __init__(self, uid, other_id, type):
+        self.user_id = uid
+        self.follow_or_fans_id = other_id
+        self.type = type
+
+
+
