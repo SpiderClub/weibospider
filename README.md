@@ -86,9 +86,6 @@
 
 ```
     config/
-        sql/
-            spider.sql      # 项目所用表
-            create_all.py   # 可直接运行该文件生成项目所需要的数据表
         __init__.py
         conf.py             # 获取配置文件的信息
         spider.yaml         # 配置文件信息，包括Mysql配置、Redis配置和一些抓取参数设定
