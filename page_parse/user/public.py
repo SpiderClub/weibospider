@@ -1,5 +1,5 @@
 # -*-coding:utf-8 -*-
-# 各类用户公有的模块
+# public parsing code
 import re
 import json
 from bs4 import BeautifulSoup
@@ -35,9 +35,8 @@ def _get_header(html):
 
 def get_verifytype(html):
     """
-    判断是否认证
-    :param html:
-    :return: 0表示未认证，1表示个人认证，2表示企业认证
+    :param html: page source
+    :return: 0 stands for unauthorized，1 stands for persional authentication，2 stands for enterprise authentication
     """
     if 'icon_pf_approve_co' in html:
         return 2
@@ -50,10 +49,10 @@ def get_verifytype(html):
 @parse_decorator(1)
 def get_verifyreason(html, verify_type):
     """
-    获取具体认证信息
-    :param html:
-    :param verify_type: 认证类型
-    :return: 认证信息
+    details for authentication
+    :param html: page source
+    :param verify_type: authentication type
+    :return: authentication info
     """
     if verify_type == 1 or verify_type == 2:
         soup = BeautifulSoup(_get_header(html), 'html.parser')
@@ -65,9 +64,9 @@ def get_verifyreason(html, verify_type):
 @parse_decorator(1)
 def get_headimg(html):
     """
-    获取用户主页公共解析部分，上边页面
-    :param html: 
-    :return: 
+    Get the head img url of current user
+    :param html: page source
+    :return: head img url
     """
     soup = BeautifulSoup(_get_header(html), 'html.parser')
     try:
@@ -80,7 +79,7 @@ def get_headimg(html):
 @parse_decorator(1)
 def get_left(html):
     """
-    获取公共解析部分，左边页面
+    The left part of the page, which is public
     """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -109,7 +108,9 @@ def get_left(html):
 @parse_decorator(1)
 def get_right(html):
     """
-    获取公共解析部分（右边页面，用户详细资料部分）
+    Parse the right part of user detail
+    :param html: page source
+    :return: the right part of user info page
     """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -141,7 +142,7 @@ def get_right(html):
 @parse_decorator(0)
 def get_level(html):
     """
-    获取用户等级
+    Get the level of users
     """
     pattern = '<span>Lv.(.*?)<\\\/span>'
     rs = re.search(pattern, html)
@@ -154,7 +155,8 @@ def get_level(html):
 @parse_decorator(2)
 def get_fans_or_follows(html):
     """
-    获取用户粉丝或者关注的user id，返回一个列表
+    :param html: current page source
+    :return: list of fans or followers
     """
     if html == '':
         return list()
@@ -177,7 +179,7 @@ def get_fans_or_follows(html):
                 m = re.search(pattern, str(follow))
                 if m:
                     r = m.group(1)
-                    # 过滤掉非正常id
+                    # filter invalid ids
                     if r.isdigit():
                         user_ids.append(m.group(1))
     return user_ids
@@ -185,9 +187,9 @@ def get_fans_or_follows(html):
 
 def get_max_crawl_pages(html):
     """
-    获取用户粉丝或者关注最多爬取的页数
-    :param html: 
-    :return: 
+    Get the max page we can crawl
+    :param html: current page source
+    :return: max page number we can crawl
     """
     if html == '':
         return 1
