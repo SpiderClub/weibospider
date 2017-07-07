@@ -44,3 +44,6 @@ class WeiboRepost(Base):
                                                       self.repost_time, self.repost_cont)
 
 
+class UserRelation(Base):
+    __table__ = user_relation
+

@@ -99,29 +99,31 @@ def get_profile(user_id):
 
 def get_fans_or_followers_ids(user_id, crawl_type):
     """
-    获取用户的粉丝和关注用户
-    :param user_id: 用户id
-    :param crawl_type: 1表示获取粉丝，2表示获取关注
-    :return: 获取的关注或者粉丝列表
+    Get followers or fans
+    :param user_id: user id
+    :param crawl_type: 1 stands for fans，2 stands for followers
+    :return: lists of fans or followers
     """
 
-    # todo 验证作家等用户的粉丝和关注是否满足;处理粉丝或者关注5页的情况
+    # todo check fans and followers the special users,such as writers
+    # todo process the conditions that fans and followers more than 5 pages
     if crawl_type == 1:
-        ff_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
     else:
-        ff_url = 'http://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
 
     cur_page = 1
     max_page = 6
     user_ids = list()
     while cur_page < max_page:
-        url = ff_url.format(user_id, cur_page)
+        url = fans_or_follows_url.format(user_id, cur_page)
         page = get_page(url)
         if cur_page == 1:
-            user_ids.extend(public.get_fans_or_follows(page))
             urls_length = public.get_max_crawl_pages(page)
             if max_page > urls_length:
                 max_page = urls_length + 1
+
+        user_ids.extend(public.get_fans_or_follows(page, user_id, crawl_type))
 
         cur_page += 1
 

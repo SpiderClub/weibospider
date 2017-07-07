@@ -97,5 +97,13 @@ weibo_repost = Table("weibo_repost", metadata,
                      Column("root_weibo_id", String(200)),
                      )
 
+# relations about user and there fans and follows
+user_relation = Table("user_relation", metadata,
+                      Column('id', INTEGER, primary_key=True, autoincrement=True),
+                      Column('user_id', String(20)),
+                      Column('follow_or_fans_id', String(20)),
+                      Column('type', INTEGER)  # 1 stands for fans, 2 stands for follows
+                      )
+
 __all__ = ['login_info', 'wbuser', 'seed_ids', 'keywords', 'weibo_data', 'keywords_wbdata', 'weibo_comment',
-           'weibo_repost']
+           'weibo_repost', 'user_relation']

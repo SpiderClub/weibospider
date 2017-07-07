@@ -5,6 +5,8 @@ import json
 from bs4 import BeautifulSoup
 from page_parse import status
 from decorators.decorator import parse_decorator
+from db.models import UserRelation
+from db.user_relation import save_relations
 
 
 def get_userid(html):
@@ -153,9 +155,12 @@ def get_level(html):
 
 
 @parse_decorator(2)
-def get_fans_or_follows(html):
+def get_fans_or_follows(html, uid, type):
     """
+    Get fans or follows and store their relationships
     :param html: current page source
+    :param uid: current user id
+    :param type: type of relations
     :return: list of fans or followers
     """
     if html == '':
@@ -166,6 +171,7 @@ def get_fans_or_follows(html):
     scripts = soup.find_all('script')
 
     user_ids = list()
+    relations = list()
     for script in scripts:
         m = re.search(pattern, script.string)
 
@@ -181,7 +187,10 @@ def get_fans_or_follows(html):
                     r = m.group(1)
                     # filter invalid ids
                     if r.isdigit():
-                        user_ids.append(m.group(1))
+                        user_ids.append(r)
+                        relations.append(UserRelation(uid, r, type))
+
+    save_relations(relations)
     return user_ids
 
 
