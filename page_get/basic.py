@@ -38,7 +38,6 @@ def get_page(url, user_verify=True, need_login=True):
 
             if name_cookies is None:
                 crawler.warning('no cookies in cookies pool, please find out the reason')
-                other.warning('this process is sleeping...')
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
         try:

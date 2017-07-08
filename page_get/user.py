@@ -122,7 +122,7 @@ def get_fans_or_followers_ids(user_id, crawl_type):
             urls_length = public.get_max_crawl_pages(page)
             if max_page > urls_length:
                 max_page = urls_length + 1
-
+        # get ids and store relations
         user_ids.extend(public.get_fans_or_follows(page, user_id, crawl_type))
 
         cur_page += 1
