@@ -1,11 +1,11 @@
 # -*-coding:utf-8 -*-
-# public parsing code
 import re
 import json
 from bs4 import BeautifulSoup
 from page_parse import status
 from decorators.decorator import parse_decorator
 from db.models import UserRelation
+from utils.filters import url_filter
 from db.user_relation import save_relations
 
 
@@ -72,7 +72,7 @@ def get_headimg(html):
     """
     soup = BeautifulSoup(_get_header(html), 'html.parser')
     try:
-        headimg = soup.find(attrs={'class': 'photo_wrap'}).find(attrs={'class': 'photo'})['src']
+        headimg = url_filter(soup.find(attrs={'class': 'photo_wrap'}).find(attrs={'class': 'photo'})['src'])
     except AttributeError:
         headimg = ''
     return headimg
@@ -88,7 +88,7 @@ def get_left(html):
     pattern = re.compile(r'FM.view\((.*)\)')
     cont = ''
     l_id = ''
-    # 这里先确定左边的标识
+    # first ensure the left part
     for script in scripts:
         m = pattern.search(script.string)
         if m and 'WB_frame_b' in script.string:
@@ -118,7 +118,7 @@ def get_right(html):
     scripts = soup.find_all('script')
     pattern = re.compile(r'FM.view\((.*)\)')
     cont = ''
-    # 这里先确定右边的标识,企业用户可能会有两个r_id
+    # first ensure right part,enterprise users may have two r_id
     rids = []
     for script in scripts:
         m = pattern.search(script.string)
