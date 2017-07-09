@@ -20,6 +20,12 @@ max_retries = get_max_retries()
 excp_interal = get_excp_interal()
 
 
+def is_banned(url):
+    if 'unfreeze' in url or 'accessdeny' in url or 'userblock' in url:
+        return True
+    return False
+
+
 @timeout(200)
 @timeout_decorator
 def get_page(url, user_verify=True, need_login=True):
@@ -53,6 +59,7 @@ def get_page(url, user_verify=True, need_login=True):
                 resp = requests.get(url, headers=headers, timeout=time_out, verify=False)
 
             page = resp.text
+
             if page:
                 page = page.encode('utf-8', 'ignore').decode('utf-8')
             else:
@@ -62,7 +69,7 @@ def get_page(url, user_verify=True, need_login=True):
             time.sleep(interal)
 
             if user_verify:
-                if 'unfreeze' in resp.url or 'accessdeny' in resp.url or 'userblock' in resp.url or is_403(page):
+                if is_banned(resp.url) or is_403(page):
                     crawler.warning('account {} has been banned'.format(name_cookies[0]))
                     freeze_account(name_cookies[0], 0)
                     Cookies.delete_cookies(name_cookies[0])
