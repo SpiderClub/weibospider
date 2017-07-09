@@ -25,7 +25,7 @@ def is_404(html):
 
 @parse_decorator(3)
 def is_403(html):
-    if 'uid' not in html or 'nick' not in html:
+    if "['uid']" not in html and "['nick']" not in html:
         return True
 
     soup = BeautifulSoup(html, 'html.parser')

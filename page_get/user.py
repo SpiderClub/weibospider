@@ -1,5 +1,4 @@
 # -*-coding:utf-8 -*-
-#  获取用户资料
 from db.models import User
 from logger.log import storage
 from page_get.basic import get_page
@@ -34,11 +33,12 @@ def get_enterprise_detail(user_id, html):
 
 def get_url_from_web(user_id):
     """
-    根据用户id获取用户资料：如果用户的domain为100505，那么会直接返回用户详细资料；如果是103505或者100306，那么需要再进行
-    一次请求，因为用base_url的方式它只会定位到用户主页而不是详细资料页；如果是企业和服务号等，通过base_url访问也会跳转到该
-    用户的主页，由于该类用户的详细页价值不大，所以不再进行请求它们的详细页
-    :param user_id: 用户id
-    :return: 用户类实体
+    Get user info according to user id.
+    If user domain is 100505,the url is just 100505+userid;
+    If user domain is 103505 or 100306, we need to request once more to get his info
+    If user type is enterprise or service, we just crawl their home page info
+    :param: user id
+    :return: user entity
     """
     if not user_id:
         return None
@@ -49,15 +49,15 @@ def get_url_from_web(user_id):
     if not is_404(html):
         domain = public.get_userdomain(html)
 
-        # 作家
+        # writers(special users)
         if domain == '103505' or domain == '100306':
             url = base_url.format(domain, user_id)
             html = get_page(url)
             user = get_user_detail(user_id, html)
-        # 普通用户
+        # normal users
         elif domain == '100505':
             user = get_user_detail(user_id, html)
-        # 默认是企业
+        # enterprise or service
         else:
             user = get_enterprise_detail(user_id, html)
 
@@ -70,7 +70,6 @@ def get_url_from_web(user_id):
         user.verify_info = public.get_verifyreason(html, user.verify_type)
         user.level = public.get_level(html)
 
-        # 保存用户信息到数据库
         save_user(user)
         storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
 
@@ -79,9 +78,7 @@ def get_url_from_web(user_id):
         return None
 
 
-# 进行用户个人资料抓取的时候，查询是否已存在于数据库，如果没有，那么就保存，有就直接从里面取出来
 def get_profile(user_id):
-    # 判断数据库是否存在该用户信息
     user = get_user_by_uid(user_id)
 
     if user:
