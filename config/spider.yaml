@@ -13,8 +13,8 @@ max_retries: 5                 # retry times for crawling
 
 # you should set the args below if you login from uncommon place
 # It's for verification code indentified
-yundama_username: resolvewang           # account for yundama
-yundama_passwd: wang1204             # password for yundama
+yundama_username: yourname           # account for yundama
+yundama_passwd: yourpasswd             # password for yundama
 
 # the value of mode can be normal or quick.
 # In noraml mode, it will be more stable, while in quick mode, the crawling speed will
