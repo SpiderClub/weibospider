@@ -2,36 +2,30 @@
 import unittest
 
 
+# TODO a better TDD is wanted
 class TestWeiboSpider(unittest.TestCase):
-    # 这单元测试写得我很尴尬...
     def test_get_login_info(self):
         from db import login_info
         infos = login_info.get_login_info()
         self.assertEquals(len(infos), 5)
 
     def test_login(self):
-        """
-        是测试是否能成功登录的，然后登录后会把cookie保存到redis中
-        """
         import random
         from wblogin.login import get_session
         from db.login_info import get_login_info
         infos = get_login_info()
         if not infos:
-            raise Exception('未获取到登陆信息')
+            raise Exception('There is no account for login')
 
         info = random.choice(infos)
         sc = get_session(info.name, info.password)
 
         if sc:
-            print('登陆成功')
+            print('login successed')
         else:
-            raise Exception('登录失败')
+            raise Exception('login failed')
 
     def test_freeze_account(self):
-        """
-        测试账号被封后是否会去查找还有可用账号没有，这里如果需要测试请换成自己数据库中的账号
-        """
         from db import login_info
         login_info.freeze_account('18708103033')
         infos = login_info.get_login_info()
@@ -41,7 +35,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_delete_cookies(self):
         """
-        测试根据键来删除cookie
+        delete according to key
         """
         from db.redis_db import Cookies
         r = Cookies.delete_cookies('18708103033')
@@ -49,7 +43,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_page_get(self):
         """
-        测试页面抓取功能
+        test crawling pages
         """
         from page_get import basic
         test_url = 'http://weibo.com/p/1005051764222885/info?mod=pedit_more'
@@ -58,7 +52,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_parse_user_info(self):
         """
-        测试解析页面功能
+        test parsing pages
         """
         from page_parse.user import person, public
         from page_get.user import get_user_detail
@@ -79,7 +73,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_get_url_from_web(self):
         """
-        测试不同类型的用户抓取功能
+        test crawling different kind of users
         """
         from page_get import user as user_get
         normal_user = user_get.get_profile('1195908387')
@@ -91,7 +85,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_get_fans(self):
         """
-        测试用户粉丝获取功能
+        test parsing fans pages
         """
         from page_parse.user import public
         with open('./tests/fans.html', encoding='utf-8') as f:
@@ -110,7 +104,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_crawl_person_infos(self):
         """
-        测试用户信息抓取
+        test for crawling user infos
         """
         from tasks.user import crawl_person_infos
         crawl_person_infos('2041028560')
@@ -150,7 +144,7 @@ class TestWeiboSpider(unittest.TestCase):
 
     def test_search_keyword(self):
         """
-        测试搜索功能
+        test for search
         :return: 
         """
         from tasks.search import search_keyword
@@ -240,6 +234,14 @@ class TestWeiboSpider(unittest.TestCase):
     def test_send_email(self):
         from utils.email_warning import send_email
         send_email()
+
+    def test_get_weibo_detail_cont(self):
+        """
+        test for get weibo's all cont
+        :return:
+        """
+        from page_get import status
+        print(status.get_cont_of_weibo('4129510280252577'))
 
 
 if __name__ == '__main__':
