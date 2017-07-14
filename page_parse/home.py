@@ -3,6 +3,7 @@ import re
 import json
 from bs4 import BeautifulSoup
 from logger.log import parser
+from page_get import status
 from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
@@ -58,6 +59,12 @@ def get_weibo_info_detail(each, html):
 
     wb_data.weibo_cont = each.find(attrs={'node-type': 'feed_content'}).find\
         (attrs={'node-type': 'feed_list_content'}).text.strip()
+
+    if '展开全文' in str(each):
+        is_all_cont = 0
+    else:
+        is_all_cont = 1
+
     try:
         wb_data.device = each.find(attrs={'class': 'WB_from'}).find(attrs={'action-type': 'app_source'}).text
     except Exception as e:
@@ -76,12 +83,12 @@ def get_weibo_info_detail(each, html):
         wb_data.praise_num = int(each.find(attrs={'action-type': 'fl_like'}).find_all('em')[1].text)
     except Exception:
         wb_data.praise_num = 0
-    return wb_data
+    return wb_data, is_all_cont
 
 
 def get_weibo_list(html):
     """
-    获取所有微博信息列表
+    get the list of weibo info
     :param html: 
     :return: 
     """
@@ -91,15 +98,18 @@ def get_weibo_list(html):
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     weibo_datas = []
     for data in feed_list:
-        wb_data = get_weibo_info_detail(data, html)
-        if wb_data is not None:
+        r = get_weibo_info_detail(data, html)
+        if r is not None:
+            wb_data = r[0]
+            if r[1] == 0:
+                wb_data.weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
             weibo_datas.append(wb_data)
     return weibo_datas
 
 
 def get_max_num(html):
     """
-    获取总页数
+    get the total page number
     :param html: 
     :return: 
     """
