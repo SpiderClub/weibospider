@@ -6,7 +6,7 @@ from kombu import Exchange, Queue
 from config.conf import get_broker_or_backend
 from celery import platforms
 
-# 允许celery以root身份启动
+# allow celery worker started by root
 platforms.C_FORCE_ROOT = True
 
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'celery.log')
@@ -14,7 +14,6 @@ beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs',
 
 tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment', 'tasks.repost']
 
-# include的作用就是注册服务化函数
 app = Celery('weibo_task', include=tasks, broker=get_broker_or_backend(1), backend=get_broker_or_backend(2))
 
 app.conf.update(
