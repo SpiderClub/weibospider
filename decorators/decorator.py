@@ -6,15 +6,16 @@ from logger.log import parser, crawler, storage
 from utils.util_cls import Timeout, KThread
 
 
-# 用于超时设置
+# timeout decorator
 def timeout_decorator(func):
     @wraps(func)
     def time_limit(*args, **kargs):
         try:
             return func(*args, **kargs)
         except Exception as e:
-            crawler.error('抓取{url}失败，具体错误信息为{e},堆栈为{stack}'.format(url=args[0], e=e,
-                                                                   stack=format_tb(e.__traceback__)[0]))
+            crawler.error('failed to crawl {url}，here are details:{e}, stack is {stack}'.format(url=args[0], e=e,
+                                                                                                stack=format_tb
+                                                                                                (e.__traceback__)[0]))
             return ''
 
     return time_limit
@@ -26,14 +27,15 @@ def db_commit_decorator(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            storage.error('数据库操作失败，具体信息是{}'.format(e))
+            storage.error('db operation error，here are details{}'.format(e))
+            storage.warning('transaction rollbacks')
             db_session.rollback()
     return session_commit
 
 
 def parse_decorator(return_type):
     """
-    :param return_type: 用于捕捉页面解析的异常, 0表示返回数字0, 1表示返回空字符串, 2表示返回[],3表示返回False, 4表示返回{}, 5返回None
+    :param return_type: catch exceptions when parsing pages
     :return: 0,'',[],False,{},None
     """
     def page_parse(func):
@@ -62,11 +64,12 @@ def parse_decorator(return_type):
     return page_parse
 
 
-# 即使在抓取的时候设置了超时函数，抓取函数还是可能会超时，这是对get_page超时的完善
+# it can be blocked when crawling pages even if we set timeout=out_time in requests.get()
 def timeout(seconds):
     def crwal_decorator(func):
         def _new_func(oldfunc, result, oldfunc_args, oldfunc_kwargs):
             result.append(oldfunc(*oldfunc_args, **oldfunc_kwargs))
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             result = []
@@ -86,7 +89,7 @@ def timeout(seconds):
 
             if alive:
                 try:
-                    raise Timeout('抓取函数运行超时')
+                    raise Timeout('request timeout')
                 finally:
                     return ''
             else:
