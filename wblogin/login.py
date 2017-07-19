@@ -94,7 +94,7 @@ def get_redirect(name, data, post_url, session):
         crawler.warning('account {} need verification for login'.format(name))
         return 'login_need_pincode'
 
-    if '正在登录' or 'Signing in' in login_loop:
+    if '正在登录' in login_loop or 'Signing in' in login_loop:
         pa = r'location\.replace\([\'"](.*?)[\'"]\)'
         return re.findall(pa, login_loop)[0]
     else:
