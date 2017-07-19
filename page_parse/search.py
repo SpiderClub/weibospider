@@ -9,7 +9,7 @@ from datetime import datetime
 user_pattern = r'id=(\d+)&u'
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def _search_page_parse(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -37,7 +37,7 @@ def get_feed_info(feed_infos,goal):
     return int(info_num)
 
 
-@parse_decorator(5)
+@parse_decorator(None)
 def get_weibo_info(each, html):
     wb_data = WeiboData()
     try:
@@ -105,7 +105,7 @@ def get_weibo_info(each, html):
         return wb_data
 
 
-@parse_decorator(5)
+@parse_decorator(None)
 def get_search_info(html):
     """
     通过搜索页的内容获取搜索结果

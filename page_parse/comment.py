@@ -5,7 +5,7 @@ from db.models import WeiboComment
 from decorators.decorator import parse_decorator
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_html_cont(html):
     cont = ''
     data = json.loads(html, encoding='utf-8').get('data', '')
@@ -25,7 +25,7 @@ def get_total_page(html):
     return page_count
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_next_url(html):
     """
     获取下一次应该访问的url
@@ -45,7 +45,7 @@ def get_next_url(html):
     return url
 
 
-@parse_decorator(2)
+@parse_decorator([])
 def get_comment_list(html, wb_id):
     """
     获取评论列表

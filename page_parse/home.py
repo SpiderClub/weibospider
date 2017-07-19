@@ -8,7 +8,7 @@ from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_weibo_infos_right(html):
     """
     通过网页获取用户主页右边部分（即微博部分）字符串
@@ -29,7 +29,7 @@ def get_weibo_infos_right(html):
     return cont
 
 
-@parse_decorator(5)
+@parse_decorator(None)
 def get_weibo_info_detail(each, html):
     wb_data = WeiboData()
 
