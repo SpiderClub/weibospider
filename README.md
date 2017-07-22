@@ -317,9 +317,6 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)同学，为本项目做了大量的贡献
-- 感谢所有捐赠的网友,所有捐款都会贡献部分(20%)给[celery](http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html),用以支持和鼓励其发展！
-而[requests](http://docs.python-requests.org/en/master/)未提供donate方式，所以目前只能通过[saythanks.io](https://saythanks.io/to/kennethreitz)对其表示谢意。
-- 感谢所有`star`支持的网友
+- 感谢所有捐赠的网友和给`star`支持的网友
 
-
-最后，祝大家玩得高兴，用得舒心！
+最后，祝大家用得舒心，用着不爽欢迎吐槽！
