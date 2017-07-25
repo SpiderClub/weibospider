@@ -9,7 +9,7 @@ from decorators.decorator import parse_decorator
 repost_url = 'http://weibo.com{}'
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_html_cont(html):
     cont = ''
     data = json.loads(html, encoding='utf-8').get('data', '')
@@ -29,7 +29,7 @@ def get_total_page(html):
     return page_count
 
 
-@parse_decorator(2)
+@parse_decorator([])
 def get_repost_list(html, mid):
     """
        Get repost details

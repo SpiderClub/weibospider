@@ -54,7 +54,7 @@ def get_status(html):
         return 0
 
 
-@parse_decorator(5)
+@parse_decorator(None)
 # todo 补充所有信息， 优化代码
 def get_detail(html):
     user = User()
