@@ -21,7 +21,7 @@ def get_userdomain(html):
     return status.get_userdomain(html)
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def _get_header(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -48,7 +48,7 @@ def get_verifytype(html):
         return 0
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_verifyreason(html, verify_type):
     """
     details for authentication
@@ -63,7 +63,7 @@ def get_verifyreason(html, verify_type):
         return ''
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_headimg(html):
     """
     Get the head img url of current user
@@ -78,7 +78,7 @@ def get_headimg(html):
     return headimg
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_left(html):
     """
     The left part of the page, which is public
@@ -107,7 +107,7 @@ def get_left(html):
     return cont
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_right(html):
     """
     Parse the right part of user detail
@@ -154,7 +154,7 @@ def get_level(html):
         return 0
 
 
-@parse_decorator(2)
+@parse_decorator([])
 def get_fans_or_follows(html, uid, type):
     """
     Get fans or follows and store their relationships

@@ -7,21 +7,21 @@ from decorators.decorator import parse_decorator
 from logger.log import parser
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_userid(html):
     pattern = re.compile(r'\$CONFIG\[\'oid\'\]=\'(.*)\';')
     m = pattern.search(html)
     return m.group(1) if m else ''
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_username(html):
     pattern = re.compile(r'\$CONFIG\[\'onick\'\]=\'(.*)\';')
     m = pattern.search(html)
     return m.group(1) if m else ''
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_userdomain(html):
     """
     :param html:
@@ -32,7 +32,7 @@ def get_userdomain(html):
     return m.group(1) if m else ''
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def _get_statushtml(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
@@ -53,7 +53,7 @@ def _get_statushtml(html):
     return cont
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_mid(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, 'html.parser')
@@ -67,7 +67,7 @@ def get_mid(html):
         parser.error('get_mid()发生异常,具体异常为{e}'.format(e=e))
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_orignalmid(html):
     """
     :return: 如果本来就是源微博，则返回微博id,否则返回源微博id
@@ -80,7 +80,7 @@ def get_orignalmid(html):
         return soup.find(attrs={'action-type': 'feed_list_item'})['omid']
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_statussource(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -94,7 +94,7 @@ def get_statussource(html):
             return ''
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_statustime(html):
     cont = _get_statushtml(html)
     soup = BeautifulSoup(cont, "html.parser")
@@ -159,7 +159,7 @@ def is_root(html):
         return True
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_rooturl(cururl, html):
     if is_root(html):
         return cururl
@@ -181,7 +181,7 @@ def get_rooturl(cururl, html):
             return url
 
 
-@parse_decorator(2)
+@parse_decorator([])
 def get_reposturls(repostinfo):
     """
     :param repostinfo: 转发信息

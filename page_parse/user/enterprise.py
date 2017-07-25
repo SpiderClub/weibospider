@@ -7,7 +7,7 @@ from page_parse.user import public
 from decorators.decorator import parse_decorator
 
 
-@parse_decorator(4)
+@parse_decorator({})
 def get_detail(html):
     """
     这个是从认证企业的个人资料页面解析数据,一般不用这个
@@ -53,7 +53,7 @@ def get_status(html):
     return int(soup.find_all('strong')[2].get_text())
 
 
-@parse_decorator(1)
+@parse_decorator('')
 def get_description(html):
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')

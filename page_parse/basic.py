@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from decorators.decorator import parse_decorator
 
 
-@parse_decorator(3)
+@parse_decorator(False)
 def is_404(html):
     soup = BeautifulSoup(html, 'html.parser')
     # 前一种情况是处理直接用js实现重定向的页面
@@ -23,7 +23,7 @@ def is_404(html):
         return False
 
 
-@parse_decorator(3)
+@parse_decorator(False)
 def is_403(html):
     if "['uid']" not in html and "['nick']" not in html:
         return True

@@ -33,9 +33,9 @@ def db_commit_decorator(func):
     return session_commit
 
 
-def parse_decorator(return_type):
+def parse_decorator(return_value):
     """
-    :param return_type: catch exceptions when parsing pages
+    :param return_value: catch exceptions when parsing pages
     :return: 0,'',[],False,{},None
     """
     def page_parse(func):
@@ -45,19 +45,7 @@ def parse_decorator(return_type):
                 return func(*keys)
             except Exception as e:
                 parser.error(e)
-
-                if return_type == 5:
-                    return None
-                elif return_type == 4:
-                    return {}
-                elif return_type == 3:
-                    return False
-                elif return_type == 2:
-                    return []
-                elif return_type == 1:
-                    return ''
-                else:
-                    return 0
+                return return_value
 
         return handle_error
 
