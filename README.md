@@ -33,13 +33,11 @@
 
 ## TODO :dart:
 - 微博内容抓取相关
-  - [x] 模拟登陆，账号请放置在[sql文件](./config/sql/spider.sql)的*login_info*表中,如果账号不需要验证码就能登录，请将`need_verify`字段设置为0，否则就设置为1，并且在[云打码](http://www.yundama.com/)
-  官网注册一个云打码用户账号，并进行适当充值
-  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子参见[sql文件](./config/sql/spider.sql)的*seed_ids*表。你也可以自己指定
-  想抓取的用户信息，只需要把用户对应的uid放到`seed_ids`中
-  - [x] 微博搜索功能，搜索词由自己指定，参考[sql文件](./config/sql/spider.sql)的*keywords*表。搜索词也可以自己指定。
+  - [x] 模拟登陆，账号请放置在*login_info*表中,如果账号登陆时需要验证码，请在[云打码](http://www.yundama.com/)官网注册一个云打码用户账号，并进行适当充值
+  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子（微博用户`uid`）请插入*seed_ids*表
+  - [x] 微博搜索功能，搜索词由自己指定，参考*keywords*表。搜索词也可以自己指定。
   - [x] 指定用户的主页：主要是原创微博内容，你也可以修改文件[home.py](./tasks/home.py)中的`home_url`和`ajax_home_url`中的`is_ori=1`为`is_all=1`来
-  抓取用户的所有微博。目前指定用户是基于已有的[seed_ids](./config/sql/spider.sql)表中的```home_crawled=0```的用户，你也可以自己指定想要抓取的用户。
+  抓取用户的所有微博。目前指定用户是基于已有的`seed_ids`表中的```home_crawled=0```的用户，你也可以自己指定想要抓取的用户。
   - [x] 指定微博的评论：主要是抓取针对该微博的评论，即根评论。你可以通过修改[comment.py](./page_parse/comment.py)中的`get_comment_list()`
   来抓取指定微博的所有评论，包括根评论和子评论。目前抓取的评论是从`weibo_data`表中选取的`comment_crawled=0`的微博，你可以指定微博mid来定制化爬取评论。
   - [x] 指定微博的转发情况：主要是热门微博的转发信息
@@ -184,7 +182,7 @@
   的话（比如通过淘宝购买），登录会出现验证码，目前本项目通过**打码平台进行验证码识别**，选择的打码平台
   是[云打码](http://www.yundama.com/)，你需要在[spider.yaml](./config/spider.yaml)中**设置云打码平台你所注册
   的用户名和密码**并进行适当充值。一块钱大概可以识别160个验证码。也可以选择别的打码平台，又好用的欢迎推荐 T.T
-  - 由于[sql文件](./config/sql/spider.sql)可能和代码更新不同步，所以推荐在项目根目录下，运行`python create_all.py`创建该项目需要的数据库表
+  - 在项目根目录下，运行`python create_all.py`创建该项目需要的数据库表
 
 
 ---
