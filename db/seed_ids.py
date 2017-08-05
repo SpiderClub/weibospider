@@ -25,13 +25,13 @@ def get_home_ids():
 def set_seed_crawled(uid, result):
     """
     :param uid: user id that is crawled
-    :param result: crawling result
+    :param result: crawling result, 1 stands for succeed, 2 stands for fail
     :return: None
     """
     seed = db_session.query(SeedIds).filter(SeedIds.uid == uid).first()
-    if seed:
-        if seed.is_crawled == 0:
-            seed.is_crawled = result
+
+    if seed and seed.is_crawled == 0:
+        seed.is_crawled = result
     else:
         seed = SeedIds(uid=uid, is_crawled=result)
         db_session.add(seed)
