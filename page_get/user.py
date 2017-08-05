@@ -70,40 +70,49 @@ def get_url_from_web(user_id):
         user.verify_info = public.get_verifyreason(html, user.verify_type)
         user.level = public.get_level(html)
 
-        save_user(user)
-        storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
+        if user.name:
+            save_user(user)
+            storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
+            return user
+        else:
+            return None
 
-        return user
     else:
         return None
 
 
 def get_profile(user_id):
+    """
+    :param user_id: uid
+    :return: user info and is crawled or not
+    """
     user = get_user_by_uid(user_id)
 
     if user:
         storage.info('user {id} has already crawled'.format(id=user_id))
         set_seed_crawled(user_id, 1)
+        is_crawled = 1
     else:
         user = get_url_from_web(user_id)
         if user is not None:
             set_seed_crawled(user_id, 1)
         else:
-            set_seed_crawled(user_id, 1)
+            set_seed_crawled(user_id, 2)
+        is_crawled = 0
 
-    return user
+    return user, is_crawled
 
 
 def get_fans_or_followers_ids(user_id, crawl_type):
     """
     Get followers or fans
     :param user_id: user id
-    :param crawl_type: 1 stands for fans，2 stands for followers
+    :param crawl_type: 1 stands for fans，2 stands for follows
     :return: lists of fans or followers
     """
 
     # todo check fans and followers the special users,such as writers
-    # todo process the conditions that fans and followers more than 5 pages
+    # todo deal with conditions that fans and followers more than 5 pages
     if crawl_type == 1:
         fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
     else:
