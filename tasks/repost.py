@@ -33,7 +33,7 @@ def crawl_repost_page(mid, uid):
     if not repost_datas:
         return
 
-    root_user = user_get.get_profile(uid)
+    root_user, _ = user_get.get_profile(uid)
 
     if total_page < limit:
         limit = total_page + 1
