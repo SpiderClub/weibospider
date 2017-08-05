@@ -29,15 +29,16 @@ def crawl_person_infos(uid):
     if not uid:
         return
 
-    user = user_get.get_profile(uid)
+    user, is_crawled = user_get.get_profile(uid)
     # If it's enterprise user, just skip it
     if user.verify_type == 2:
         set_seed_other_crawled(uid)
         return
 
     # Crawl fans and followers
-    app.send_task('tasks.user.crawl_follower_fans', args=(uid,), queue='fans_followers',
-                  routing_key='for_fans_followers')
+    if not is_crawled:
+        app.send_task('tasks.user.crawl_follower_fans', args=(uid,), queue='fans_followers',
+                      routing_key='for_fans_followers')
 
 
 @app.task(ignore_result=True)

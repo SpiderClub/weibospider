@@ -160,7 +160,7 @@ def get_fans_or_follows(html, uid, type):
     Get fans or follows and store their relationships
     :param html: current page source
     :param uid: current user id
-    :param type: type of relations
+    :param type: type of relations, 1 stands for fans，2 stands for follows
     :return: list of fans or followers
     """
     if html == '':
