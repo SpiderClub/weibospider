@@ -24,6 +24,9 @@
 
 ## 配置和使用 :sparkles:
 
+**使用前请大家务必仔细读项目配置 和 项目使用**
+
+
 ### 配置
 
 **建议编程经验较为缺乏的同学直接查看演示视频(链接: https://pan.baidu.com/s/1eSy2qzw 密码: ypn5)**
@@ -74,22 +77,22 @@
   - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
   - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):转发信息抓取
 
-- 基本用法：请按照**启动worker=>运行login_first.py=> 启动定时任务或者别的任务**这个顺序进行
+- 基本用法：请先在数据库中添加基本数据，然后再按照**启动各个节点的worker -> 运行login_first.py -> 启动定时任务或者别的任务**这个顺序进行，下面是详细说明
   - **在分布式节点上启动worker**。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
-比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info -c 1 -Ofair```。如果不指定，
-即运行`celery -A tasks.workers worker -l info -c 1`，那么所有任务都可以在该节点实现。所有的queue及作用和更多关于worker的知识请
+比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info -c 1```。如果不指定`-Q`参数，
+即运行`celery -A tasks.workers worker -l info -c 1`，那么**所有任务都能够在该节点执行**。所有的queue及作用和更多关于worker的知识请
 在[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)中查看
-  - 如果是**第一次运行该项目**，为了在抓取任务运行之前能有cookies，需要在任意一个节点上，切换到项目根目录执行```python
-login_first.py```**获取首次登陆的cookie**，需要注意它只会分发任务到指定了```login_queue```的节点上或者未指定 `-Q`的节点上
+  - celery运行定时任务会延迟一个定时周期。如果是**第一次运行该项目**，为了在抓取任务运行之前能有cookies，需要在任意一个节点上，切换到项目根目录执行`pythonlogin_first.py`**获取首次登陆的cookie**，
+需要注意它只会分发任务到指定了`login_queue`的节点上或者未指定 `-Q`的节点上
   - 在其中一个分布式节点上，切换到项目根目录，再启动定时任务(beat只启动一个，否则会重复执行定时任务)：
-```celery beat -A tasks.workers -l info```，因为beat任务会有一段时间的延迟(比如登录任务会延迟10个小时再执行)，所以第二步要通过```python login_first.py```来获取worker
-首次运行需要的cookie.如果你想马上启动其他任务，而非等定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动和login_first.py执行后就执行用户抓取任务，那么就通过
+`celery beat -A tasks.workers -l info`。因为beat任务会有一段时间的延迟(比如登录任务会延迟20个小时再执行)，所以第二步要通过```python login_first.py```来获取worker
+首次运行需要的cookies.如果你想马上启动其他任务，而非等定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动和login_first.py执行后就执行用户抓取任务，那么就通过
 ```python user_first.py```来执行
   - **通过*flower*监控节点健康状况**：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP.
 如果需要让外网访问，可以这样`celery -A tasks.workers flower --address=0.0.0.0 --port=5555`
   - 程序默认以普通模式运行，如果想改成极速模式，请修改[配置文件](./config/spider.yaml)中`mode`的值为`quick`。关于极速和普通模式的区别，
   请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E5%BE%AE%E5%8D%9A%E7%88%AC%E8%99%AB%E7%9A%84%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%80%9F%E6%A8%A1%E5%BC%8F)
-  - **注意，请在[release](https://github.com/ResolveWang/WeiboSpider/releases)页面下载稳定版本的微博爬虫，最新的不保证能正常和稳定运行**
+  - **注意，请在[release](https://github.com/ResolveWang/WeiboSpider/releases)页面下载稳定版本的微博爬虫，master分支不保证能正常和稳定运行**
 
 
 - 其它
@@ -97,6 +100,7 @@ login_first.py```**获取首次登陆的cookie**，需要注意它只会分发�
   - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
   - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加QQ群（群号是:499500161, 暗号是：微博爬虫）询问
   - 如果项目某些地方和你的应用场景不符，可以基于已有代码进行定制化开发，阅读[代码结构](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84)以帮助你快速了解代码的组织方式和核心内容
+  - 由于部分同学反映，数据库表有些字段不能见闻知义，所以添加了[数据库表字段设计说明](https://github.com/ResolveWang/weibospider/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E)
 
 ## 常见问题 :question:
 1.问：项目部署好复杂啊，我也没有多台机器，我可以单机运行吗？
