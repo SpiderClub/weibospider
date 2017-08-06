@@ -28,6 +28,11 @@ def is_403(html):
     if "['uid']" not in html and "['nick']" not in html:
         return True
 
+    # verify code for search page
+    # todo  solve the problem of verify_code when searching
+    if 'yzm_img' in html and 'yzm_input' in html:
+        return True
+
     soup = BeautifulSoup(html, 'html.parser')
     if soup.title:
         if '访问受限' in soup.title.text or '解冻' in soup.title.text:
