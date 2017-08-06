@@ -72,7 +72,7 @@ def get_url_from_web(user_id):
 
         if user.name:
             save_user(user)
-            storage.info('已经成功保存ID为{id}的用户信息'.format(id=user_id))
+            storage.info('has stored user {id} info successfully'.format(id=user_id))
             return user
         else:
             return None
