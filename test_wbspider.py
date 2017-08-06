@@ -76,11 +76,11 @@ class TestWeiboSpider(unittest.TestCase):
         test crawling different kind of users
         """
         from page_get import user as user_get
-        normal_user = user_get.get_profile('1195908387')
+        normal_user, _ = user_get.get_profile('1195908387')
         self.assertEqual(normal_user.name, '日_推')
-        writer = user_get.get_profile('1191258123')
+        writer, _ = user_get.get_profile('1191258123')
         self.assertEqual(writer.description, '韩寒')
-        enterprise_user = user_get.get_profile('1839256234')
+        enterprise_user, _ = user_get.get_profile('1839256234')
         self.assertEqual(enterprise_user.level, 36)
 
     def test_get_fans(self):
@@ -90,8 +90,7 @@ class TestWeiboSpider(unittest.TestCase):
         from page_parse.user import public
         with open('./tests/fans.html', encoding='utf-8') as f:
             cont = f.read()
-        public.get_fans_or_follows(cont)
-        ids = public.get_fans_or_follows(cont)
+        ids = public.get_fans_or_follows(cont, '2036911095', 1)
         self.assertEqual(len(ids), 9)
 
     def test_bulk_insert_with_duplicates(self):

@@ -237,7 +237,7 @@ def get_session(name, password):
                 other.error('account {} has been forbidden'.format(name))
                 freeze_account(name, 0)
                 return None
-            other.info('The login account is {}'.format(name))
+            other.info('Login successful! The login account is {}'.format(name))
             Cookies.store_cookies(name, session.cookies.get_dict())
             return session
          
