@@ -8,6 +8,8 @@ from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
 
+# todo 重构搜索解析代码和主页解析代码，使其可重用
+
 @parse_decorator('')
 def get_weibo_infos_right(html):
     """

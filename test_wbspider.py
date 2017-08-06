@@ -1,6 +1,10 @@
 # coding:utf-8
 import unittest
 
+import requests
+
+TEST_SERVER = 'http://test.rookiefly.cn/'
+
 
 # TODO a better TDD is wanted
 class TestWeiboSpider(unittest.TestCase):
@@ -56,18 +60,27 @@ class TestWeiboSpider(unittest.TestCase):
         """
         from page_parse.user import person, public
         from page_get.user import get_user_detail
-        with open('./tests/writer.html', encoding='utf-8') as f:
-            cont = f.read()
+
+        url = TEST_SERVER + 'writer.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         user = person.get_detail(cont)
         user.verify_type = public.get_verifytype(cont)
         self.assertEqual(user.verify_type, 1)
         self.assertEqual(user.description, '韩寒')
-        with open('./tests/person.html', encoding='utf-8') as f:
-            cont = f.read()
+
+        url = TEST_SERVER + 'person.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         user = get_user_detail('222333312', cont)
         self.assertEqual(user.follows_num, 539)
-        with open('./tests/excp.html', encoding='utf-8') as f:
-            cont = f.read()
+
+        url = TEST_SERVER + 'excp.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         user = get_user_detail('1854706423', cont)
         self.assertEqual(user.birthday, '1988年2月21日')
 
@@ -88,8 +101,10 @@ class TestWeiboSpider(unittest.TestCase):
         test parsing fans pages
         """
         from page_parse.user import public
-        with open('./tests/fans.html', encoding='utf-8') as f:
-            cont = f.read()
+        url = TEST_SERVER + 'fans.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         ids = public.get_fans_or_follows(cont, '2036911095', 1)
         self.assertEqual(len(ids), 9)
 
@@ -114,8 +129,10 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import search
-        with open('tests/search.html', encoding='utf-8') as f:
-            cont = f.read()
+        url = TEST_SERVER + 'search.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         infos = search.get_search_info(cont)
 
         self.assertEqual(len(infos), 20)
@@ -136,8 +153,10 @@ class TestWeiboSpider(unittest.TestCase):
         """
         from db.wb_data import insert_weibo_datas
         from page_parse import search
-        with open('tests/search.html', encoding='utf-8') as f:
-            cont = f.read()
+        url = TEST_SERVER + 'search.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        cont = resp.text
         infos = search.get_search_info(cont)
         insert_weibo_datas(infos)
 
@@ -155,15 +174,18 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import home
-        with open('tests/enterprisehome.html', encoding='utf-8') as f:
-            html = f.read()
+        url = TEST_SERVER + 'enterprisehome.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         wbcounts = home.get_wbdata_fromweb(html)
         self.assertEqual(len(wbcounts), 15)
 
-        with open('tests/personhome.html', encoding='utf-8') as f:
-            html = f.read()
+        url = TEST_SERVER + 'personhome.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         wbcounts = home.get_wbdata_fromweb(html)
-        print(wbcounts)
         self.assertEqual(len(wbcounts), 15)
 
     def test_ajax_home_page_data(self):
@@ -172,8 +194,11 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import home
-        with open('tests/asyncpersonhome.html', encoding='utf-8') as f:
-            html = f.read()
+
+        url = TEST_SERVER + 'asyncpersonhome.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         datas = home.get_home_wbdata_byajax(html)
         self.assertEqual(len(datas), 15)
 
@@ -183,8 +208,11 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import home
-        with open('tests/asyncpersonhome.html', encoding='utf-8') as f:
-            html = f.read()
+
+        url = TEST_SERVER + 'asyncpersonhome.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         num = home.get_total_page(html)
         self.assertEqual(num, 18)
 
@@ -194,8 +222,10 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import comment
-        with open('tests/comment.html', encoding='utf-8') as f:
-            html = f.read()
+        url = TEST_SERVER + 'comment.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         comment_list = comment.get_comment_list(html, '1123331211')
         self.assertEqual(len(comment_list), 19)
 
@@ -205,8 +235,10 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import comment
-        with open('tests/comment.html', encoding='utf-8') as f:
-            html = f.read()
+        url = TEST_SERVER + 'comment.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         total_page = comment.get_total_page(html)
         self.assertEqual(total_page, 227)
 
@@ -216,8 +248,10 @@ class TestWeiboSpider(unittest.TestCase):
         :return: 
         """
         from page_parse import repost
-        with open('tests/repost.html', encoding='utf-8') as f:
-            html = f.read()
+        url = TEST_SERVER + 'repost.html'
+        resp = requests.get(url)
+        resp.encoding = 'utf-8'
+        html = resp.text
         total_page = repost.get_total_page(html)
         self.assertEqual(total_page, 1580)
 
