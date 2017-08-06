@@ -1,6 +1,7 @@
 # -*-coding:utf-8 -*-
 import re
 from bs4 import BeautifulSoup
+from page_get import status
 from logger.log import parser
 from db.models import WeiboData
 from decorators.decorator import parse_decorator
@@ -41,72 +42,71 @@ def get_feed_info(feed_infos,goal):
 def get_weibo_info(each, html):
     wb_data = WeiboData()
     try:
-        try:
-            user_cont = each.find(attrs={'class': 'face'})
-            user_info = user_cont.find('a')
-            m = re.match(user_pattern, user_info.img.get('usercard'))
+        user_cont = each.find(attrs={'class': 'face'})
+        user_info = user_cont.find('a')
+        m = re.match(user_pattern, user_info.img.get('usercard'))
 
-            if m:
-                wb_data.uid = m.group(1)
-            else:
-                parser.warning('未提取到用户id,页面源码是{}'.format(html))
-                return None
-
-        except Exception as why:
-            parser.error('解析用户信息出错，出错原因:{},页面源码是{}'.format(why, html))
-            return None
-
-        wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
-        try:
-            wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
-        except Exception as e:
-            parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
-            return None
-
-        try:
-            wb_data.device = each.find(attrs={'class': 'feed_from'}).find(attrs={'rel': 'nofollow'}).text
-        except AttributeError:
-            wb_data.device = ''
-
-        try:
-            create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['date']
-        except (AttributeError, KeyError):
-            wb_data.create_time = ''
+        if m:
+            wb_data.uid = m.group(1)
         else:
-            create_time = int(create_time) / 1000  # 时间戳单位不同
-            create_time = datetime.fromtimestamp(create_time)
-            wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
-
-        try:
-            feed_action = each.find(attrs={'class': 'feed_action'})
-        except Exception as why:
-            parser.error('解析feed_action出错,出错原因:{},页面源码是{}'.format(why, each))
-        else:
-            feed_infos = feed_action.find_all('li')
-            try:
-                wb_data.repost_num = get_feed_info(feed_infos,'转发')
-            except (AttributeError, ValueError):
-                wb_data.repost_num = 0
-            try:
-                wb_data.comment_num = get_feed_info(feed_infos,'评论')
-            except (AttributeError, ValueError):
-                wb_data.comment_num = 0
-            try:
-                wb_data.praise_num = int(feed_action.find(attrs={'action-type': 'feed_list_like'}).find('em').text)
-            except (AttributeError, ValueError):
-                wb_data.praise_num = 0
-
-        try:
-            wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
-        except Exception as why:
-            parser.error('解析微博内容出错:{}, 页面源码是{}'.format(why, html))
+            parser.warning('未提取到用户id,页面源码是{}'.format(html))
             return None
 
     except Exception as why:
-        parser.error('整条解析出错,原因为:{}, 页面源码是{}'.format(why, html))
+        parser.error('解析用户信息出错，出错原因:{},页面源码是{}'.format(why, html))
         return None
+
+    wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
+    try:
+        wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
+    except Exception as e:
+        parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
+        return None
+
+    try:
+        wb_data.device = each.find(attrs={'class': 'feed_from'}).find(attrs={'rel': 'nofollow'}).text
+    except AttributeError:
+        wb_data.device = ''
+
+    try:
+        create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['date']
+    except (AttributeError, KeyError):
+        wb_data.create_time = ''
     else:
-        return wb_data
+        create_time = int(create_time) / 1000  # 时间戳单位不同
+        create_time = datetime.fromtimestamp(create_time)
+        wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
+
+    try:
+        feed_action = each.find(attrs={'class': 'feed_action'})
+    except Exception as why:
+        parser.error('解析feed_action出错,出错原因:{},页面源码是{}'.format(why, each))
+    else:
+        feed_infos = feed_action.find_all('li')
+        try:
+            wb_data.repost_num = get_feed_info(feed_infos, '转发')
+        except (AttributeError, ValueError):
+            wb_data.repost_num = 0
+        try:
+            wb_data.comment_num = get_feed_info(feed_infos, '评论')
+        except (AttributeError, ValueError):
+            wb_data.comment_num = 0
+        try:
+            wb_data.praise_num = int(feed_action.find(attrs={'action-type': 'feed_list_like'}).find('em').text)
+        except (AttributeError, ValueError):
+            wb_data.praise_num = 0
+
+    try:
+        wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
+    except Exception as why:
+        parser.error('解析微博内容出错:{}, 页面源码是{}'.format(why, html))
+        return None
+
+    if '展开全文' in str(each):
+        is_all_cont = 0
+    else:
+        is_all_cont = 1
+    return wb_data, is_all_cont
 
 
 @parse_decorator(None)
@@ -128,8 +128,11 @@ def get_search_info(html):
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     search_list = []
     for each in feed_list:
-        wb_data = get_weibo_info(each, html)
-        if wb_data is not None:
+        r = get_weibo_info(each, html)
+        if r is not None:
+            wb_data = r[0]
+            if r[1] == 0:
+                wb_data.weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
             search_list.append(wb_data)
     return search_list
 
