@@ -29,9 +29,9 @@
 
 ### 配置
 
-**建议编程经验较为缺乏的同学直接查看演示视频(链接: https://pan.baidu.com/s/1eSy2qzw 密码: ypn5)**
+**建议新手和小白们先查看演示视频(链接: https://pan.baidu.com/s/1eSy2qzw 密码: ypn5)**
 
-- 环境配置:小白和新手请直接查看[这里](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
+- 环境配置:如果环境配置经验比较少，建议直接点击查看[项目环境配置](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
   - 考虑到Python3是趋势和一些将该项目用于学习的用户，项目运行环境为**Python3.x**
   - 项目存储后端使用**Mysql**，所以需要在存储服务器上**安装Mysql**,注意设置字符集编码为**utf-8**
   - 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
@@ -214,15 +214,17 @@ redis中删除该账号对应的信息，因为要复现登录后被封需要一
 
 
 ## 赞助本项目:thumbsup:
+
+如果本项目确实解决了你的刚需，或者对你有较大的启发，不妨请作者喝杯咖啡或者买本新书。
+
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 - [捐赠记录](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 
-如果本项目对你有用，欢迎对本项目进行捐赠，捐赠时候请留下你的```github ID```，当然您也可以匿名捐赠。
 
 ## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
-- 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)同学，为本项目做了大量的贡献
+- 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)，为本项目做了大量的贡献
 - 感谢所有捐赠的网友和给`star`支持的网友
 
 最后，祝大家用得舒心，用着不爽欢迎吐槽！
