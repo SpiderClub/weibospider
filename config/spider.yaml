@@ -1,11 +1,11 @@
 # coding:utf-8
 time_out: 200                  # timeout for crawling and storing user info
-min_crawl_interal: 1           # min interal of http request
-max_crawl_interal: 5           # max interal of http request
+min_crawl_interal: 10           # min interal of http request
+max_crawl_interal: 20           # max interal of http request
 excp_interal: 5*60             # time for sleeping when crawling raises exceptions
 
 # TODO set a default value for max_value of crawling
-max_search_page: 30            # max search page for crawling
+max_search_page: 50            # max search page for crawling
 max_home_page: 50              # max user home page for crawling
 max_comment_page: 2000         # max comment page for crawling
 max_repost_page: 2000          # max repost page for crawling
@@ -13,46 +13,50 @@ max_retries: 5                 # retry times for crawling
 
 # you should set the args below if you login from uncommon place
 # It's for verification code indentified
-yundama_username: yourname           # account for yundama
-yundama_passwd: yourpasswd             # password for yundama
+yundama_username: xxxxxxxx           # account for yundama
+yundama_passwd: xxxxxxxxx            # password for yundama
 
 # the value of mode can be normal or quick.
 # In noraml mode, it will be more stable, while in quick mode, the crawling speed will
 # be much faster, and the weibo account almostly will be banned
-mode: quick
+mode: normal
 # the max number of each cookie can be shared
 # if you choose quick mode, your cookie will be used util it's banned
 share_host_count: 5
 # the expire time(hours) of each weibo cookies
-cookie_expire_time: 23
+cookie_expire_time: 20
 
 
 
 db:
-    host: xxx
+    host: xxxx
     port: 3306
     user: weibospider
-    password: xxx
+    password: xxxx
     db_name: weibo
     db_type: mysql
 
 redis:
-    host: xxx
+    host: xxxx
     port: 6379
     password: weibospider
     cookies: 1                   # store and fetch cookies
-    urls: 2                      # store fetched urls and results
+    # store fetched urls and results,so you can decide whether retry to crawl the urls or not
+    urls: 2
     broker: 5                    # broker for celery
     backend: 6                   # backed for celery
     id_name: 8                   # user id and names，for repost info analysis
+    # expire_time (hours) for redis db2, if they are useless to you, you can set the value smaller
+    expire_time: 48
 
 # warning by email
 email:
     # your email must open smtp & pop3 service
     server: smtp.sina.com
     port: 587
-    from: xxx@sina.com           #sendingemailaccount
-    password: xxx                #youremailpasswd
-    to: xxxx@139.com             #bind 139 email,so your phone will receive the warning message
+    from: xxxxxxxxxxxxxx   #sendingemailaccount
+    password: xxxxxx         #youremailpasswd
+    to: 18708103033@139.com      #bind 139 email,so your phone will receive the warning message
     subject: Warning Of Weibo Spider
     warning_info: Please find out the reason why the spider stops working
+
