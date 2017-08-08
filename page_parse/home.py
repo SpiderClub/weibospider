@@ -68,9 +68,8 @@ def get_weibo_info_detail(each, html):
         is_all_cont = 1
 
     try:
-        wb_data.device = each.find(attrs={'class': 'WB_from'}).find(attrs={'action-type': 'app_source'}).text
-    except Exception as e:
-        parser.error('本次解析设备出错，具体是{}'.format(e))
+        wb_data.device = each.find(attrs={'class': 'WB_from S_txt2'}).find(attrs={'action-type': 'app_source'}).text
+    except AttributeError:
         wb_data.device = ''
 
     try:
