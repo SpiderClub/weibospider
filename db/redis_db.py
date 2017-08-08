@@ -12,10 +12,12 @@ from config.conf import (
     get_cookie_expire_time
 )
 
+
 mode = get_running_mode()
 redis_args = get_redis_args()
 share_host_count = get_share_host_count()
 cookie_expire_time = get_cookie_expire_time()
+data_expire_time = int(redis_args.get('expire_time')) * 60 * 60
 
 
 # todo consider the concurrency when fetching or storing cookies
@@ -151,6 +153,7 @@ class Urls(object):
     @classmethod
     def store_crawl_url(cls, url, result):
         cls.rd_con.set(url, result)
+        cls.rd_con.expire(url, data_expire_time)
 
 
 class IdNames(object):
@@ -162,8 +165,13 @@ class IdNames(object):
         cls.rd_con.set(user_name, user_id)
 
     @classmethod
+    def delele_id_name(cls, user_name):
+        cls.rd_con.delete(user_name)
+
+    @classmethod
     def fetch_uid_by_name(cls, user_name):
         user_id = cls.rd_con.get(user_name)
+        cls.delele_id_name(user_name)
         if user_id:
             return user_id.decode('utf-8')
         return ''
