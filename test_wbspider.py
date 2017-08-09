@@ -89,6 +89,7 @@ class TestWeiboSpider(unittest.TestCase):
         test crawling different kind of users
         """
         from page_get import user as user_get
+
         normal_user, _ = user_get.get_profile('1195908387')
         self.assertEqual(normal_user.name, '日_推')
         writer, _ = user_get.get_profile('1191258123')
