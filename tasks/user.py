@@ -1,7 +1,12 @@
 # coding:utf-8
 from tasks.workers import app
 from page_get import user as user_get
-from db.seed_ids import get_seed_ids, get_seed_by_id, insert_seeds, set_seed_other_crawled
+from db.seed_ids import (
+                         get_seed_ids,
+                         get_seed_by_id,
+                         insert_seeds,
+                         set_seed_other_crawled
+                        )
 
 
 @app.task(ignore_result=True)
