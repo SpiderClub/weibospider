@@ -49,7 +49,7 @@ keywords = Table('keywords', metadata,
                  Column("enable", INTEGER, default=1, server_default='1'),
                  )
 
-# 微博信息表 weibo_data
+# weibo info data
 weibo_data = Table('weibo_data', metadata,
                    Column("id", INTEGER, primary_key=True, autoincrement=True),
                    Column("weibo_id", String(200), unique=True),

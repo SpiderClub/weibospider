@@ -6,8 +6,10 @@ from tasks.workers import app
 from page_parse.user import public
 from page_get.basic import get_page
 from db.wb_data import insert_weibo_datas
-from db.seed_ids import get_home_ids
 from config.conf import get_max_home_page
+from db.seed_ids import (get_home_ids,
+                         set_seed_home_crawled
+                         )
 from page_parse.home import (get_wbdata_fromweb,
                              get_home_wbdata_byajax,
                              get_total_page
@@ -45,7 +47,7 @@ def crawl_weibo_datas(uid):
         weibo_datas = get_wbdata_fromweb(html)
 
         if not weibo_datas:
-            crawler.warning("failed to crawl user {}'s info, please check out the reason".format(uid))
+            crawler.warning("user {} has no weibo".format(uid))
             return
 
         insert_weibo_datas(weibo_datas)
@@ -68,6 +70,7 @@ def crawl_weibo_datas(uid):
 
         app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_1,), queue='ajax_home_crawler',
                       routing_key='ajax_home_info')
+    set_seed_home_crawled(uid)
 
 
 @app.task
