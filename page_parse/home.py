@@ -1,7 +1,6 @@
 # -*-coding:utf-8 -*-
 import re
 import json
-import datetime
 import urllib.parse
 from bs4 import BeautifulSoup
 
@@ -112,8 +111,6 @@ def get_weibo_info_detail(each, html):
         wb_data.praise_num = int(each.find(attrs={'action-type': 'fl_like'}).find_all('em')[1].text)
     except Exception:
         wb_data.praise_num = 0
-
-    wb_data.crawl_time = datetime.datetime.now()
     return wb_data, is_all_cont
 
 
@@ -133,7 +130,8 @@ def get_weibo_list(html):
         if r is not None:
             wb_data = r[0]
             if r[1] == 0:
-                wb_data.weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
+                weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
+                wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             weibo_datas.append(wb_data)
     return weibo_datas
 
