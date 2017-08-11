@@ -1,13 +1,17 @@
 # -*-coding:utf-8 -*-
 import re
+import urllib.parse
+from datetime import datetime
 from bs4 import BeautifulSoup
+
 from page_get import status
 from logger.log import parser
 from db.models import WeiboData
 from decorators.decorator import parse_decorator
-from datetime import datetime
 
-user_pattern = r'id=(\d+)&u'
+
+PROTOCOL = 'https'
+USER_PATTERN = r'id=(\d+)&u'
 
 
 @parse_decorator('')
@@ -34,35 +38,49 @@ def get_feed_info(feed_infos,goal):
             info_num = info.text.replace(goal, '')
             break
     if info_num is None:
-        parser.error('解析出现意外模板:{}'.format(feed_infos))
+        parser.error('unexcept template:{}'.format(feed_infos))
     return int(info_num)
 
 
 @parse_decorator(None)
 def get_weibo_info(each, html):
     wb_data = WeiboData()
+    user_cont = each.find(attrs={'class': 'face'})
+    user_info = user_cont.find('a')
+    m = re.match(USER_PATTERN, user_info.img.get('usercard'))
+
+    if m:
+        wb_data.uid = m.group(1)
+    else:
+        parser.warning("fail to get user'sid, the page source is{}".format(html))
+        return None
     try:
-        user_cont = each.find(attrs={'class': 'face'})
-        user_info = user_cont.find('a')
-        m = re.match(user_pattern, user_info.img.get('usercard'))
-
-        if m:
-            wb_data.uid = m.group(1)
-        else:
-            parser.warning('未提取到用户id,页面源码是{}'.format(html))
-            return None
-
-    except Exception as why:
-        parser.error('解析用户信息出错，出错原因:{},页面源码是{}'.format(why, html))
+        wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
+    except (AttributeError, IndexError, TypeError):
         return None
 
-    wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
     try:
         wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
     except Exception as e:
-        parser.error('解析微博url出错，出错原因是{},页面源码是{}'.format(e, html))
+        parser.error('fail to get weibo url, the error is {}, the source page is {}'.format(e, html))
         return None
 
+    def url_filter(url):
+        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url else url
+
+    try:
+        imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
+        imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
+        wb_data.weibo_img = ';'.join(imgs_url)
+    except Exception:
+        wb_data.weibo_img = ''
+
+    try:
+        a_tag = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('a'))
+        extracted_url = urllib.parse.unquote(re.findall(r"full_url=(.+?)&amp;", a_tag)[0])
+        wb_data.weibo_video = url_filter(extracted_url)
+    except Exception:
+        wb_data.weibo_video = ''
     try:
         wb_data.device = each.find(attrs={'class': 'feed_from'}).find(attrs={'rel': 'nofollow'}).text
     except AttributeError:
@@ -80,7 +98,7 @@ def get_weibo_info(each, html):
     try:
         feed_action = each.find(attrs={'class': 'feed_action'})
     except Exception as why:
-        parser.error('解析feed_action出错,出错原因:{},页面源码是{}'.format(why, each))
+        parser.error('failt to get feed_action, the error is {},the page source is {}'.format(why, each))
     else:
         feed_infos = feed_action.find_all('li')
         try:
@@ -99,7 +117,7 @@ def get_weibo_info(each, html):
     try:
         wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
     except Exception as why:
-        parser.error('解析微博内容出错:{}, 页面源码是{}'.format(why, html))
+        parser.error('fail to get weibo cont, the error is {}, the page source is {}'.format(why, html))
         return None
 
     if '展开全文' in str(each):
@@ -121,7 +139,6 @@ def get_search_info(html):
 
     if content == '':
         return list()
-
     # todo 这里用bs会导致某些信息不能被解析（参考../tests/fail.html），可参考使用xpath，考虑到成本，暂时不实现
     soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
 
@@ -132,7 +149,8 @@ def get_search_info(html):
         if r is not None:
             wb_data = r[0]
             if r[1] == 0:
-                wb_data.weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
+                weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
+                wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             search_list.append(wb_data)
     return search_list
 
