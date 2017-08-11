@@ -11,8 +11,11 @@ from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
 
-# todo 重构搜索解析代码和主页解析代码，使其可重用；捕获所有具体异常，而不是笼统的使用Exception
+PROTOCOL = 'https'
+ROOT_URL = 'weibo.com'
 
+
+# todo 重构搜索解析代码和主页解析代码，使其可重用；捕获所有具体异常，而不是笼统的使用Exception
 @parse_decorator('')
 def get_weibo_infos_right(html):
     """
@@ -59,20 +62,25 @@ def get_weibo_info_detail(each, html):
     time_url = each.find(attrs={'node-type': 'feed_list_item_date'})
     wb_data.create_time = time_url.get('title', '')
     wb_data.weibo_url = time_url.get('href', '')
-    if 'weibo.com' not in wb_data.weibo_url:
-        wb_data.weibo_url = 'http://weibo.com{}'.format(wb_data.weibo_url)
+    if ROOT_URL not in wb_data.weibo_url:
+        wb_data.weibo_url = '{}://{}{}'.format(PROTOCOL, ROOT_URL, wb_data.weibo_url)
+
+    def url_filter(url):
+        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url else url
 
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_content'}).find(attrs={'node-type': 'feed_list_media_prev'}).
                    find_all('img'))
-        wb_data.weibo_img = str(re.findall(r"src=\"(.+?)\"", imgs))
+        imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
+        wb_data.weibo_img = ';'.join(imgs_url)
     except Exception:
         wb_data.weibo_img = ''
 
     try:
         li = str(each.find(attrs={'node-type': 'feed_content'}).find(attrs={'node-type': 'feed_list_media_prev'}).
                  find_all('li'))
-        wb_data.weibo_video = urllib.parse.unquote(re.findall(r"video_src=(.+?)&amp;", li)[0])
+        extracted_url = urllib.parse.unquote(re.findall(r"video_src=(.+?)&amp;", li)[0])
+        wb_data.weibo_video = url_filter(extracted_url)
     except Exception:
         wb_data.weibo_video = ''
 
