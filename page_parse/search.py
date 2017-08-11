@@ -10,6 +10,7 @@ from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
 
+ORIGIN = 'http'
 PROTOCOL = 'https'
 USER_PATTERN = r'id=(\d+)&u'
 
@@ -66,7 +67,7 @@ def get_weibo_info(each, html):
         return None
 
     def url_filter(url):
-        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url else url
+        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url or ORIGIN not in url else url
 
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))

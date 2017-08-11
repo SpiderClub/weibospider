@@ -10,6 +10,8 @@ from db.models import WeiboData
 from decorators.decorator import parse_decorator
 
 
+# weibo will use https in the whole website in the future,so the default protocol we use is https
+ORIGIN = 'http'
 PROTOCOL = 'https'
 ROOT_URL = 'weibo.com'
 
@@ -65,7 +67,7 @@ def get_weibo_info_detail(each, html):
         wb_data.weibo_url = '{}://{}{}'.format(PROTOCOL, ROOT_URL, wb_data.weibo_url)
 
     def url_filter(url):
-        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url else url
+        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url or ORIGIN not in url else url
 
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_content'}).find(attrs={'node-type': 'feed_list_media_prev'}).
