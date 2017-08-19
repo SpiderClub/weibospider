@@ -36,7 +36,7 @@ def crawl_person_infos(uid):
 
     user, is_crawled = user_get.get_profile(uid)
     # If it's enterprise user, just skip it
-    if user.verify_type == 2:
+    if user and user.verify_type == 2:
         set_seed_other_crawled(uid)
         return
 
