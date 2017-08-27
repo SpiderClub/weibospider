@@ -3,7 +3,7 @@ import unittest
 
 import requests
 
-TEST_SERVER = 'http://test.rookiefly.cn/'
+TEST_SERVER = 'https://test.rookiefly.cn/'
 
 
 # TODO a better TDD is wanted
