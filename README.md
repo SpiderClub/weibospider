@@ -198,7 +198,7 @@ redis中删除该账号对应的信息，因为要复现登录后被封需要一
   讲解**celery的基本概念和用法**（请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)中关于celery构建分布式爬虫的系列文章);
   讲解微博的反爬虫策略(具体请查看[issue17](https://github.com/ResolveWang/WeiboSpider/issues/17)、[issue18](https://github.com/ResolveWang/WeiboSpider/issues/18));
   各个```tasks```模块的作用和使用方法（请查看wiki中关`1task queue`的[说明](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)）。
-  - [ ] 寻找能解决redis单点故障的方案
+  - [x] 寻找能解决redis单点故障的方案,有兴趣可以查看我写的[这篇文章](https://github.com/ResolveWang/weibospider/wiki/Celery%E9%85%8D%E7%BD%AERedis-Sentinel%E5%81%9A%E9%AB%98%E5%8F%AF%E7%94%A8)
   - [x] 完善代码注释，方便用户做二次开发
   - [x] 支持Dockerfile部署项目
   - [ ] 重构项目，以更加Pythonic的方式构建项目
