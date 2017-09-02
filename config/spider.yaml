@@ -61,6 +61,8 @@ redis:
           port: 26379
         - host: 3.3.3.3
           port: 26379
+        - host: 4.4.4.4
+          port: 26380
     master: mymaster             # redis sentinel master name
     socket_timeout: 5               # sockt timeout for redis sentinel
 
