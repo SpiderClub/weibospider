@@ -14,7 +14,7 @@ max_retries: 5                 # retry times for crawling
 # you should set the args below if you login from uncommon place
 # It's for verification code indentified
 yundama_username: xxxxxxxx           # account for yundama
-yundama_passwd: xxxxxxxxx            # password for yundama
+yundama_passwd: xxxxxxxx             # password for yundama
 
 # the value of mode can be normal or quick.
 # In noraml mode, it will be more stable, while in quick mode, the crawling speed will
@@ -24,22 +24,19 @@ mode: normal
 # if you choose quick mode, your cookie will be used util it's banned
 share_host_count: 5
 # the expire time(hours) of each weibo cookies
-cookie_expire_time: 20
+cookie_expire_time: 23
 
 
 
 db:
-    host: xxxx
+    host: xxxxx
     port: 3306
     user: weibospider
-    password: xxxx
+    password: xxxxx
     db_name: weibo
     db_type: mysql
 
 redis:
-    host: xxxx
-    port: 6379
-    password: weibospider
     cookies: 1                   # store and fetch cookies
     # store fetched urls and results,so you can decide whether retry to crawl the urls or not
     urls: 2
@@ -48,15 +45,29 @@ redis:
     id_name: 8                   # user id and names，for repost info analysis
     # expire_time (hours) for redis db2, if they are useless to you, you can set the value smaller
     expire_time: 48
+    # if you don't need sentinel, just set sentinel: '' and master: '' and socktime_timeout: ''
+    # if you use redis sentinel, you can just skip the host and port below
+    host: 127.0.0.1
+    port: 6379
+    # password for redis, if you use redis sentinel, it's sentinel auth-pass
+    password: abcdefg
+    sentinel:
+        - host: 1.1.1.1
+          port: 26379
+        - host: 1.1.1.1
+          port: 26379
+    master: mymaster             # redis sentinel master name
+    socket_timeout: 5               # sockt timeout for redis sentinel
+
 
 # warning by email
 email:
     # your email must open smtp & pop3 service
     server: smtp.sina.com
     port: 587
-    from: xxxxxxxxxxxxxx   #sendingemailaccount
-    password: xxxxxx         #youremailpasswd
-    to: 18708103033@139.com      #bind 139 email,so your phone will receive the warning message
+    from: xxx@sina.com   #sendingemailaccount
+    password: xxxx          #youremailpasswd
+    to: xxxxxx@139.com      #bind 139 email,so your phone will receive the warning message
     subject: Warning Of Weibo Spider
     warning_info: Please find out the reason why the spider stops working
 
