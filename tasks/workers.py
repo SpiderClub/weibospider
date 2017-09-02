@@ -1,20 +1,32 @@
 # coding:utf-8
 import os
 from datetime import timedelta
-from celery import Celery
+
+from celery import Celery, platforms
 from kombu import Exchange, Queue
-from config.conf import get_broker_or_backend
-from celery import platforms
+
+from config.conf import (
+    get_broker_and_backend,
+    get_redis_master
+)
 
 # allow celery worker started by root
 platforms.C_FORCE_ROOT = True
 
-worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'celery.log')
-beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__))+'/logs', 'beat.log')
-
+worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'celery.log')
+beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'beat.log')
+broker_and_backend = get_broker_and_backend()
 tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment', 'tasks.repost']
 
-app = Celery('weibo_task', include=tasks, broker=get_broker_or_backend(1), backend=get_broker_or_backend(2))
+if isinstance(broker_and_backend, list):
+    broker, backend = broker_and_backend
+    app = Celery('weibo_task', include=tasks, broker=broker, backend=backend)
+else:
+    master = get_redis_master()
+    app = Celery('weibo_task', include=tasks, broker=broker_and_backend)
+    app.conf.update(
+        BROKER_TRANSPORT_OPTIONS={'master_name': master},
+    )
 
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
@@ -76,5 +88,3 @@ app.conf.update(
     ),
 
 )
-
-
