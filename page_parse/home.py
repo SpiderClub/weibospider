@@ -2,11 +2,13 @@
 import re
 import json
 import urllib.parse
+
 from bs4 import BeautifulSoup
 
-from logger.log import parser
 from page_get import status
+from logger.log import parser
 from db.models import WeiboData
+from config.conf import get_crawling_mode
 from decorators.decorator import parse_decorator
 
 
@@ -14,6 +16,7 @@ from decorators.decorator import parse_decorator
 ORIGIN = 'http'
 PROTOCOL = 'https'
 ROOT_URL = 'weibo.com'
+CRAWLING_MODE = get_crawling_mode()
 
 
 # todo 重构搜索解析代码和主页解析代码，使其可重用；捕获所有具体异常，而不是笼统的使用Exception
@@ -131,7 +134,7 @@ def get_weibo_list(html):
         r = get_weibo_info_detail(data, html)
         if r is not None:
             wb_data = r[0]
-            if r[1] == 0:
+            if r[1] == 0 and CRAWLING_MODE == 'accurate':
                 weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
                 wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             weibo_datas.append(wb_data)

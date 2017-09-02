@@ -2,17 +2,21 @@
 import re
 import urllib.parse
 from datetime import datetime
+
+
 from bs4 import BeautifulSoup
 
 from page_get import status
 from logger.log import parser
 from db.models import WeiboData
+from config.conf import get_crawling_mode
 from decorators.decorator import parse_decorator
 
 
 ORIGIN = 'http'
 PROTOCOL = 'https'
 USER_PATTERN = r'id=(\d+)&u'
+CRAWLING_MODE = get_crawling_mode()
 
 
 @parse_decorator('')
@@ -149,7 +153,7 @@ def get_search_info(html):
         r = get_weibo_info(each, html)
         if r is not None:
             wb_data = r[0]
-            if r[1] == 0:
+            if r[1] == 0 and CRAWLING_MODE == 'accurate':
                 weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
                 wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             search_list.append(wb_data)
