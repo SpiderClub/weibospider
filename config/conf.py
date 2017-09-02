@@ -53,23 +53,26 @@ def get_max_retries():
     return cf.get('max_retries')
 
 
-def get_broker_or_backend(types):
-    """
-    :param types: 类型，1表示中间人，2表示消息后端
-    :return: 
-    """
+def get_broker_and_backend():
     redis_info = cf.get('redis')
-    host = redis_info.get('host')
-    port = redis_info.get('port')
     password = redis_info.get('password')
-
-    if types == 1:
-        db = redis_info.get('broker')
+    sentinel_args = redis_info.get('sentinel', '')
+    db = redis_info.get('broker', 5)
+    if sentinel_args:
+        broker_url = ";".join('sentinel://:{}@{}:{}/{}'.format(password, sentinel['host'], sentinel['port'], db) for
+                              sentinel in sentinel_args)
+        return broker_url
     else:
-        db = redis_info.get('backend')
-    url = 'redis://:{}@{}:{}/{}'.format(password, host, port, db)
+        host = redis_info.get('host')
+        port = redis_info.get('port')
+        backend_db = redis_info.get('backend', 6)
+        broker_url = 'redis://:{}@{}:{}/{}'.format(password, host, port, db)
+        backend_url = 'redis://:{}@{}:{}/{}'.format(password, host, port, backend_db)
+        return broker_url, backend_url
 
-    return url
+
+def get_redis_master():
+    return cf.get('redis').get('master', '')
 
 
 def get_code_username():
@@ -94,3 +97,4 @@ def get_cookie_expire_time():
 
 def get_email_args():
     return cf.get('email')
+
