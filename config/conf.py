@@ -84,7 +84,11 @@ def get_code_password():
 
 
 def get_running_mode():
-    return cf.get('mode')
+    return cf.get('running_mode')
+
+
+def get_crawling_mode():
+    return cf.get('crawling_mode')
 
 
 def get_share_host_count():
