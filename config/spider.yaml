@@ -1,8 +1,8 @@
 # coding:utf-8
-time_out: 200                  # timeout for crawling and storing user info
+time_out: 200                   # timeout for crawling and storing user info
 min_crawl_interal: 10           # min interal of http request
 max_crawl_interal: 20           # max interal of http request
-excp_interal: 5*60             # time for sleeping when crawling raises exceptions
+excp_interal: 5*60              # time for sleeping when crawling raises exceptions
 
 # TODO set a default value for max_value of crawling
 max_search_page: 50            # max search page for crawling
@@ -21,6 +21,7 @@ yundama_passwd: xxxxxx             # password for yundama
 # In normal mode, it will be more stable, while in quick mode, the crawling speed will
 # be much faster, and the weibo account almostly will be banned
 running_mode: normal
+
 # The value of crawling mode can be accurate or normal
 # In normal mode, the spider won't crawl the weibo content of "展开全文" when execute home crawl tasks or search crawl
 # tasks, so the speed will be much quicker.
@@ -56,6 +57,8 @@ redis:
     id_name: 8                   # user id and names，for repost info analysis
     # expire_time (hours) for redis db2, if they are useless to you, you can set the value smaller
     expire_time: 48
+    # redis sentinel, if you don't neet it, just set sesntinel: '' and delete - host -port args
+    # like this     sentinel: ''
     sentinel:
         - host: 2.2.2.2
           port: 26379
@@ -63,8 +66,8 @@ redis:
           port: 26379
         - host: 4.4.4.4
           port: 26380
-    master: mymaster             # redis sentinel master name
-    socket_timeout: 5               # sockt timeout for redis sentinel
+    master: mymaster             # redis sentinel master name, if you don't need it, just set master: ''
+    socket_timeout: 5            # sockt timeout for redis sentinel, if you don't need it, just set master: ''
 
 
 # warning by email
