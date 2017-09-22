@@ -1,5 +1,5 @@
 '''
-test log
+test logger
 '''
 from log import crawler, parser, storage, other
 

@@ -63,7 +63,4 @@ parser = logging.getLogger('parser')
 other = logging.getLogger('other')
 storage = logging.getLogger('storage')
 
-
 __all__ = ['crawler', 'parser', 'other', 'storage']
-
-
