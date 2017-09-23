@@ -22,131 +22,20 @@
 
 ## 配置和使用 :sparkles:
 
-**使用前请大家务必仔细读项目配置 和 项目使用**，[Wiki](https://github.com/ResolveWang/weibospider/wiki)也包含了大量有用信息，遇到相关问题的时候请耐心阅读。
-
-
-### 配置
-
-**建议新手和小白们先查看演示视频(链接: https://pan.baidu.com/s/1eSy2qzw 密码: ypn5)**
-
-- 环境配置:如果环境配置经验比较少，建议直接点击查看[项目环境配置](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)
-  - 考虑到Python3是趋势和一些将该项目用于学习的用户，项目运行环境为**Python3.x**
-  - 项目存储后端使用**Mysql**，所以需要在存储服务器上**安装Mysql**,注意设置字符集编码为**utf-8**
-  - 由于项目是使用[celery](http://docs.celeryproject.org/en/latest/)做分布式任务调度，所以
-需要使用broker和各个分布式节点通信，项目使用的是Redis，所以需要先安装[Redis](https://redis.io/download)。
-注意修改Redis的配置文件让它能监听除本机外的别的节点的请求，**建议给Redis设置密码**，如
-果没设置密码，需要关闭保护模式(不推荐，这个**有安全风险**)才能和各个节点通信。如果害怕遇到Redis单点
-故障，可以使用Redis主从配置。
-
-- 项目相关配置
-  - 对Python虚拟环境了解的朋友可以使用 `source env.sh`，直接创建项目需要的虚拟环境和安装相关依赖。注意目前`env.sh`中支持的发行版是`CPython`和`Anaconda`，如果Python发行版
-  是其它，那么可能需要修改`env.sh`文件中安装`virtualenv`的命令.虚拟环境默认安装在项目根目录，文件夹是`.env`。执行`source env.sh`会默认安装所有项目需要的依赖。
-  - 如果不熟悉虚拟环境，可以通过在项目根目录执行```pip install -r requirements.txt```。这里celery版本用的3.1.25，目的是**兼容windows用户**。
-  如果你是linux或者mac用户，建议将celery版本升级成4.x。**特别注意，Windows平台上Celery的定时功能不可用！所以如果需要用到定时任务分发的话，请务必将beat部署到linux或者mac上**.
-  - 打开[配置文件](./config/spider.yaml)修改数据库相关配置。如果你不需要使用redis主从做高可用，那么可以在`sentinel`参数一行设置`sentinel: ''`并且删除示例配置中的所
-  有`- host xxx port xxx`参数。如果你的账号不是常用地登录的话（比如通过淘宝购买），登录会出现验证码，目前本项目通过**打码平台进行验证码识别**，选择的打码平台是
-  [云打码](http://www.yundama.com/)，你需要在[spider.yaml](./config/spider.yaml)中**设置云打码平台你所注册的用户名和密码**并进行适当充值。一块钱大概可以识别160个验证
-  码。也可以选择别的打码平台，又好用的欢迎推荐 T.T
-  - 先手动创建一个名为`weibo`的数据库，然后在项目根目录下，运行`python create_all.py`创建该项目需要的数据库表
-
-
----
-
-如果需要使用Docker部署项目，可以阅读[这篇文章](https://github.com/ResolveWang/weibospider/wiki/%E4%BD%BF%E7%94%A8Docker%E6%9E%84%E5%BB%BA%E5%92%8C%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE)
-
-### 使用
-
-- 入口文件
-  - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
-  - [user.py](./tasks/user.py)和[user_first.py](user_first.py):微博用户抓取程序
-  - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
-  - [home.py](./tasks/home.py)和[home_first.py](home_first.py):微博用户主页所有微博抓取程序
-  - [comment.py](./tasks/comment.py)和[comment_first.py](comment_first.py):微博评论抓取
-  - [repost.py](./tasks/repost.py)和[repost_first.py](repost_first.py):转发信息抓取
-
-- 基本用法：请先在数据库中添加基本数据，然后再按照**启动各个节点的worker -> 运行login_first.py -> 启动定时任务或者别的任务**这个顺序进行，下面是详细说明
-  - **在分布式节点上启动worker**。需要在启动worker的时候**指定分布式节点的queue**,queue的作用是配置节点可以接收什么任务，不可以接收什么任务。
-比如我需要在节点1执行登录和用户抓取任务，那么启动worker的语句就是```celery -A tasks.workers -Q login_queue,user_crawler worker -l info -c 1```。如果不指定`-Q`参数，
-即运行`celery -A tasks.workers worker -l info -c 1`，那么**所有任务都能够在该节点执行**。所有的queue及作用和更多关于worker的知识请
-在[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)中查看
-  - celery运行定时任务会延迟一个定时周期。如果是**第一次运行该项目**，为了在抓取任务运行之前能有cookies，需要在任意一个节点上，切换到项目根目录执行`pythonlogin_first.py`**获取首次登陆的cookie**，
-需要注意它只会分发任务到指定了`login_queue`的节点上或者未指定 `-Q`的节点上
-  - 在其中一个分布式节点上，切换到项目根目录，再启动定时任务(beat只启动一个，否则会重复执行定时任务)：
-`celery beat -A tasks.workers -l info`。因为beat任务会有一段时间的延迟(比如登录任务会延迟20个小时再执行)，所以第二步要通过```python login_first.py```来获取worker
-首次运行需要的cookies.如果你想马上启动其他任务，而非等定时任务启动，那么可以执行相应的  `*.first.py`，比如我想在worker启动和login_first.py执行后就执行用户抓取任务，那么就通过
-```python user_first.py```来执行
-  - **通过*flower*监控节点健康状况**：先在任意一个节点，切换到项目根目录，再执行```flower -A tasks.workers```，通过'http://xxxx:5555' 访问所有节点信息，这里的```xxxx```指的是节点的IP.
-如果需要让外网访问，可以这样`celery -A tasks.workers flower --address=0.0.0.0 --port=5555`
-  - 程序默认以普通模式运行，如果想改成极速模式，请修改[配置文件](./config/spider.yaml)中`mode`的值为`quick`。关于极速和普通模式的区别，
-  请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E5%BE%AE%E5%8D%9A%E7%88%AC%E8%99%AB%E7%9A%84%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%80%9F%E6%A8%A1%E5%BC%8F)
-  - **注意，请在[release](https://github.com/ResolveWang/WeiboSpider/releases)页面下载稳定版本的微博爬虫，master分支不保证能正常和稳定运行**
-
-
-- 其它
-  - 定时登录是为了维护cookie的时效性，据我实验，PC端微博的cookie有效时长为24小时,因此设置定时执行登录的任务频率必须小于24小时，该项目默认20小时就定时登录一次
-  - 为了保证cookie的可用性，除了做定时登录以外(可能项目代码有未知的bug)，另外也**从redis层面将cookie过期时间设置为23小时**，每次更新cookie就重设过期时间
-  - 如果读了上述配置说明还不能顺利运行或者运行该项目的时候出了任何问题，欢迎提issue或者添加QQ群（群号是:499500161, 暗号是：微博爬虫）询问
-  - 如果项目某些地方和你的应用场景不符，可以基于已有代码进行定制化开发，阅读[代码结构](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84)以帮助你快速了解代码的组织方式和核心内容
-  - 由于部分同学反映，数据库表有些字段不能见闻知义，所以添加了[数据库表字段设计说明](https://github.com/ResolveWang/weibospider/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E)
+关于详细配置请大家耐心阅读[这篇文档](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E5%85%B7%E4%BD%93%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)及该文档提及的相关文档。
 
 ## 常见问题 :question:
-项目常见问题请查看[项目使用常见问题](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98
+项目常见问题请查看[项目使用常见问题](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
 
 
 ## 其它说明 :heavy_exclamation_mark:
-- 本项目**运行环境是Python3.x**，由于Py2和Py3关于字符编码完全不同，所以如果需要在Py2上运行该程序，需要修改解析模块的相关代码
-- 建议**使用linux或者mac**作为worker节点，windows平台也可以作为worker节点，**但是一定不能作为beat节点**，并且celery版本要注意一致。
-- 目前该项目已经抓取将近三十万条微博用户数据，如果有需要数据的同学，可以开issue。我是打算数据量大了过后再进行分享。
-- 目前项目有普通抓取和极速抓取两种模式，细节请查看[分布式微博爬虫的普通模式与极速模式](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E5%BE%AE%E5%8D%9A%E7%88%AC%E8%99%AB%E7%9A%84%E6%99%AE%E9%80%9A%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%80%9F%E6%A8%A1%E5%BC%8F)
-- 建议每台机器上都指定queue，目前发现如果启动worker的时候只指定`-c 1 -l info`而不指定`-Q`的话，可能运行会出现问题
-- 如果不需要登录的模块建议就别使用cookie进行抓取，因为这样账号的负载更小。至于哪些信息不需要登录，且是有价值的，这个还会再进行调研，和等待用户的反馈。
-- 如果是**开发版，可能会存在运行出问题的情况**，所以建议通过[release](https://github.com/ResolveWang/WeiboSpider/releases)页面下载稳定版
-- 文档方面，目前在[WiKi](https://github.com/ResolveWang/WeiboSpider/wiki)中有一些较为系统的知识。如果使用过程中遇到问题，可以给该项目**提issue**,
-也可以**加QQ群交流**，群号是:499500161, 暗号是：微博爬虫。**注意加群务必备注信息，否则将视为广告而拒绝！**
-- 项目维护者目前只有我一个人，所以功能更新速度可能会比较慢，目前我只会关注自己会用到或者觉得有趣的部分，有别的需求的朋友可以提feture，如果恰巧也懂Python，**欢迎提PR**
-- 如果试用了本项目，**觉得项目还不错的，麻烦多多宣传**啦。觉得项目太渣或是大家有一些有意义、有趣的想法，欢迎
-拍砖、吐槽或者**提PR**,作者接受一切有意义的建议和提问。另外，随手点个```star```也是对本人工作的肯定和鼓励:kissing_heart:，
-作者也接受捐赠:laughing:。送人玫瑰，手有余香:blush:。
+一些补充说明请查看[项目补充说明](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E)
 
 
 ## TODO :dart:
-- 微博内容抓取相关
-  - [x] 模拟登陆，账号请放置在*login_info*表中,如果账号登陆时需要验证码，请在[云打码](http://www.yundama.com/)官网注册一个云打码用户账号，并进行适当充值
-  - [x] 微博常见用户和企业用户信息抓取：通过粉丝和关注进行增量式抓取，起始种子（微博用户`uid`）请插入*seed_ids*表
-  - [x] 微博搜索功能，搜索词由自己指定
-  - [x] 指定用户的主页：主要是原创微博内容，你也可以修改文件[home.py](./tasks/home.py)中的`home_url`和`ajax_home_url`中的`is_ori=1`为`is_all=1`来
-  抓取用户的所有微博。目前指定用户是基于已有的`seed_ids`表中的```home_crawled=0```的用户，你也可以自己指定想要抓取的用户。
-  - [x] 指定微博的评论：主要是抓取针对该微博的评论，即根评论。你可以通过修改[comment.py](./page_parse/comment.py)中的`get_comment_list()`
-  来抓取指定微博的所有评论，包括根评论和子评论。目前抓取的评论是从`weibo_data`表中选取的`comment_crawled=0`的微博，你可以指定微博mid来定制化爬取评论。
-  - [x] 指定微博的转发情况：主要是热门微博的转发信息
+关于项目下一步计划和已完成的目标可以查看[这篇文章](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%AE%A1%E5%88%92%E5%92%8C%E8%BF%9B%E5%B1%95)
 
-- 反爬虫相关
-  - [x] 测试单机单账号访问阈值，这个问题和下面一个问题可以参考 [issue#17](https://github.com/ResolveWang/WeiboSpider/issues/17)和[issue#18](https://github.com/ResolveWang/WeiboSpider/issues/18)
-  - [x] 测试单机多账号访问效果
-  - [x] 验证不同模块，微博系统的容忍度是否相同
-  - [x] 验证登录状态的cookies和代理ip是否可以成功抓取：测试结果是可以使用登录后的cookie
- 从别的地方进行数据采集，根据这一点，可以考虑使用代理IP，但是代理IP的质量和稳定性可能会
- 有问题，可能需要找一个或者自己写一个**高可用**的代理池，这一点还**有待考察**)
-  - [x] 验证移动端登录Cookie和PC端是否可共享，如果可以共享则为PC端大规模抓取提供了可能，因为基于
-  移动端的异地模拟登陆难度比PC端要小。目前异地账号使用打码平台进行验证码识别，并未采用移动端的方式登录
-  - [x] 比较单IP和单账号哪个的限制更多，从而制定更加高效的数据采集方案：测试得知，经常是
- 账号被封了，然后同一个IP用别的账号还能登陆，所以账号的限制比IP更加严格
-
-- 其它
-  - [x] 优化代码，让程序运行更加快速和稳定：水平有限，已经优化过一次了。下一次可能
-    要等一段时间了
-  - [x] 修复某些时候抓取失败的问题(已添加重试机制)
-  - [x] 改成分布式爬虫(使用Celery做分布式任务调度和管理)
-  - [x] 完善文档，包括怎么快速**创建虚拟环境**，怎么**安装相关依赖库**，怎么**使用该项目**(请查看三个演示视频(链接: https://pan.baidu.com/s/1kVHUWGv 密码: ydhs))；
-  讲解**celery的基本概念和用法**（请查看[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)中关于celery构建分布式爬虫的系列文章);
-  讲解微博的反爬虫策略(具体请查看[issue17](https://github.com/ResolveWang/WeiboSpider/issues/17)、[issue18](https://github.com/ResolveWang/WeiboSpider/issues/18));
-  各个```tasks```模块的作用和使用方法（请查看wiki中关`1task queue`的[说明](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)）。
-  - [x] 寻找能解决redis单点故障的方案,有兴趣可以查看我写的[这篇文章](https://github.com/ResolveWang/weibospider/wiki/Celery%E9%85%8D%E7%BD%AERedis-Sentinel%E5%81%9A%E9%AB%98%E5%8F%AF%E7%94%A8)
-  - [x] 完善代码注释，方便用户做二次开发
-  - [x] 支持Dockerfile部署项目
-  - [ ] 重构项目，以更加Pythonic的方式构建项目
-
-## 如何贡献 :loudspeaker:
+## 如何贡献 :octocat:
 - 如果遇到使用中有什么问题，可以在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提出来
 - 代码中如果有逻辑不合理或者内容不完善的地方，可以fork后进行修改，然后Pull Request，如果一经采纳，就会将你加入[contributors](https://github.com/ResolveWang/WeiboSpider/graphs/contributors),
 注意提PR之前，**检查一下代码风格是否符合PEP8并且改动的代码已经在自己机器上做了充足的测试（保证能长期稳定运行）**
