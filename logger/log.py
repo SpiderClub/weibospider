@@ -58,12 +58,9 @@ log_config = {
 
 log_conf.dictConfig(log_config)
 
-other = logging.getLogger('other')
 crawler = logging.getLogger('crawler')
-parser = logging.getLogger('page_parser')
+parser = logging.getLogger('parser')
+other = logging.getLogger('other')
 storage = logging.getLogger('storage')
 
-
 __all__ = ['crawler', 'parser', 'other', 'storage']
-
-
