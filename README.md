@@ -1,9 +1,6 @@
-## 关于本项目 :octocat:
 [![](https://img.shields.io/badge/python-3.4-green.svg)](https://www.python.org/download/releases/3.4.0/) [![](https://img.shields.io/badge/python-3.5-green.svg)](https://www.python.org/downloads/release/python-352/)
 [![](https://img.shields.io/badge/python-3.6-green.svg)](https://www.python.org/downloads/release/python-360/) [![](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
-- 实现内容包括用户信息、用户主页所有微博、微博搜索、微博评论和微博转发关系抓取等
-- 本项目基于本人实际的工作，并对此做了大量的修改，可以保证项目的稳定运行
 
 ## 为何选择本项目 :star:
 - 功能全面：包括了用户信息抓取、指定关键字搜索结果增量抓取、指定用户主页所有微博抓取、评论抓取和转发关系抓取等
@@ -25,7 +22,7 @@
 
 ## 配置和使用 :sparkles:
 
-**使用前请大家务必仔细读项目配置 和 项目使用**
+**使用前请大家务必仔细读项目配置 和 项目使用**，[Wiki](https://github.com/ResolveWang/weibospider/wiki)也包含了大量有用信息，遇到相关问题的时候请耐心阅读。
 
 
 ### 配置
@@ -55,22 +52,11 @@
 
 ---
 
-上面其实已经介绍完整个项目的配置流程了.如果大家对docker比较熟悉，也可以使用基于docker的方式进行部署。
-如果大家有使用docker的经验，估计也不用我多说了吧，只是要注意一点，构建镜像的时候需要在项目的根目录，因为在构建
-镜像的过程中会拷贝`WeiboSpider`整个项目，目前用的硬编码，除了挂载可以灵活一点也没找到别的办法。镜像构建语句可以
-是
-> docker build -f WeiboSpider/Dockerfile -t resolvewang/weibospider:v1.0 .
-
-构建好镜像后运行容器默认是接受所有任务路由，如果只接收部分，直接覆盖`CMD`的命令即可，比如我只想执行login任务，那么
-> docker run --name resolvewang/weibospider:v1.0 celery -A tasks.workers -Q login_queue worker -l info -c 1
-
-又比如通过docker启动定时器
-> docker run --name spiderbeater resolvewang/weibospider:v1.0 celery beat -A tasks.workers -l info
-
+如果需要使用Docker部署项目，可以阅读[这篇文章](https://github.com/ResolveWang/weibospider/wiki/%E4%BD%BF%E7%94%A8Docker%E6%9E%84%E5%BB%BA%E5%92%8C%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE)
 
 ### 使用
 
-- 入口文件：如果有同学有**修改源码**的需求，那么建议**从入口文件开始阅读**
+- 入口文件
   - [login.py](./tasks/login.py)和[login_first.py](login_first.py):PC端微博登陆程序
   - [user.py](./tasks/user.py)和[user_first.py](user_first.py):微博用户抓取程序
   - [search.py](./tasks/search.py)和[search_first.py](search_first.py):微博话题搜索程序
@@ -104,51 +90,7 @@
   - 由于部分同学反映，数据库表有些字段不能见闻知义，所以添加了[数据库表字段设计说明](https://github.com/ResolveWang/weibospider/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E)
 
 ## 常见问题 :question:
-1.问：项目部署好复杂啊，我也没有多台机器，我可以单机运行吗？
-
-答：可以单节点运行。celery是去中心化的，如果由于硬件所限，你只有一台机器，也是可以直接按照本文档和项目中
-的[配置文档说明](https://github.com/ResolveWang/weibospider/wiki)直接跑通该项目。关于项目使用的
-问题都可以在issue中提出来。
-
-2.关于redis的问题：为什么我在给redis设置密码后，并且把redis设置成了守护进程，但是没起作用？
-
-答：其实这个问题和项目关系不是特别大吧。。。不过考虑到有的同学并不熟悉redis，我这里还是阐明一下，
-如果在linux上面搭redis的话，当我们修改了```redis.conf```文件后，我们在启动redis的时候也**需要指定redis.conf
-文件**，启动之前，最好把```redis-server```加入到环境变量中。比如我的```redis.conf```放在```/etc/redis```中，
-那么我可以通过先切换到```/etc/redis```目录，再通过```redis-server redis.conf```来启动redis server，也可以
-直接```redis-server /etc/redis/redis.conf```来启动，前提是 **redis-server**文件需要在环境变量中.另外，还得
-注意一点，如果是centos的话，redis3.2.7可能会在`make&&make install` 阶段报错，建议下载redis3.2.8
-
-3.这个项目的模拟登陆和抓取的时候是怎么处理验证码的啊？
-
-答：这个项目在**模拟登陆阶段会判断账号是否需要验证码**，对于需要验证码的账号，通过*打码平台识别验证码*进行
-操作，我选择的是[云打码](http://www.yundama.com/)；对于微博账号抓取的时候被封出现的验证码，目前的处理是从数据库和
-redis中删除该账号对应的信息，因为要复现登录后被封需要一些时间来测试，并且某些情况下会验证手机，而某些情况只是识别验证码，这个
-还需要进一步求证。
-
-另外，我们应该尽量规避验证码，比如模拟登陆的时候尽量在账号常用地登录，还有一个点就是测试微博的容忍边界，小于它的阈值做采集
-就不容易被封（不过速度很慢），毕竟按规矩来被封的风险要小得多。如果有图形图像识别的牛人解决了验证码的问题，欢迎提PR，帮助更多人。
-
-4.这个项目能在windows上执行吗？
-
-答：window上可以执行worker节点，但是不能执行beat节点（即定时任务）。如果要混用windows和linux，那么一定要将celery版本
-降级为3.1.25，且将beat节点部署到linux服务器上。
-
-5.这个项目一天能抓多少数据？
-
-答：如果使用极速模式，3台机器每天可抓上百万的用户信息，可抓上千万的微博信息（如果用搜索来抓相关微博，达不到这个量，因为搜索接口
-限制非常很严格），它的代价就是账号必然会被封，推荐在网上购买小号进行抓取。如果采用普通模式，那么三台机器每天可抓大概几万条用户
-信息，账号较为安全。另外，还有一点是，微博搜索的限制比较严格，速度可能会比抓用户信息和抓用户主页微博慢，这点可能在后面会针对不同
-需求的用户进行相应处理。
-
-6.这个项目搜索抓到的数据怎么和手动搜索的数据量不一致？
-
-答：不一致主要是因为搜索是用的高级搜索，默认只搜索原创微博，而用户手动去搜索是搜索的所有微博，包括转发的，所以数据量上会有出入，
-如果要抓取所有微博，那么修改[search模块](./tasks/search.py)的`url`和[home模块](./tasks/home.py)中的`home_url`的值即可。
-
-7.可以为这个项目做个web监控和管理页面吗？
-
-答：其实这个需求不是必须的，并且flower已经提供了类似的功能了。使用flower，我们可以监控各个节点的健康状况，且可以看到执行的任务情况
+项目常见问题请查看[项目使用常见问题](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98
 
 
 ## 其它说明 :heavy_exclamation_mark:
@@ -227,6 +169,4 @@ redis中删除该账号对应的信息，因为要复现登录后被封需要一
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架
 - 感谢大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
 - 感谢提PR和issue的同学，这里特别感谢[yun17](https://github.com/yun17)，为本项目做了大量的贡献
-- 感谢所有捐赠的网友和给`star`支持的网友
-
-最后，祝大家用得舒心，用着不爽欢迎吐槽！
+- 感谢所有捐赠和给`star`支持的网友
