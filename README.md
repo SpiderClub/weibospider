@@ -3,22 +3,22 @@
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 
 ## 为何选择本项目 :star:
-- 功能全面：包括了用户信息抓取、指定关键字搜索结果增量抓取、指定用户主页所有微博抓取、评论抓取和转发关系抓取等
-- 数据全面：PC端展现的数据量比移动端更加丰富。并且相比于*其它同类项目*对微博的简单分析，本项目做了大量细致的工作，
+- 功能全面：包括了**用户信息抓取**、**指定关键字搜索结果增量抓取**、**指定用户主页所有原创微博抓取**、**评论抓取**和**转发关系抓取**等
+- 数据全面：**PC端展现的数据量比移动端更加丰富**。并且相比于*其它同类项目*对微博的简单分析，本项目做了大量细致的工作，
 比如不同`domain`不同用户的解析策略、不同`domain`不同用户的主页分析策略等
-- 稳定！项目可以长期稳定运行。
+- 稳定！**项目可以长期稳定运行**。
   - 为了保证程序能长期稳定运行，数据所有的网络请求都是通过抓包手动分析的，未用任何自动化工具，包括模拟登陆！
   从另一个方面来说，抓取速度也是比较有保证的
   - 通过合理的阈值设定，账号可以保证安全。**但是不推荐用户使用自己的常用账号**
   - 即使账号不可用或者登陆失败，项目都对其做了处理（智能冻结账号，出错重试等），以保证每次请求都是有效的，并及时把错误反馈给用户
   - 通过大量的异常检测和处理，几乎捕获了所有的解析和抓取异常。编写了大量的解析代码来获取足够全面的信息
-- 复用性和二次开发性很好。项目很多地方都有详细的代码注释，方便阅读。即使本项目不能完全满足你
+- 复用性和**二次开发性很好**。项目很多地方都有详细的代码注释，方便阅读。即使本项目不能完全满足你
 对微博数据采集和分析的需求，你也可以自己在该项目的基础上做二次开发，项目已经在微博抓取和各个
 模版解析上做了大量工作。
-- 由于**本项目与本人实际工作有关联**(代码并不是工作中使用的代码)，所以可以放心它会长期更新。目前已经迭代一年有余了。
+- 该项目会长期更新，目前已经迭代一年有余了。
 - 丰富文档支持：请点击[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)查看**所有文档**。如果文档仍然不能解
-决你的问题，欢迎提issue，维护者看到后都会积极回答，也可以通过加QQ群(群号：499500161, 暗号：微博爬虫，务必备注加群信息，否则
-视为广告处理)进行交流。
+决你的问题，欢迎提issue，维护者看到后都会积极回答，也可以通过加QQ群(群号：499500161, 暗号：微博爬虫，**务必备注加群信息，否则
+视为广告处理**)进行交流。
 
 ## 配置和使用 :sparkles:
 
@@ -35,16 +35,6 @@
 ## TODO :dart:
 关于项目下一步计划和已完成的目标可以查看[这篇文章](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%AE%A1%E5%88%92%E5%92%8C%E8%BF%9B%E5%B1%95)
 
-## 如何贡献 :octocat:
-- 如果遇到使用中有什么问题，可以在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提出来
-- 代码中如果有逻辑不合理或者内容不完善的地方，可以fork后进行修改，然后Pull Request，如果一经采纳，就会将你加入[contributors](https://github.com/ResolveWang/WeiboSpider/graphs/contributors),
-注意提PR之前，**检查一下代码风格是否符合PEP8并且改动的代码已经在自己机器上做了充足的测试（保证能长期稳定运行）**
-- 可以实现`todo`中的需求
-- 欢迎在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提有意义的future
-- 希望有仔细研究过微博反爬虫策略的同学积极提建议
-
-点击查看[贡献者名单](https://github.com/ResolveWang/WeiboSpider/wiki/%E8%B4%A1%E7%8C%AE%E8%80%85%E5%90%8D%E5%8D%95)
-
 
 ## 赞助本项目:thumbsup:
 
@@ -52,6 +42,15 @@
 
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 - [捐赠记录](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
+
+## 如何贡献 :octocat:
+- 如果遇到使用中有什么问题，可以在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提出来
+- 代码中如果有逻辑不合理或者内容不完善的地方，可以fork后进行修改，然后Pull Request，你也可以添加一些较实用的功能
+- 可以帮助实现`todo`中的需求
+- 欢迎在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提有意义的future
+- 希望有仔细研究过微博反爬虫策略的同学积极提建议
+
+点击查看[贡献者名单](https://github.com/ResolveWang/WeiboSpider/wiki/%E8%B4%A1%E7%8C%AE%E8%80%85%E5%90%8D%E5%8D%95)
 
 
 ## 致谢:heart:
