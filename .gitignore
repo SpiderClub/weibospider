@@ -7,4 +7,5 @@ celerybeat-schedule.db
 .env
 config/conf.yaml
 *.pyc
-
+.cache/
+*/.cache/
