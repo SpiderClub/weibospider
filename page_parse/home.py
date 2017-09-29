@@ -41,7 +41,7 @@ def get_weibo_infos_right(html):
     return cont
 
 
-@parse_decorator(5)
+@parse_decorator(None)
 def get_weibo_info_detail(each, html):
     wb_data = WeiboData()
 
