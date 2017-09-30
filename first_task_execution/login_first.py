@@ -1,4 +1,3 @@
-# coding:utf-8
 from tasks import login
 
 if __name__ == '__main__':
