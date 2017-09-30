@@ -1,6 +1,6 @@
-# coding:utf-8
-from tasks.workers import app
-from page_get import user as user_get
+from .workers import app
+from page_get import (
+    get_fans_or_followers_ids, get_profile)
 from db.seed_ids import (
                          get_seed_ids,
                          get_seed_by_id,
@@ -13,8 +13,8 @@ from db.seed_ids import (
 def crawl_follower_fans(uid):
     seed = get_seed_by_id(uid)
     if seed.other_crawled == 0:
-        rs = user_get.get_fans_or_followers_ids(uid, 1)
-        rs.extend(user_get.get_fans_or_followers_ids(uid, 2))
+        rs = get_fans_or_followers_ids(uid, 1)
+        rs.extend(get_fans_or_followers_ids(uid, 2))
         datas = set(rs)
         # If data already exits, just skip it
         if datas:
@@ -34,7 +34,7 @@ def crawl_person_infos(uid):
     if not uid:
         return
 
-    user, is_crawled = user_get.get_profile(uid)
+    user, is_crawled = get_profile(uid)
     # If it's enterprise user, just skip it
     if user and user.verify_type == 2:
         set_seed_other_crawled(uid)

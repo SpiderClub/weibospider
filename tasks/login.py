@@ -1,11 +1,10 @@
-# coding:utf-8
 import time
 
 from db.redis_db import Cookies
 from logger import log
 from wblogin import login
 from db import login_info
-from tasks.workers import app
+from .workers import app
 
 
 @app.task(ignore_result=True)

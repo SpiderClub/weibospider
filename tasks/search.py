@@ -1,9 +1,9 @@
-# coding:utf-8
 from urllib import parse as url_parse
-from logger.log import crawler
-from tasks.workers import app
-from page_get.basic import get_page
-from config.conf import get_max_search_page
+
+from logger import crawler
+from .workers import app
+from page_get import get_page
+from config import get_max_search_page
 from page_parse import search as parse_search
 from db.search_words import get_search_keywords
 from db.keywords_wbdata import insert_keyword_wbid
@@ -11,16 +11,16 @@ from db.wb_data import insert_weibo_data, get_wb_by_mid
 
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
-url = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
-limit = get_max_search_page() + 1
+URL = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
+LIMIT = get_max_search_page() + 1
 
 
 @app.task(ignore_result=True)
 def search_keyword(keyword, keyword_id):
     cur_page = 1
     encode_keyword = url_parse.quote(keyword)
-    while cur_page < limit:
-        cur_url = url.format(encode_keyword, cur_page)
+    while cur_page < LIMIT:
+        cur_url = URL.format(encode_keyword, cur_page)
 
         search_page = get_page(cur_url)
         if not search_page:

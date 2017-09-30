@@ -1,20 +1,20 @@
-# coding:utf-8
 import time
+
 from db import wb_data
-from tasks.workers import app
+from .workers import app
 from page_parse import comment
 from config import conf
-from page_get.basic import get_page
+from page_get import get_page
 from db.weibo_comment import save_comments
 
-# 起始请求地址
-base_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}&__rnd={}'
+
+BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}&__rnd={}'
 
 
 @app.task(ignore_result=True)
 def crawl_comment_by_page(mid, page_num):
     cur_time = int(time.time() * 1000)
-    cur_url = base_url.format(mid, page_num, cur_time)
+    cur_url = BASE_URL.format(mid, page_num, cur_time)
     html = get_page(cur_url, user_verify=False)
     comment_datas = comment.get_comment_list(html, mid)
     save_comments(comment_datas)

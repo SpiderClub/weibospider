@@ -1,21 +1,20 @@
-# -*-coding:utf-8 -*-
 from db import wb_data
 from db import weibo_repost
-from tasks.workers import app
+from .workers import app
 from page_parse import repost
-from logger.log import crawler
+from logger import crawler
 from db.redis_db import IdNames
-from page_get.basic import get_page
-from page_get import user as user_get
-from config.conf import get_max_repost_page
+from page_get import (
+    get_page, get_profile)
+from config import get_max_repost_page
 
 
-base_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&page={}'
+BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&page={}'
 
 
 @app.task
 def crawl_repost_by_page(mid, page_num):
-    cur_url = base_url.format(mid, page_num)
+    cur_url = BASE_URL.format(mid, page_num)
     html = get_page(cur_url, user_verify=False)
     repost_datas = repost.get_repost_list(html, mid)
     if page_num == 1:
@@ -33,7 +32,7 @@ def crawl_repost_page(mid, uid):
     if not repost_datas:
         return
 
-    root_user, _ = user_get.get_profile(uid)
+    root_user, _ = get_profile(uid)
 
     if total_page < limit:
         limit = total_page + 1
