@@ -1,4 +1,3 @@
-# -*-coding:utf-8 -*-
 import re
 import os
 import rsa
@@ -11,19 +10,21 @@ from urllib.parse import quote_plus
 
 import requests
 
-from config import conf
-from headers import headers
+from config import headers
+from utils import code_verificate
+from page_parse import is_403
 from db.redis_db import Cookies
-from utils import code_verification
-from page_parse.basic import is_403
-from logger.log import crawler, other
 from db.login_info import freeze_account
+from config import (
+    get_code_username, get_code_password)
+from logger import (
+    crawler, other)
 
 
-verify_code_path = './{}{}.png'
-index_url = "http://weibo.com/login.php"
-yundama_username = conf.get_code_username()
-yundama_password = conf.get_code_password()
+VERIFY_CODE_PATH = './{}{}.png'
+
+yundama_username = get_code_username()
+yundama_password = get_code_password()
 
 
 def get_pincode_url(pcid):
@@ -40,7 +41,7 @@ def get_img(url, name, retry_count):
     :param retry_count: retry number for getting verfication code
     :return: 
     """
-    pincode_name = verify_code_path.format(name, retry_count)
+    pincode_name = VERIFY_CODE_PATH.format(name, retry_count)
     resp = requests.get(url, headers=headers, stream=True)
     with open(pincode_name, 'wb') as f:
         for chunk in resp.iter_content(1000):
@@ -177,7 +178,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
         raise Exception('login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
     pincode_name = get_img(img_url, name, retry_count)
-    verify_code, yundama_obj, cid = code_verification.code_verificate(yundama_username, yundama_password,
+    verify_code, yundama_obj, cid = code_verificate(yundama_username, yundama_password,
                                                                       pincode_name)
     data['door'] = verify_code
     rs = get_redirect(name, data, post_url, session)
