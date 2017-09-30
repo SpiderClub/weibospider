@@ -1,5 +1,5 @@
-from tasks import comment
+from tasks import execute_comment_task
 
 
 if __name__ == '__main__':
-    comment.excute_comment_task()
+    execute_comment_task()

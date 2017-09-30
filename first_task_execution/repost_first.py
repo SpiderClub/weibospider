@@ -1,5 +1,5 @@
-from tasks import repost
+from tasks import execute_repost_task
 
 
 if __name__ == '__main__':
-    repost.excute_repost_task()
+    execute_repost_task()

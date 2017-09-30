@@ -1,4 +1,5 @@
-from tasks import search
+from tasks import execute_search_task
+
 
 if __name__ == '__main__':
-    search.excute_search_task()
+    execute_search_task()

@@ -1,4 +1,5 @@
-from tasks import user
+from tasks import execute_user_task
+
 
 if __name__ == '__main__':
-    user.excute_user_task()
+    execute_user_task()

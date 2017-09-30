@@ -1,5 +1,5 @@
-from tasks import home
+from tasks import execute_home_task
 
 
 if __name__ == '__main__':
-    home.excute_home_task()
+    execute_home_task()
