@@ -7,7 +7,7 @@ from db.seed_ids import set_seed_crawled
 from page_parse.user import enterprise, person, public
 
 
-base_url = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
+BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
 
 
 def get_user_detail(user_id, html):
@@ -42,7 +42,7 @@ def get_url_from_web(user_id):
     if not user_id:
         return None
 
-    url = base_url.format('100505', user_id)
+    url = BASE_URL.format('100505', user_id)
     html = get_page(url)
 
     if not is_404(html):
@@ -50,7 +50,7 @@ def get_url_from_web(user_id):
 
         # writers(special users)
         if domain == '103505' or domain == '100306':
-            url = base_url.format(domain, user_id)
+            url = BASE_URL.format(domain, user_id)
             html = get_page(url)
             user = get_user_detail(user_id, html)
         # normal users
