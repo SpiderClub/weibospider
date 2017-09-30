@@ -56,7 +56,7 @@ def crawl_repost_page(mid, uid):
 
 
 @app.task(ignore_result=True)
-def excute_repost_task():
+def execute_repost_task():
     # regard current weibo url as the original url, you can also analyse from the root url
     weibo_datas = wb_data.get_weibo_repost_not_crawled()
     crawler.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))

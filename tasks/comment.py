@@ -39,7 +39,7 @@ def crawl_comment_page(mid):
 
 
 @app.task(ignore_result=True)
-def excute_comment_task():
+def execute_comment_task():
     # 只解析了根评论，而未对根评论下的评论进行抓取，如果有需要的同学，可以适当做修改
     weibo_datas = wb_data.get_weibo_comment_not_crawled()
     for weibo_data in weibo_datas:

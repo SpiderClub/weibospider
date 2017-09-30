@@ -74,7 +74,7 @@ def crawl_weibo_datas(uid):
 
 
 @app.task
-def excute_home_task():
+def execute_home_task():
     # you can have many strategies to crawl user's home page, here we choose table seed_ids's uid
     # whose home_crawl is 0
     id_objs = get_home_ids()

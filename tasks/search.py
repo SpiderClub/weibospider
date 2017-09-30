@@ -51,7 +51,7 @@ def search_keyword(keyword, keyword_id):
 
 
 @app.task(ignore_result=True)
-def excute_search_task():
+def execute_search_task():
     keywords = get_search_keywords()
     for each in keywords:
         app.send_task('tasks.search.search_keyword', args=(each[0], each[1]), queue='search_crawler',

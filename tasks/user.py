@@ -47,7 +47,7 @@ def crawl_person_infos(uid):
 
 
 @app.task(ignore_result=True)
-def excute_user_task():
+def execute_user_task():
     seeds = get_seed_ids()
     if seeds:
         for seed in seeds:
