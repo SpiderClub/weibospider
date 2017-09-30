@@ -1,8 +1,9 @@
-# -*-coding:utf-8 -*-
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import (
+    create_engine, MetaData)
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from config.conf import get_db_args
+
+from config import get_db_args
 
 
 def get_engine():

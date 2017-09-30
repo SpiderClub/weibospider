@@ -1,8 +1,8 @@
-# coding:utf-8
 from sqlalchemy import text
-from db.basic_db import db_session
-from db.models import WeiboData
-from decorators.decorator import db_commit_decorator
+
+from .basic_db import db_session
+from .models import WeiboData
+from decorators import db_commit_decorator
 
 
 @db_commit_decorator

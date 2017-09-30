@@ -1,7 +1,6 @@
-# coding:utf-8
-from db.basic_db import db_session
-from db.models import WeiboRepost
-from decorators.decorator import db_commit_decorator
+from .basic_db import db_session
+from .models import WeiboRepost
+from decorators import db_commit_decorator
 
 
 # TODO find out the reason why the code can't catch "pymysql.err.IntegrityError"

@@ -1,6 +1,5 @@
-# coding:utf-8
-from db.basic_db import db_session
-from decorators.decorator import db_commit_decorator
+from .basic_db import db_session
+from decorators import db_commit_decorator
 
 
 @db_commit_decorator

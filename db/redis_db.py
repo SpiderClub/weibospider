@@ -1,12 +1,11 @@
-# coding:utf-8
 import json
 import socket
 import datetime
 
 import redis
 from redis.sentinel import Sentinel
-from logger.log import crawler
-from config.conf import (
+from logger import crawler
+from config import (
     get_redis_args,
     get_share_host_count,
     get_running_mode,

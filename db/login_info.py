@@ -1,8 +1,8 @@
-# -*-coding:utf-8 -*-
 from sqlalchemy import text
-from db.basic_db import db_session
-from db.models import LoginInfo
-from decorators.decorator import db_commit_decorator
+
+from .basic_db import db_session
+from .models import LoginInfo
+from decorators import db_commit_decorator
 
 
 def get_login_info():

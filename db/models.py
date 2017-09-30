@@ -1,6 +1,5 @@
-# -*-coding:utf-8 -*-
-from db.basic_db import Base
-from db.tables import *
+from .basic_db import Base
+from .tables import *
 
 
 class LoginInfo(Base):
