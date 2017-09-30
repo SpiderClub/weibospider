@@ -1,8 +1,7 @@
-# -*-coding:utf-8 -*-
-# 个人用户个人资料页
 from bs4 import BeautifulSoup
-from page_parse.user import public
-from decorators.decorator import parse_decorator
+
+from ..user import public
+from decorators import parse_decorator
 from db.models import User
 
 

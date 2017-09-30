@@ -1,4 +1,3 @@
-# -*-coding:utf-8 -*-
 import re
 import json
 import urllib.parse
@@ -6,10 +5,10 @@ import urllib.parse
 from bs4 import BeautifulSoup
 
 from page_get import status
-from logger.log import parser
+from logger import parser
 from db.models import WeiboData
-from config.conf import get_crawling_mode
-from decorators.decorator import parse_decorator
+from config import get_crawling_mode
+from decorators import parse_decorator
 
 
 # weibo will use https in the whole website in the future,so the default protocol we use is https

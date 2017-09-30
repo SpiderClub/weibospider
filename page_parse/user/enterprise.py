@@ -1,10 +1,10 @@
-# -*-coding:utf-8 -*-
-# 认证企业资料页面
 import re
 import json
+
 from bs4 import BeautifulSoup
+
 from page_parse.user import public
-from decorators.decorator import parse_decorator
+from decorators import parse_decorator
 
 
 @parse_decorator({})

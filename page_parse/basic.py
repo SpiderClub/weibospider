@@ -1,6 +1,6 @@
-# -*- coding:utf-8 -*-
 from bs4 import BeautifulSoup
-from decorators.decorator import parse_decorator
+
+from decorators import parse_decorator
 
 
 @parse_decorator(False)

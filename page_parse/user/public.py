@@ -1,11 +1,12 @@
-# -*-coding:utf-8 -*-
 import re
 import json
+
 from bs4 import BeautifulSoup
+
 from page_parse import status
-from decorators.decorator import parse_decorator
+from decorators import parse_decorator
 from db.models import UserRelation
-from utils.filters import url_filter
+from utils import url_filter
 from db.user_relation import save_relations
 
 

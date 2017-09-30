@@ -1,12 +1,14 @@
 import json
+
 from bs4 import BeautifulSoup
-from logger.log import parser
+
+from logger import parser
 from db.models import WeiboRepost
 from db.redis_db import IdNames
-from decorators.decorator import parse_decorator
+from decorators import parse_decorator
 
 
-repost_url = 'http://weibo.com{}'
+REPOST_URL = 'http://weibo.com{}'
 
 
 @parse_decorator('')
@@ -57,7 +59,7 @@ def get_repost_list(html, mid):
             wb_repost.user_name = repost.find(attrs={'class': 'list_con'}).find(attrs={'class': 'WB_text'}).find('a').\
                 text
             wb_repost.repost_time = repost.find(attrs={'class': 'WB_from S_txt2'}).find('a').get('title')
-            wb_repost.weibo_url = repost_url.format(repost.find(attrs={'class': 'WB_from S_txt2'}).find('a').
+            wb_repost.weibo_url = REPOST_URL.format(repost.find(attrs={'class': 'WB_from S_txt2'}).find('a').
                                                     get('href'))
             parents = repost.find(attrs={'class': 'WB_text'}).find(attrs={'node-type': 'text'})
             wb_repost.root_weibo_id = mid
