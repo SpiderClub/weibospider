@@ -14,4 +14,5 @@ def text_filter(html):
     soup = BeautifulSoup(html, 'html.parser')
     return soup.text.strip()
 
+
 __all__ = ['url_filter', 'text_filter']

@@ -1,7 +1,8 @@
 import json
 import time
 import requests
-from logger.log import other
+
+from logger import other
 
 
 class YDMHttp:
