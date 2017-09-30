@@ -5,7 +5,7 @@ import random
 
 import requests
 
-from headers import FakeChromeUA
+from config import FakeChromeUA
 from exceptions import CookieGenException
 
 
