@@ -14,7 +14,7 @@ PASSPORT_URL = 'https://passport.weibo.com/visitor/visitor?entry=miniblog&a=ente
 POST_URL = 'https://passport.weibo.com/visitor/genvisitor'
 INRARNATE_URL = 'https://passport.weibo.com/visitor/visitor?a=incarnate&t={}&w={}&c={}&gc=&cb=cross_domain&from=' \
                 'weibo&_rand={}'
-CHECK_URL = 'http://weibo.com/sinat'
+CHECK_URL = 'http://weibo.com/1319066361/Flttyxak8'
 
 user_agent = FakeChromeUA.get_ua()
 brower_type, brower_version = user_agent.split(' ')[-2].split('/')
@@ -66,7 +66,7 @@ def get_tid_and_c(post_url):
         return tid, c, w
 
 
-def get_sub_and_subp():
+def get_cookies_and_headers():
     tid, c, w = get_tid_and_c(POST_URL)
     inrarnate_url = INRARNATE_URL.format(tid, w, c, format(random.random(), '.17f'))
     resp = requests.get(inrarnate_url, headers=headers)
@@ -82,4 +82,7 @@ def get_sub_and_subp():
     resp = requests.get(CHECK_URL, headers=headers)
     if '$CONFIG' not in resp.text:
         raise CookieGenException('failed to gen cookies without login')
-    return dict(SUB=sub, SUBP=subp)
+    return headers
+
+
+
