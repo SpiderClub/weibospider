@@ -3,7 +3,8 @@ import os
 import random
 from yaml import load
 
-config_path = os.path.join(os.path.dirname(__file__), 'spider.yaml')
+
+config_path = os.path.join(os.path.dirname(__file__), 'conf.yaml')
 
 
 with open(config_path, encoding='utf-8') as f:
