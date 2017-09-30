@@ -1,12 +1,12 @@
-# -*-coding:utf-8 -*-
 from functools import wraps
 from traceback import format_tb
+
 from db.basic_db import db_session
-from logger.log import parser, crawler, storage
-from utils.util_cls import Timeout, KThread
+from logger import (
+    parser, crawler, storage)
+from utils import Timeout, KThread
 
 
-# timeout decorator
 def timeout_decorator(func):
     @wraps(func)
     def time_limit(*args, **kargs):
