@@ -1,7 +1,6 @@
-# -*-coding:utf-8 -*-
 import json
 from utils import filters
-from page_get.basic import get_page
+from .basic import get_page
 
 
 base_url = 'http://weibo.com/p/aj/mblog/getlongtext?ajwvr=6&mid={}'
@@ -23,4 +22,3 @@ def get_cont_of_weibo(mid):
             cont = ''
         return cont
 
-__all__ = ['get_cont_of_weibo']
