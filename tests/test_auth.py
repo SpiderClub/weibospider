@@ -21,11 +21,21 @@ class TestWithoutLogin:
         resp = requests.get(url)
         assert unique_str not in resp.text
 
-    def test_crawl_weibo_comment_without_login(self):
-        pass
+    def test_crawl_weibo_comment_without_login(self, headers):
+        comment_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id=4158045430832830&page=1'
+        resp = requests.get(comment_url, headers=headers)
+        assert 'Sina Visitor System' not in resp.text
 
-    def test_crawl_weibo_repost_without_login(self):
-        pass
+        resp = requests.get(comment_url)
+        assert 'Sina Visitor System' in resp.text
+
+    def test_crawl_weibo_repost_without_login(self, headers):
+        repost_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4158045430832830&page=12'
+        resp = requests.get(repost_url, headers=headers)
+        assert 'Sina Visitor System' not in resp.text
+
+        resp = requests.get(repost_url)
+        assert 'Sina Visitor System' in resp.text
 
     @pytest.mark.parametrize(
         'unique_str, url', [
