@@ -26,4 +26,4 @@ branches:
 after_success:
     - coverage combine
     - coveralls
-    - coverage
+    - codecov
