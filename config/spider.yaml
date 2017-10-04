@@ -48,7 +48,7 @@ db:
 redis:
     host: 127.0.0.1
     port: 6379
-    password: weibospider
+    password: ''
     cookies: 1                   # store and fetch cookies
     # store fetched urls and results,so you can decide whether retry to crawl the urls or not
     urls: 2
