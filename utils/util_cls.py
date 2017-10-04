@@ -54,7 +54,3 @@ class KThread(threading.Thread):
     def kill(self):
 
         self.killed = True
-
-
-class Timeout(Exception):
-    """function run timeout"""
