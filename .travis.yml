@@ -20,7 +20,7 @@ script:
 
 branches:
   only:
-    - dev
+    - master
 
 after_success:
     - codecov
