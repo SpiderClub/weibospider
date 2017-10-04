@@ -23,8 +23,8 @@ from logger import (
 
 VERIFY_CODE_PATH = './{}{}.png'
 
-yundama_username = get_code_username()
-yundama_password = get_code_password()
+yundama_username = os.getenv('YUMDAMA_ACCOUNT') or get_code_username()
+yundama_password = os.getenv('YUMDAMA_PASS') or get_code_password()
 
 
 def get_pincode_url(pcid):
