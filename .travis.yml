@@ -13,7 +13,6 @@ cache:
 
 install:
     - pip install codecov
-    - pip install coveralls
     - pip install -r requirements.txt
 
 script:
@@ -24,6 +23,4 @@ branches:
     - dev
 
 after_success:
-    - coverage combine
-    - coveralls
     - codecov
