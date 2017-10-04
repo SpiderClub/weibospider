@@ -4,7 +4,8 @@ from traceback import format_tb
 from db.basic_db import db_session
 from logger import (
     parser, crawler, storage)
-from utils import Timeout, KThread
+from utils import KThread
+from exceptions import Timeout
 
 
 def timeout_decorator(func):
