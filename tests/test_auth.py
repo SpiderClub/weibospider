@@ -1,7 +1,10 @@
+import os
+
 import pytest
 import requests
 
-from wblogin import get_cookies_and_headers
+from wblogin import (
+    get_cookies_and_headers, get_session)
 
 
 class TestWithoutLogin:
@@ -48,11 +51,8 @@ class TestWithoutLogin:
 
 
 class TestWithLogin:
-    def test_login(self):
-        pass
-
-    def test_crawl_user_info_with_login(self):
-        pass
-
-    def test_advance_search_with_login(self):
-        pass
+    def login(self):
+        login_account = os.getenv('WEIBO_ACCOUNT')
+        login_pass = os.getenv('WEIBO_PASS')
+        session = get_session(login_account, login_pass)
+        assert session is not None
