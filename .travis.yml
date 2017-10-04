@@ -1,0 +1,23 @@
+language: python
+sudo: false
+python:
+    - "3.4"
+    - "3.5"
+    - "3.6"
+
+services:
+  - redis-server
+
+cache:
+    - pip
+
+install:
+    - pip install codecov
+    - pip install -r requirements.txt
+
+script:
+  - coverage run -p -m pytest tests
+
+branches:
+  only:
+    - dev
