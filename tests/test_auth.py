@@ -50,9 +50,9 @@ class TestWithoutLogin:
         assert unique_str in resp.text
 
 
-# class TestWithLogin:
-#     def login(self):
-#         login_account = os.getenv('WEIBO_ACCOUNT')
-#         login_pass = os.getenv('WEIBO_PASS')
-#         session = get_session(login_account, login_pass)
-#         assert session is not None
+class TestWithLogin:
+    def login(self):
+        login_account = os.getenv('WEIBO_ACCOUNT')
+        login_pass = os.getenv('WEIBO_PASS')
+        session = get_session(login_account, login_pass)
+        assert session is not None
