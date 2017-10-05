@@ -80,28 +80,18 @@ def get_cookies(mode):
         try:
             m = re.search(extract_pattern, resp.text)
             s = json.loads(m.group())
-            sub = s.get('data').get('sub')
-            subp = s.get('data').get('subp')
+            sub = s.get('data').get('sub', '')
+            subp = s.get('data').get('subp', '')
         except AttributeError:
             raise CookieGenException('failed to gen cookies without login')
-
-        cookie_str = 'SUB={};SUBP={};'.format(sub, subp)
-        headers.update(Cookie=cookie_str)
-        resp = requests.get(CHECK_URL, headers=headers)
-        if '$CONFIG' not in resp.text:
-            raise CookieGenException('failed to gen cookies without login')
-        return cookie_str
     else:
         sub = '_' + ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase)
-                            for _ in range(83)) + '..'
+                            for _ in range(50)) + '..'
         subp = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase)
-                       for _ in range(88))
+                       for _ in range(58))
 
     cookies = dict(SUB=sub, SUBP=subp)
     resp = requests.get(CHECK_URL, cookies=cookies)
     if '$CONFIG' not in resp.text:
         raise CookieGenException('failed to gen cookies without login')
     return dict(SUB=sub, SUBP=subp)
-
-
-
