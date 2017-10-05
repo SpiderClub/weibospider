@@ -2,6 +2,7 @@ import re
 import json
 import time
 import random
+import string
 
 import requests
 
@@ -66,23 +67,41 @@ def get_tid_and_c(post_url):
         return tid, c, w
 
 
-def get_cookies_and_headers():
-    tid, c, w = get_tid_and_c(POST_URL)
-    inrarnate_url = INRARNATE_URL.format(tid, w, c, format(random.random(), '.17f'))
-    resp = requests.get(inrarnate_url, headers=headers)
-    try:
-        m = re.search(extract_pattern, resp.text)
-        s = json.loads(m.group())
-        sub = s.get('data').get('sub')
-        subp = s.get('data').get('subp')
-    except AttributeError:
-        raise CookieGenException('failed to gen cookies without login')
-    cookie_str = 'SUB={};SUBP={};'.format(sub, subp)
-    headers.update(Cookie=cookie_str)
-    resp = requests.get(CHECK_URL, headers=headers)
+def get_cookies(mode):
+    """
+    :param mode: if mode is 'strict', get subp and sub from weibo system;
+    if mode is default, just gen sub and subp by random
+    :return:
+    """
+    if mode == 'strict':
+        tid, c, w = get_tid_and_c(POST_URL)
+        inrarnate_url = INRARNATE_URL.format(tid, w, c, format(random.random(), '.17f'))
+        resp = requests.get(inrarnate_url, headers=headers)
+        try:
+            m = re.search(extract_pattern, resp.text)
+            s = json.loads(m.group())
+            sub = s.get('data').get('sub')
+            subp = s.get('data').get('subp')
+        except AttributeError:
+            raise CookieGenException('failed to gen cookies without login')
+
+        cookie_str = 'SUB={};SUBP={};'.format(sub, subp)
+        headers.update(Cookie=cookie_str)
+        resp = requests.get(CHECK_URL, headers=headers)
+        if '$CONFIG' not in resp.text:
+            raise CookieGenException('failed to gen cookies without login')
+        return cookie_str
+    else:
+        sub = '_' + ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase)
+                            for _ in range(83)) + '..'
+        subp = ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase)
+                       for _ in range(88))
+
+    cookies = dict(SUB=sub, SUBP=subp)
+    resp = requests.get(CHECK_URL, cookies=cookies)
     if '$CONFIG' not in resp.text:
         raise CookieGenException('failed to gen cookies without login')
-    return headers
+    return dict(SUB=sub, SUBP=subp)
 
 
 
