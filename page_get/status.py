@@ -1,6 +1,6 @@
 import json
 
-from utils import filters
+from utils import text_filter
 from .basic import get_page
 
 
@@ -18,7 +18,7 @@ def get_cont_of_weibo(mid):
     if html:
         try:
             html = json.loads(html, encoding='utf-8').get('data').get('html')
-            cont = filters.text_filter(html)
+            cont = text_filter(html)
         except AttributeError:
             cont = ''
         return cont
