@@ -23,8 +23,8 @@ from logger import (
 
 VERIFY_CODE_PATH = './{}{}.png'
 
-yundama_username = os.getenv('YUMDAMA_ACCOUNT') or get_code_username()
-yundama_password = os.getenv('YUMDAMA_PASS') or get_code_password()
+YUMDAMA_USERNAME = os.getenv('YUMDAMA_ACCOUNT') or get_code_username()
+YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or get_code_password()
 
 
 def get_pincode_url(pcid):
@@ -174,12 +174,11 @@ def login_by_pincode(name, password, session, server_data, retry_count):
         'pcid': pcid
     }
 
-    if not yundama_username:
+    if not YUMDAMA_USERNAME:
         raise Exception('login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
     pincode_name = get_img(img_url, name, retry_count)
-    verify_code, yundama_obj, cid = code_verificate(yundama_username, yundama_password,
-                                                                      pincode_name)
+    verify_code, yundama_obj, cid = code_verificate(YUMDAMA_USERNAME, YUMDAMA_PASSWORD, pincode_name)
     data['door'] = verify_code
     rs = get_redirect(name, data, post_url, session)
 

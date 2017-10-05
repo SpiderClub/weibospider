@@ -65,7 +65,6 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies(cls):
-        # todo send user a email if it's been blocked
         if mode == 'normal':
             return cls.fetch_cookies_of_normal()
 

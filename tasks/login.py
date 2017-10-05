@@ -2,14 +2,14 @@ import time
 
 from db.redis_db import Cookies
 from logger import log
-from wblogin import login
+from login import get_session
 from db import login_info
 from .workers import app
 
 
 @app.task(ignore_result=True)
 def login_task(name, password):
-    login.get_session(name, password)
+    get_session(name, password)
 
 
 # There should be login interval, if too many accounts login at the same time from the same ip, all the

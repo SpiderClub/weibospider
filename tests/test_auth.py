@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-from wblogin import (
+from login import (
     get_cookies_and_headers, get_session)
 
 
