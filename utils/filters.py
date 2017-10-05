@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 
 
 def url_filter(url):
-    if 'http' not in url:
+    if url.lower().startswith('//'):
         return 'http:{}'.format(url)
-    elif 'sina' or 'weibo' not in url:
+    elif url.lower().startswith('/'):
         return 'http://weibo.com{}'.format(url)
     else:
         return url
