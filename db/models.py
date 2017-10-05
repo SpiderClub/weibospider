@@ -21,6 +21,9 @@ class KeyWords(Base):
 class WeiboData(Base):
     __table__ = weibo_data
 
+    def __repr__(self):
+        return 'weibo url:{};weibo content:{}'.format(self.weibo_url, self.weibo_cont)
+
 
 class KeywordsWbdata(Base):
     __table__ = keywords_wbdata
