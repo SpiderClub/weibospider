@@ -1,4 +1,3 @@
-# coding:utf-8
 import time
 
 from logger import crawler
@@ -7,13 +6,10 @@ from page_parse.user import public
 from page_get import get_page
 from db.wb_data import insert_weibo_datas
 from config import get_max_home_page
-from db.seed_ids import (get_home_ids,
-                         set_seed_home_crawled
-                         )
-from page_parse.home import (get_wbdata_fromweb,
-                             get_home_wbdata_byajax,
-                             get_total_page
-                             )
+from db.seed_ids import (
+    get_home_ids, set_seed_home_crawled)
+from page_parse.home import (
+    get_wbdata_fromweb, get_home_wbdata_byajax, get_total_page)
 
 
 # only crawls origin weibo
@@ -23,12 +19,13 @@ AJAX_URL = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={
 
 
 @app.task(ignore_result=True)
-def crawl_ajax_page(url):
+def crawl_ajax_page(url, auth_level):
     """
     :param url: user home ajax url
+    :param auth_level: 1 stands for no login but need fake cookies, 2 stands for login
     :return: resp.text
     """
-    ajax_html = get_page(url, user_verify=False)
+    ajax_html = get_page(url, auth_level, is_ajax=True)
     ajax_wbdatas = get_home_wbdata_byajax(ajax_html)
     if not ajax_wbdatas:
         return ''
@@ -43,7 +40,10 @@ def crawl_weibo_datas(uid):
     cur_page = 1
     while cur_page <= limit:
         url = HOME_URL.format(uid, cur_page)
-        html = get_page(url)
+        if cur_page == 1:
+            html = get_page(url, auth_level=1)
+        else:
+            html = get_page(url, auth_level=2)
         weibo_datas = get_wbdata_fromweb(html)
 
         if not weibo_datas:
@@ -54,26 +54,30 @@ def crawl_weibo_datas(uid):
 
         domain = public.get_userdomain(html)
         cur_time = int(time.time()*1000)
-        ajax_url_0 = HOME_URL.format(domain, 0, domain, uid, cur_page, cur_page, cur_time)
+        ajax_url_0 = AJAX_URL.format(domain, 0, domain, uid, cur_page, cur_page, cur_time)
         ajax_url_1 = AJAX_URL.format(domain, 1, domain, uid, cur_page, cur_page, cur_time+100)
 
         if cur_page == 1:
             # here we use local call to get total page number
-            total_page = get_total_page(crawl_ajax_page(ajax_url_1))
+            total_page = get_total_page(crawl_ajax_page(ajax_url_1, 2))
+            auth_level = 1
+        else:
+            auth_level = 2
 
         if total_page < limit:
             limit = total_page
 
-        cur_page += 1
-        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0,), queue='ajax_home_crawler',
+        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0, auth_level), queue='ajax_home_crawler',
                       routing_key='ajax_home_info')
 
-        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_1,), queue='ajax_home_crawler',
+        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_1, auth_level), queue='ajax_home_crawler',
                       routing_key='ajax_home_info')
+        cur_page += 1
+
     set_seed_home_crawled(uid)
 
 
-@app.task
+@app.task(ignore_result=True)
 def execute_home_task():
     # you can have many strategies to crawl user's home page, here we choose table seed_ids's uid
     # whose home_crawl is 0
