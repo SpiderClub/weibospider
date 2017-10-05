@@ -28,6 +28,9 @@ def is_403(html):
     if "['uid']" not in html and "['nick']" not in html and "['islogin']='1'" in html:
         return True
 
+    if 'Sina Visitor System' in html:
+        return True
+
     # verify code for search page
     # todo  solve the problem of verify_code when searching
     if 'yzm_img' in html and 'yzm_input' in html:
