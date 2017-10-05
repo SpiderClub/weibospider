@@ -4,7 +4,7 @@ from utils import text_filter
 from .basic import get_page
 
 
-BASE_URL = 'http://weibo.com/p/aj/mblog/getlongtext?ajwvr=6&mid={}'
+BASE_URL = 'http://s.weibo.com/ajax/direct/morethan140?mid={}'
 
 
 def get_cont_of_weibo(mid):
@@ -13,7 +13,7 @@ def get_cont_of_weibo(mid):
     :return: all cont of the weibo
     """
     url = BASE_URL.format(mid)
-    html = get_page(url, user_verify=False)
+    html = get_page(url, auth_level=0, is_ajax=True)
 
     if html:
         try:
@@ -22,4 +22,6 @@ def get_cont_of_weibo(mid):
         except AttributeError:
             cont = ''
         return cont
+    else:
+        return ''
 
