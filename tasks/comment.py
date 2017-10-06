@@ -15,19 +15,19 @@ BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}&__rnd={}'
 def crawl_comment_by_page(mid, page_num):
     cur_time = int(time.time() * 1000)
     cur_url = BASE_URL.format(mid, page_num, cur_time)
-    html = get_page(cur_url, user_verify=False)
+    html = get_page(cur_url, auth_level=1, is_ajax=True)
     comment_datas = comment.get_comment_list(html, mid)
     save_comments(comment_datas)
     if page_num == 1:
         wb_data.set_weibo_comment_crawled(mid)
-    return html
+    return html, comment_datas
 
 
 @app.task(ignore_result=True)
 def crawl_comment_page(mid):
     limit = conf.get_max_comment_page() + 1
     # 这里为了马上拿到返回结果，采用本地调用的方式
-    first_page = crawl_comment_by_page(mid, 1)
+    first_page = crawl_comment_by_page(mid, 1)[0]
     total_page = comment.get_total_page(first_page)
 
     if total_page < limit:
