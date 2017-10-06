@@ -1,17 +1,8 @@
-import os
-
 import pytest
 import requests
 
-from login import (
-    get_cookies, get_session)
-
 
 class TestWithoutLogin:
-    @pytest.fixture(scope='class', autouse=True)
-    def cookies(self):
-        return get_cookies()
-
     @pytest.mark.parametrize(
         'unique_str, url', [
             ('$CONFIG', 'http://weibo.com/1752613937/Afa5SFjJc'),
@@ -50,9 +41,3 @@ class TestWithoutLogin:
         assert unique_str in resp.text
 
 
-class TestWithLogin:
-    def login(self):
-        login_account = os.getenv('WEIBO_ACCOUNT')
-        login_pass = os.getenv('WEIBO_PASS')
-        session = get_session(login_account, login_pass)
-        assert session is not None
