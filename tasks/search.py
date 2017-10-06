@@ -7,7 +7,8 @@ from config import get_max_search_page
 from page_parse import search as parse_search
 from db.search_words import get_search_keywords
 from db.keywords_wbdata import insert_keyword_wbid
-from db.wb_data import insert_weibo_data, get_wb_by_mid
+from db.wb_data import (
+    insert_weibo_data, get_wb_by_mid)
 
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
@@ -21,8 +22,10 @@ def search_keyword(keyword, keyword_id):
     encode_keyword = url_parse.quote(keyword)
     while cur_page < LIMIT:
         cur_url = URL.format(encode_keyword, cur_page)
-
-        search_page = get_page(cur_url)
+        if cur_page == 1:
+            search_page = get_page(cur_url, auth_level=1)
+        else:
+            search_page = get_page(cur_url, auth_level=2)
         if not search_page:
             crawler.warning('No result for keyword {}, the source page is {}'.format(keyword, search_page))
             return
@@ -34,7 +37,7 @@ def search_keyword(keyword, keyword_id):
         for wb_data in search_list:
             rs = get_wb_by_mid(wb_data.weibo_id)
             if rs:
-                crawler.info('keyword {} has been crawled in this turn'.format(keyword))
+                crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
                 return
             else:
                 insert_weibo_data(wb_data)
@@ -42,11 +45,12 @@ def search_keyword(keyword, keyword_id):
                 # send task for crawling user info
                 app.send_task('tasks.user.crawl_person_infos', args=(wb_data.uid,), queue='user_crawler',
                               routing_key='for_user_info')
-
-        if 'page next S_txt1 S_line1' in search_page:
+        if cur_page == 1:
+            cur_page += 1
+        elif 'page next S_txt1 S_line1' in search_page:
             cur_page += 1
         else:
-            crawler.info('keyword {} has been crawled in this turn'.format(keyword))
+            crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
             return
 
 
