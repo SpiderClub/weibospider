@@ -9,6 +9,9 @@ class LoginInfo(Base):
 class User(Base):
     __table__ = wbuser
 
+    def __init__(self, uid):
+        self.uid = uid
+
 
 class SeedIds(Base):
     __table__ = seed_ids

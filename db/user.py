@@ -1,3 +1,7 @@
+from sqlalchemy.exc import IntegrityError as SI
+from pymysql.err import IntegrityError as PI
+from sqlalchemy.exc import InvalidRequestError
+
 from .models import User
 from .basic_db import db_session
 from decorators import db_commit_decorator
@@ -5,8 +9,12 @@ from decorators import db_commit_decorator
 
 @db_commit_decorator
 def save_users(users):
-    db_session.add_all(users)
-    db_session.commit()
+    try:
+        db_session.add_all(users)
+        db_session.commit()
+    except (SI, PI, InvalidRequestError):
+        for user in users:
+            save_user(user)
 
 
 @db_commit_decorator

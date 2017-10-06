@@ -28,8 +28,7 @@ def db_commit_decorator(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            storage.error('db operation error，here are details{}'.format(e))
-            storage.warning('transaction rollbacks')
+            storage.error('DB operation error，here are details:{}'.format(e))
             db_session.rollback()
     return session_commit
 
