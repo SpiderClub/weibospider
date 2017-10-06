@@ -9,7 +9,7 @@ from config import get_max_home_page
 from db.seed_ids import (
     get_home_ids, set_seed_home_crawled)
 from page_parse.home import (
-    get_wbdata_fromweb, get_home_wbdata_byajax, get_total_page)
+    get_data, get_ajax_data, get_total_page)
 
 
 # only crawls origin weibo
@@ -26,7 +26,7 @@ def crawl_ajax_page(url, auth_level):
     :return: resp.text
     """
     ajax_html = get_page(url, auth_level, is_ajax=True)
-    ajax_wbdatas = get_home_wbdata_byajax(ajax_html)
+    ajax_wbdatas = get_ajax_data(ajax_html)
     if not ajax_wbdatas:
         return ''
 
@@ -44,7 +44,7 @@ def crawl_weibo_datas(uid):
             html = get_page(url, auth_level=1)
         else:
             html = get_page(url, auth_level=2)
-        weibo_datas = get_wbdata_fromweb(html)
+        weibo_datas = get_data(html)
 
         if not weibo_datas:
             crawler.warning("user {} has no weibo".format(uid))
