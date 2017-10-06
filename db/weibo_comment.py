@@ -1,15 +1,20 @@
+from sqlalchemy.exc import IntegrityError as SI
+from pymysql.err import IntegrityError as PI
+from sqlalchemy.exc import InvalidRequestError
+
 from .basic_db import db_session
 from .models import WeiboComment
 from decorators import db_commit_decorator
 
 
 @db_commit_decorator
-def save_comments(comment_list):
-    for comment in comment_list:
-        r = get_comment_by_id(comment.comment_id)
-        if not r:
+def save_comments(comments):
+    try:
+        db_session.add_all(comments)
+        db_session.commit()
+    except (SI, PI, InvalidRequestError):
+        for comment in comments:
             save_comment(comment)
-    db_session.commit()
 
 
 @db_commit_decorator
