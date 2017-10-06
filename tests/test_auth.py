@@ -10,7 +10,7 @@ from login import (
 class TestWithoutLogin:
     @pytest.fixture(scope='class', autouse=True)
     def cookies(self):
-        return get_cookies('default')
+        return get_cookies()
 
     @pytest.mark.parametrize(
         'unique_str, url', [
