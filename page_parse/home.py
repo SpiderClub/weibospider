@@ -153,7 +153,7 @@ def get_max_num(html):
 
 
 @parse_decorator(list())
-def get_wbdata_fromweb(html):
+def get_data(html):
     """
     从主页获取具体的微博数据
     :param html: 
@@ -164,7 +164,7 @@ def get_wbdata_fromweb(html):
 
 
 @parse_decorator(list())
-def get_home_wbdata_byajax(html):
+def get_ajax_data(html):
     """
     通过返回的ajax内容获取用户微博信息
     :param html: 
