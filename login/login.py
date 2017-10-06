@@ -13,6 +13,7 @@ import requests
 from config import headers
 from utils import code_verificate
 from page_parse import is_403
+from exceptions import LoginException
 from db.redis_db import Cookies
 from db.login_info import freeze_account
 from config import (
@@ -175,7 +176,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
     }
 
     if not YUMDAMA_USERNAME:
-        raise Exception('login need verfication code, please set your yumdama info in config/spider.yaml')
+        raise LoginException('Login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
     pincode_name = get_img(img_url, name, retry_count)
     verify_code, yundama_obj, cid = code_verificate(YUMDAMA_USERNAME, YUMDAMA_PASSWORD, pincode_name)

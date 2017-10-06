@@ -5,4 +5,13 @@ class CookieGenException(Exception):
 
 
 class Timeout(Exception):
-    """function run timeout"""
+    """
+    Function run timeout
+    """
+
+
+class LoginException(Exception):
+    """
+    Login error for weibo login
+    """
+
