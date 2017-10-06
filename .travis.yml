@@ -6,10 +6,14 @@ python:
     - "3.6"
 
 services:
+  - mysql
   - redis-server
 
 cache:
     - pip
+
+before_install:
+  - mysql -e 'CREATE DATABASE weibo;'
 
 install:
     - pip install codecov
