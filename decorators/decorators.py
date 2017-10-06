@@ -37,7 +37,7 @@ def db_commit_decorator(func):
 def parse_decorator(return_value):
     """
     :param return_value: catch exceptions when parsing pages, return the default value
-    :return: the default value is 0,'',[],False,{} or None
+    :return: the default value is whatever you want, usually it's 0,'',[],False,{} or None
     """
     def page_parse(func):
         @wraps(func)
@@ -45,7 +45,9 @@ def parse_decorator(return_value):
             try:
                 return func(*keys)
             except Exception as e:
-                parser.error(e)
+                parser.error('Failed to parse the page, {} is raised, here are details:{}'.format(
+                    e, format_tb(e.__traceback__)[0]
+                ))
                 return return_value
 
         return handle_error

@@ -43,7 +43,7 @@ def get_url_from_web(user_id):
         return None
 
     url = BASE_URL.format('100505', user_id)
-    html = get_page(url)
+    html = get_page(url, auth_level=1)
 
     if not is_404(html):
         domain = public.get_userdomain(html)
@@ -71,7 +71,7 @@ def get_url_from_web(user_id):
 
         if user.name:
             save_user(user)
-            storage.info('has stored user {id} info successfully'.format(id=user_id))
+            storage.info('Has stored user {id} info successfully'.format(id=user_id))
             return user
         else:
             return None

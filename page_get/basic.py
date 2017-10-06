@@ -23,7 +23,7 @@ TIME_OUT = get_timeout()
 INTERAL = get_crawl_interal()
 MAX_RETRIES = get_max_retries()
 EXCP_INTERAL = get_excp_interal()
-COOKIES = get_cookies('default')
+COOKIES = get_cookies()
 
 
 def is_banned(url):
@@ -64,6 +64,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             crawler.warning('Excepitons are raised when crawling {}.Here are details:{}'.format(url, e))
             count += 1
             time.sleep(EXCP_INTERAL)
+            continue
 
         if resp.status_code == 414:
             crawler.warning('This ip has been blocked by weibo system')
@@ -73,6 +74,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
         if resp.text:
             page = resp.text.encode('utf-8', 'ignore').decode('utf-8')
         else:
+            count += 1
             continue
         if auth_level == 2:
             # slow down to aviod being banned
