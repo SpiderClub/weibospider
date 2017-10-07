@@ -2,6 +2,7 @@ import pytest
 
 from config import create_all
 from db.basic import db_session
+from db.models import User
 from db.tables import (
     wbuser, login_info, keywords_wbdata, keywords,
     weibo_data, weibo_comment, weibo_repost)
@@ -27,7 +28,9 @@ class TestMysql:
         assert rs.rowcount > 0
 
     def test_user_oper(self):
-        user_list = FAKE_IDS
+        user_list = list()
+        for fake_id in FAKE_IDS:
+            user_list.append(User(fake_id))
         UserOper.add_all(user_list)
 
         rs = db_session.execute('select * from {}'.format(wbuser.name))
@@ -63,13 +66,13 @@ class TestMysql:
     def test_seedids_oper(self):
         SeedidsOper.insert_seeds(FAKE_IDS)
         assert len(SeedidsOper.get_seed_ids()) == 2
-        assert len(SeedidsOper.get_seed_by_id(FAKE_ID)) == 1
+        assert SeedidsOper.get_seed_by_id(FAKE_ID) is not None
 
         SeedidsOper.set_seed_crawled(FAKE_ID, 1)
         assert len(SeedidsOper.get_seed_ids()) == 1
 
     def test_weibodata_oper(self):
-        db_session.execute("insert into {} ({}.mid) values ('".format(weibo_data.name, weibo_data.name)
+        db_session.execute("insert into {} ({}.weibo_id) values ('".format(weibo_data.name, weibo_data.name)
                            + FAKE_ID + "')")
         assert WbDataOper.get_wb_by_mid(FAKE_ID) is not None
         assert len(WbDataOper.get_weibo_comment_not_crawled()) == 1
