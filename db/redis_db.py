@@ -80,8 +80,11 @@ class Cookies(object):
             name = cookies_con.lpop('account_queue').decode('utf-8')
             # during the crawling, some cookies can be banned
             # some account fetched from account_queue can be unavailable
-            j_account = cookies_con.hget('account', name).decode('utf-8')
-            if j_account:
+            j_account = cookies_con.hget('account', name)
+            if not j_account:
+                return None
+            else:
+                j_account = j_account.decode('utf-8')
                 if cls.check_cookies_timeout(j_account):
                     cls.delete_cookies(name)
                     continue
@@ -160,7 +163,7 @@ class Cookies(object):
         cookies = json.loads(cookies)
         login_time = datetime.datetime.fromtimestamp(cookies['loginTime'])
         if datetime.datetime.now() - login_time > datetime.timedelta(hours=cookie_expire_time):
-            crawler.warning('the account has been expired')
+            crawler.warning('The account has been expired')
             return True
         return False
 
