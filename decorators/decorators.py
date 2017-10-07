@@ -1,7 +1,7 @@
 from functools import wraps
 from traceback import format_tb
 
-from db.basic_db import db_session
+from db.basic import db_session
 from logger import (
     parser, crawler, storage)
 from utils import KThread
