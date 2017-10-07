@@ -1,6 +1,8 @@
 from sqlalchemy import (
     Table, Column, INTEGER, String, Text)
-from .basic_db import metadata
+
+from .basic import metadata
+
 
 # login table
 login_info = Table("login_info", metadata,

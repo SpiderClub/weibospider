@@ -1,11 +1,11 @@
 import time
 
-from db import wb_data
 from .workers import app
 from page_parse import comment
 from config import conf
 from page_get import get_page
-from db.weibo_comment import save_comments
+from db.dao import (
+    WbDataOper, CommentOper)
 
 
 BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}&__rnd={}'
@@ -17,9 +17,9 @@ def crawl_comment_by_page(mid, page_num):
     cur_url = BASE_URL.format(mid, page_num, cur_time)
     html = get_page(cur_url, auth_level=1, is_ajax=True)
     comment_datas = comment.get_comment_list(html, mid)
-    save_comments(comment_datas)
+    CommentOper.add_all(comment_datas)
     if page_num == 1:
-        wb_data.set_weibo_comment_crawled(mid)
+        WbDataOper.set_weibo_comment_crawled(mid)
     return html, comment_datas
 
 
@@ -41,7 +41,7 @@ def crawl_comment_page(mid):
 @app.task(ignore_result=True)
 def execute_comment_task():
     # 只解析了根评论，而未对根评论下的评论进行抓取，如果有需要的同学，可以适当做修改
-    weibo_datas = wb_data.get_weibo_comment_not_crawled()
+    weibo_datas = WbDataOper.get_weibo_comment_not_crawled()
     for weibo_data in weibo_datas:
         app.send_task('tasks.comment.crawl_comment_page', args=(weibo_data.weibo_id,), queue='comment_crawler',
                       routing_key='comment_info')

@@ -7,7 +7,7 @@ import requests
 from config import headers
 from logger import crawler
 from login import get_cookies
-from db.login_info import freeze_account
+from db.dao import LoginInfoOper
 from utils import send_email
 from db.redis_db import (
     Urls, Cookies)
@@ -81,7 +81,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             time.sleep(INTERAL)
             if is_banned(resp.url) or is_403(page):
                 crawler.warning('Account {} has been banned'.format(name_cookies[0]))
-                freeze_account(name_cookies[0], 0)
+                LoginInfoOper.freeze_account(name_cookies[0], 0)
                 Cookies.delete_cookies(name_cookies[0])
                 count += 1
                 continue

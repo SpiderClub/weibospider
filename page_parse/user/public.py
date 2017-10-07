@@ -7,7 +7,7 @@ from page_parse import status
 from decorators import parse_decorator
 from db.models import UserRelation
 from utils import url_filter
-from db.user_relation import save_relations
+from db.dao import UserRelationOper
 
 
 def get_userid(html):
@@ -191,7 +191,7 @@ def get_fans_or_follows(html, uid, type):
                         user_ids.append(r)
                         relations.append(UserRelation(uid, r, type))
 
-    save_relations(relations)
+    UserRelationOper.add_all(relations)
     return user_ids
 
 

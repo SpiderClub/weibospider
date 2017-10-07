@@ -4,10 +4,9 @@ from logger import crawler
 from .workers import app
 from page_parse.user import public
 from page_get import get_page
-from db.wb_data import insert_weibo_datas
 from config import get_max_home_page
-from db.seed_ids import (
-    get_home_ids, set_seed_home_crawled)
+from db.dao import (
+    WbDataOper, SeedidsOper)
 from page_parse.home import (
     get_data, get_ajax_data, get_total_page)
 
@@ -30,7 +29,7 @@ def crawl_ajax_page(url, auth_level):
     if not ajax_wbdatas:
         return ''
 
-    insert_weibo_datas(ajax_wbdatas)
+    WbDataOper.add_all(ajax_wbdatas)
     return ajax_html
 
 
@@ -50,7 +49,7 @@ def crawl_weibo_datas(uid):
             crawler.warning("user {} has no weibo".format(uid))
             return
 
-        insert_weibo_datas(weibo_datas)
+        WbDataOper.add_all(weibo_datas)
 
         domain = public.get_userdomain(html)
         cur_time = int(time.time()*1000)
@@ -74,14 +73,14 @@ def crawl_weibo_datas(uid):
                       routing_key='ajax_home_info')
         cur_page += 1
 
-    set_seed_home_crawled(uid)
+    SeedidsOper.set_seed_home_crawled(uid)
 
 
 @app.task(ignore_result=True)
 def execute_home_task():
     # you can have many strategies to crawl user's home page, here we choose table seed_ids's uid
     # whose home_crawl is 0
-    id_objs = get_home_ids()
+    id_objs = SeedidsOper.get_home_ids()
     for id_obj in id_objs:
         app.send_task('tasks.home.crawl_weibo_datas', args=(id_obj.uid,), queue='home_crawler',
                       routing_key='home_info')

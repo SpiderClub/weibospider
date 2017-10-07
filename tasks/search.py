@@ -5,10 +5,9 @@ from .workers import app
 from page_get import get_page
 from config import get_max_search_page
 from page_parse import search as parse_search
-from db.search_words import get_search_keywords
-from db.keywords_wbdata import insert_keyword_wbid
-from db.wb_data import (
-    insert_weibo_data, get_wb_by_mid)
+from db.dao import (
+    KeywordsOper, KeywordsDataOper, WbDataOper)
+
 
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
@@ -35,13 +34,13 @@ def search_keyword(keyword, keyword_id):
         # Because the search results are sorted by time, if any result has been stored in mysql,
         # we need not crawl the same keyword in this turn
         for wb_data in search_list:
-            rs = get_wb_by_mid(wb_data.weibo_id)
+            rs = WbDataOper.get_wb_by_mid(wb_data.weibo_id)
             if rs:
                 crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
                 return
             else:
-                insert_weibo_data(wb_data)
-                insert_keyword_wbid(keyword_id, wb_data.weibo_id)
+                WbDataOper.add_one(wb_data)
+                KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)
                 # send task for crawling user info
                 app.send_task('tasks.user.crawl_person_infos', args=(wb_data.uid,), queue='user_crawler',
                               routing_key='for_user_info')
@@ -56,7 +55,7 @@ def search_keyword(keyword, keyword_id):
 
 @app.task(ignore_result=True)
 def execute_search_task():
-    keywords = get_search_keywords()
+    keywords = KeywordsOper.get_search_keywords()
     for each in keywords:
         app.send_task('tasks.search.search_keyword', args=(each[0], each[1]), queue='search_crawler',
                       routing_key='for_search_info')

@@ -3,7 +3,7 @@ import time
 from db.redis_db import Cookies
 from logger import log
 from login import get_session
-from db import login_info
+from db.dao import LoginInfoOper
 from .workers import app
 
 
@@ -16,7 +16,7 @@ def login_task(name, password):
 # accounts can be banned by weibo's anti-cheating system
 @app.task(ignore_result=True)
 def execute_login_task():
-    infos = login_info.get_login_info()
+    infos = LoginInfoOper.get_login_info()
     # Clear all stacked login tasks before each time for login
     Cookies.check_login_task()
     log.crawler.info('The login task is starting...')

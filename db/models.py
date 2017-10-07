@@ -1,4 +1,4 @@
-from .basic_db import Base
+from .basic import Base
 from .tables import *
 
 

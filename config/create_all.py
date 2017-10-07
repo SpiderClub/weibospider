@@ -1,5 +1,5 @@
 from db.tables import *
-from db.basic_db import metadata
+from db.basic import metadata
 
 
 def create_all_table():

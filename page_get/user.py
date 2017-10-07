@@ -2,9 +2,10 @@ from db.models import User
 from logger import storage
 from .basic import get_page
 from page_parse import is_404
-from db.user import save_user, get_user_by_uid
-from db.seed_ids import set_seed_crawled
-from page_parse.user import enterprise, person, public
+from db.dao import (
+    UserOper, SeedidsOper)
+from page_parse.user import (
+    enterprise, person, public)
 
 
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
@@ -69,7 +70,7 @@ def get_url_from_web(user_id):
         user.level = public.get_level(html)
 
         if user.name:
-            save_user(user)
+            UserOper.add_one(user)
             storage.info('Has stored user {id} info successfully'.format(id=user_id))
             return user
         else:
@@ -84,18 +85,18 @@ def get_profile(user_id):
     :param user_id: uid
     :return: user info and is crawled or not
     """
-    user = get_user_by_uid(user_id)
+    user = UserOper.get_user_by_uid(user_id)
 
     if user:
         storage.info('user {id} has already crawled'.format(id=user_id))
-        set_seed_crawled(user_id, 1)
+        SeedidsOper.set_seed_crawled(user_id, 1)
         is_crawled = 1
     else:
         user = get_url_from_web(user_id)
         if user is not None:
-            set_seed_crawled(user_id, 1)
+            SeedidsOper.set_seed_crawled(user_id, 1)
         else:
-            set_seed_crawled(user_id, 2)
+            SeedidsOper.set_seed_crawled(user_id, 2)
         is_crawled = 0
 
     return user, is_crawled
