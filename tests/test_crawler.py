@@ -25,7 +25,7 @@ def test_crawl_first_home_page():
     from page_parse.home import get_ajax_data
     url = 'http://weibo.com/u/1800822823?is_ori=1&is_tag=0&profile_ftype=1&page=1'
     content = get_page(url, auth_level=1)
-    assert "['islogin']='0'" in content
+    assert "['islogin'] = '0'" in content
     cur_time = int(time.time() * 1000)
     ajax_url_0 = HOME_AJAX_URL.format('100505', 0, '100505', '1800822823', 1, 1, cur_time)
     ajax_url_1 = HOME_AJAX_URL.format('100505', 0, '100505', '1800822823', 1, 1, cur_time + 100)
