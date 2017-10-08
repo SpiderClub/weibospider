@@ -7,6 +7,14 @@ services:
   - mysql
   - redis-server
 
+ignore:
+  - *.md
+  - requirements.txt
+  - test-requirements.txt
+  - .gitignore
+  - Dockerfile
+  - env.sh
+
 cache:
     - pip
 
