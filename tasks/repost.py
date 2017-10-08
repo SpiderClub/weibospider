@@ -9,7 +9,7 @@ from page_get import (
 from config import get_max_repost_page
 
 
-BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&page={}'
+BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
 
 
 @app.task

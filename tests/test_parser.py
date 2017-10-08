@@ -61,6 +61,6 @@ def test_parse_comment_info(cookies):
 
 
 def test_parse_repost_info(cookies):
-    url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4141730615319112&page=4'
+    url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4159763183121316&&page=4'
     content = requests.get(url, cookies=cookies).text
     assert len(repost.get_repost_list(content, '4141730615319112')) > 0
