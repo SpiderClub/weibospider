@@ -2,3 +2,4 @@ tox
 mock
 pytest
 pytest-cov
+codecov
