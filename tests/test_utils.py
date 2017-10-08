@@ -1,9 +1,15 @@
 import os
 import time
 
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 import pytest
 
-from decorators import timeout
+from exceptions import CookieGenException
+from decorators import (
+    timeout, retry)
 from utils import (
     send_email, url_filter, text_filter)
 
@@ -59,3 +65,40 @@ def test_url_filter(url, expect):
 )
 def test_text_filter(text, expect):
     assert text_filter(text) == expect
+
+
+def test_retry_decorator():
+    hit = [0]
+    tries = 5
+    i = 1
+    j = 0
+
+    @retry(tries, exceptions=ZeroDivisionError)
+    def f(a, b):
+        hit[0] += 1
+        return a / b
+
+    with pytest.raises(ZeroDivisionError):
+        f(i, j)
+
+    assert hit[0] == tries
+
+
+def test_retry_with_delay():
+    get_cookies = mock.Mock()
+    get_cookies.side_effect = CookieGenException('Failed to gen cookies')
+
+    tries = 5
+    delay = 2
+    total_sleep_time = [0]
+
+    @retry(tries, delay, exceptions=CookieGenException)
+    def get():
+        total_sleep_time[0] += delay
+        return get_cookies()
+
+    with pytest.raises(CookieGenException):
+        get()
+
+    assert total_sleep_time[0] == tries * delay
+
