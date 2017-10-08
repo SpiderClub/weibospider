@@ -11,7 +11,7 @@ from tests import REQUEST_INTERNAL
 
 
 @pytest.mark.parametrize(
-    'uid, expect_name', [('5576276117', '微博运动'), ('10503', 'TimYang')]
+    'uid, expect_name', [('1642351362', 'angelababy'), ('10503', 'TimYang')]
 )
 def test_parse_user_info(uid, expect_name):
     user_info = get_profile(uid)[0]

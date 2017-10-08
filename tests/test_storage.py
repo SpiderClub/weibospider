@@ -24,7 +24,7 @@ class TestMysql:
         UserOper.add_all(user_list)
 
         rs = db_session.execute('select * from {}'.format(wbuser.name))
-        assert rs.rowcount == 2
+        assert rs.rowcount > 0
 
         assert UserOper.get_user_by_uid('5') is None
         assert UserOper.get_user_by_uid(FAKE_ID) is not None

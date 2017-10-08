@@ -56,7 +56,7 @@ def test_crawl_first_search_page():
 @pytest.mark.parametrize(
     'uid, expect', [
         ('1371731565', 'Miss'),
-        ('1642591402', '新浪娱乐')
+        ('1642351362', 'angelababy')
     ])
 def test_crawl_userinfo(uid, expect):
     user = get_profile(uid)[0]
