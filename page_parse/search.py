@@ -1,21 +1,18 @@
-# -*-coding:utf-8 -*-
 import re
 import urllib.parse
+from urllib3.util import parse_url
 from datetime import datetime
-
 
 from bs4 import BeautifulSoup
 
 from page_get import status
-from logger.log import parser
+from logger import parser
+from utils import url_filter
 from db.models import WeiboData
-from config.conf import get_crawling_mode
-from decorators.decorator import parse_decorator
+from config import get_crawling_mode
+from decorators import parse_decorator
 
 
-ORIGIN = 'http'
-PROTOCOL = 'https'
-USER_PATTERN = r'id=(\d+)&u'
 CRAWLING_MODE = get_crawling_mode()
 
 
@@ -27,7 +24,7 @@ def _search_page_parse(html):
     for script in scripts:
         m = pattern.search(str(script))
         # 这个判断不全面，对于json编码的可以成功，对于直接返回的不会成功
-        if m and 'pl_weibo_direct' in script.string and 'S_txt1' in script.string:
+        if m and 'pl_weibo_direct' in script.string and 'S_line1' in script.string:
             search_cont = m.group(1)
             pattern2 = re.compile(r'"html":"(.*)"}$')
             m2 = pattern2.search(search_cont)
@@ -36,7 +33,7 @@ def _search_page_parse(html):
     return ''
 
 
-def get_feed_info(feed_infos,goal):
+def get_feed_info(feed_infos, goal):
     info_num = None
     for info in feed_infos:
         if goal in info.text:
@@ -50,15 +47,14 @@ def get_feed_info(feed_infos,goal):
 @parse_decorator(None)
 def get_weibo_info(each, html):
     wb_data = WeiboData()
-    user_cont = each.find(attrs={'class': 'face'})
-    user_info = user_cont.find('a')
-    m = re.match(USER_PATTERN, user_info.img.get('usercard'))
 
-    if m:
-        wb_data.uid = m.group(1)
-    else:
-        parser.warning("fail to get user'sid, the page source is{}".format(html))
+    user_cont = each.find(attrs={'class': 'face'})
+    user_href = user_cont.find('a').get('href', '')
+    if not user_href:
+        parser.warning('Failed to get user id')
         return None
+    wb_data.uid = parse_url(user_href).path[3:]
+
     try:
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
     except (AttributeError, IndexError, TypeError):
@@ -67,12 +63,8 @@ def get_weibo_info(each, html):
     try:
         wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
     except Exception as e:
-        parser.error('fail to get weibo url, the error is {}, the source page is {}'.format(e, html))
+        parser.error('Failed to get weibo url, the error is {}, the source page is {}'.format(e, html))
         return None
-
-    def url_filter(url):
-        return ':'.join([PROTOCOL, url]) if PROTOCOL not in url and ORIGIN not in url else url
-
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
         imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
@@ -103,7 +95,7 @@ def get_weibo_info(each, html):
     try:
         feed_action = each.find(attrs={'class': 'feed_action'})
     except Exception as why:
-        parser.error('failt to get feed_action, the error is {},the page source is {}'.format(why, each))
+        parser.error('Failed to get feed_action, the error is {},the page source is {}'.format(why, each))
     else:
         feed_infos = feed_action.find_all('li')
         try:
@@ -122,7 +114,7 @@ def get_weibo_info(each, html):
     try:
         wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
     except Exception as why:
-        parser.error('fail to get weibo cont, the error is {}, the page source is {}'.format(why, html))
+        parser.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
         return None
 
     if '展开全文' in str(each):
@@ -132,21 +124,18 @@ def get_weibo_info(each, html):
     return wb_data, is_all_cont
 
 
-@parse_decorator(None)
+@parse_decorator([])
 def get_search_info(html):
     """
-    通过搜索页的内容获取搜索结果
-    :param html: 
-    :return: 
+    :param html: response content for search with login
+    :return: search results
     """
     # 搜索结果可能有两种方式，一种是直接返回的，一种是编码过后的
     content = _search_page_parse(html) if '举报' not in html else html
-
     if content == '':
         return list()
     # todo 这里用bs会导致某些信息不能被解析（参考../tests/fail.html），可参考使用xpath，考虑到成本，暂时不实现
     soup = BeautifulSoup(content.encode('utf-8', 'ignore').decode('utf-8'), "html.parser")
-
     feed_list = soup.find_all(attrs={'action-type': 'feed_list_item'})
     search_list = []
     for each in feed_list:

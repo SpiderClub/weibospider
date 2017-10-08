@@ -1,8 +1,7 @@
-# -*-coding:utf-8 -*-
-# 个人用户个人资料页
 from bs4 import BeautifulSoup
-from page_parse.user import public
-from decorators.decorator import parse_decorator
+
+from ..user import public
+from decorators import parse_decorator
 from db.models import User
 
 
@@ -56,8 +55,8 @@ def get_status(html):
 
 @parse_decorator(None)
 # todo 补充所有信息， 优化代码
-def get_detail(html):
-    user = User()
+def get_detail(html, uid):
+    user = User(uid)
     cont = public.get_right(html)
     if cont == '':
         return None

@@ -1,25 +1,24 @@
-# -*-coding:utf-8 -*-
-from db import wb_data
-from db import weibo_repost
-from tasks.workers import app
+from .workers import app
 from page_parse import repost
-from logger.log import crawler
+from logger import crawler
 from db.redis_db import IdNames
-from page_get.basic import get_page
-from page_get import user as user_get
-from config.conf import get_max_repost_page
+from db.dao import (
+    WbDataOper, RepostOper)
+from page_get import (
+    get_page, get_profile)
+from config import get_max_repost_page
 
 
-base_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&page={}'
+BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
 
 
 @app.task
 def crawl_repost_by_page(mid, page_num):
-    cur_url = base_url.format(mid, page_num)
-    html = get_page(cur_url, user_verify=False)
+    cur_url = BASE_URL.format(mid, page_num)
+    html = get_page(cur_url, auth_level=1, is_ajax=True)
     repost_datas = repost.get_repost_list(html, mid)
     if page_num == 1:
-        wb_data.set_weibo_repost_crawled(mid)
+        WbDataOper.set_weibo_repost_crawled(mid)
     return html, repost_datas
 
 
@@ -33,7 +32,7 @@ def crawl_repost_page(mid, uid):
     if not repost_datas:
         return
 
-    root_user, _ = user_get.get_profile(uid)
+    root_user, _ = get_profile(uid)
 
     if total_page < limit:
         limit = total_page + 1
@@ -53,13 +52,13 @@ def crawl_repost_page(mid, uid):
             repost_obj.parent_user_id = user_id
         repost_datas[index] = repost_obj
 
-    weibo_repost.save_reposts(repost_datas)
+    RepostOper.add_all(repost_datas)
 
 
 @app.task(ignore_result=True)
-def excute_repost_task():
+def execute_repost_task():
     # regard current weibo url as the original url, you can also analyse from the root url
-    weibo_datas = wb_data.get_weibo_repost_not_crawled()
+    weibo_datas = WbDataOper.get_weibo_repost_not_crawled()
     crawler.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))
 
     for weibo_data in weibo_datas:

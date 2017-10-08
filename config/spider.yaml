@@ -48,7 +48,7 @@ db:
 redis:
     host: 127.0.0.1
     port: 6379
-    password: weibospider
+    password: ''
     cookies: 1                   # store and fetch cookies
     # store fetched urls and results,so you can decide whether retry to crawl the urls or not
     urls: 2
@@ -76,9 +76,9 @@ email:
     # your email must open smtp & pop3 service
     server: smtp.sina.com
     port: 587
-    from: xxxx@sina.com   #sendingemailaccount
-    password: xxxxx          #youremailpasswd
-    to: xxxx@139.com      #bind 139 email,so your phone will receive the warning message
+    from: xxxxx@sina.com         #sendingemailaccount
+    password: xxxx               #youremailpasswd
+    to: xxxxxxxx@139.com         #bind 139 email,so your phone will receive the warning message
     subject: Warning Of Weibo Spider
     warning_info: Please find out the reason why the spider stops working
 

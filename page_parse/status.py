@@ -1,10 +1,10 @@
-# -*-coding:utf-8 -*-
-# 微博详情页
 import re
 import json
+
 from bs4 import BeautifulSoup
-from decorators.decorator import parse_decorator
-from logger.log import parser
+
+from decorators import parse_decorator
+from logger import parser
 
 
 @parse_decorator('')

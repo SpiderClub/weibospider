@@ -52,6 +52,12 @@
 
 点击查看[贡献者名单](https://github.com/ResolveWang/WeiboSpider/wiki/%E8%B4%A1%E7%8C%AE%E8%80%85%E5%90%8D%E5%8D%95)
 
+## 重要声明 :loudspeaker:
+该项目开发的初衷是为了对部分信息进行监控，并且获取一些自然语言处理所需的语料，在**数据抓取的时候对爬虫访问频率进行了较为严格的控制**。
+后来在技术和兴趣的驱动下，才慢慢扩展了分布式和对微博反爬虫策略的探究。
+
+所以作者希望用户能合理使用该项目（通过[配置文件](./config/spider.yaml)控制访问频率），本着`够用就行`的原则，不要做`竭泽而渔`
+的事情，对微博系统的正常运行和维护造成较大的困扰。
 
 ## 致谢:heart:
 - 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架

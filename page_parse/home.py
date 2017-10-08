@@ -1,4 +1,3 @@
-# -*-coding:utf-8 -*-
 import re
 import json
 import urllib.parse
@@ -6,10 +5,10 @@ import urllib.parse
 from bs4 import BeautifulSoup
 
 from page_get import status
-from logger.log import parser
+from logger import parser
 from db.models import WeiboData
-from config.conf import get_crawling_mode
-from decorators.decorator import parse_decorator
+from config import get_crawling_mode
+from decorators import parse_decorator
 
 
 # weibo will use https in the whole website in the future,so the default protocol we use is https
@@ -122,7 +121,7 @@ def get_weibo_info_detail(each, html):
 def get_weibo_list(html):
     """
     get the list of weibo info
-    :param html: 
+    :param html:
     :return: 
     """
     if not html:
@@ -141,18 +140,20 @@ def get_weibo_list(html):
     return weibo_datas
 
 
+@parse_decorator(1)
 def get_max_num(html):
     """
     get the total page number
-    :param html: 
-    :return: 
+    :param html:
+    :return:
     """
     soup = BeautifulSoup(html, "html.parser")
     href_list = soup.find(attrs={'action-type': 'feed_list_page_morelist'}).find_all('a')
     return len(href_list)
 
 
-def get_wbdata_fromweb(html):
+@parse_decorator(list())
+def get_data(html):
     """
     从主页获取具体的微博数据
     :param html: 
@@ -162,7 +163,8 @@ def get_wbdata_fromweb(html):
     return get_weibo_list(cont)
 
 
-def get_home_wbdata_byajax(html):
+@parse_decorator(list())
+def get_ajax_data(html):
     """
     通过返回的ajax内容获取用户微博信息
     :param html: 
@@ -172,6 +174,7 @@ def get_home_wbdata_byajax(html):
     return get_weibo_list(cont)
 
 
+@parse_decorator(1)
 def get_total_page(html):
     """
     从ajax返回的内容获取用户主页的所有能看到的页数

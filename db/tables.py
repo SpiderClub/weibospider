@@ -1,6 +1,8 @@
-# -*-coding:utf-8 -*-
-from sqlalchemy import Table, Column, INTEGER, String, Text
-from db.basic_db import metadata
+from sqlalchemy import (
+    Table, Column, INTEGER, String, Text)
+
+from .basic import metadata
+
 
 # login table
 login_info = Table("login_info", metadata,

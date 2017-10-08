@@ -1,16 +1,15 @@
-# coding:utf-8
 import os
 from datetime import timedelta
 
 from celery import Celery, platforms
 from kombu import Exchange, Queue
 
-from config.conf import (
+from config import (
     get_broker_and_backend,
     get_redis_master
 )
 
-# allow celery worker started by root
+
 platforms.C_FORCE_ROOT = True
 
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'celery.log')

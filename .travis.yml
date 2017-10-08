@@ -1,0 +1,31 @@
+language: python
+sudo: false
+python:
+    - "3.4"
+    - "3.5"
+    - "3.6"
+
+services:
+  - mysql
+  - redis-server
+
+cache:
+    - pip
+
+before_install:
+  - mysql -e 'CREATE DATABASE weibo;'
+
+install:
+    - pip install codecov
+    - pip install -r requirements.txt
+
+script:
+  - coverage run -p -m pytest tests
+
+branches:
+  only:
+    - master
+
+after_success:
+    - coverage combine
+    - codecov

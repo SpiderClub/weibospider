@@ -1,12 +1,15 @@
-# -*-coding:utf-8 -*-
-from functools import wraps
+import time
+import collections
+from functools import wraps, partial
 from traceback import format_tb
-from db.basic_db import db_session
-from logger.log import parser, crawler, storage
-from utils.util_cls import Timeout, KThread
+
+from db.basic import db_session
+from logger import (
+    parser, crawler, storage, other)
+from utils import KThread
+from exceptions import Timeout
 
 
-# timeout decorator
 def timeout_decorator(func):
     @wraps(func)
     def time_limit(*args, **kargs):
@@ -27,8 +30,7 @@ def db_commit_decorator(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            storage.error('db operation error，here are details{}'.format(e))
-            storage.warning('transaction rollbacks')
+            storage.error('DB operation error，here are details:{}'.format(e))
             db_session.rollback()
     return session_commit
 
@@ -36,7 +38,7 @@ def db_commit_decorator(func):
 def parse_decorator(return_value):
     """
     :param return_value: catch exceptions when parsing pages, return the default value
-    :return: the default value is 0,'',[],False,{} or None
+    :return: the default value is whatever you want, usually it's 0,'',[],False,{} or None
     """
     def page_parse(func):
         @wraps(func)
@@ -44,7 +46,9 @@ def parse_decorator(return_value):
             try:
                 return func(*keys)
             except Exception as e:
-                parser.error(e)
+                parser.error('Failed to parse the page, {} is raised, here are details:{}'.format(
+                    e, format_tb(e.__traceback__)[0]
+                ))
                 return return_value
 
         return handle_error
@@ -88,3 +92,32 @@ def timeout(seconds):
         return wrapper
 
     return crwal_decorator
+
+
+def retry(times=-1, delay=0, exceptions=Exception, logger=other):
+    """
+    inspired by https://github.com/invl/retry
+    :param times: retry times
+    :param delay: internals between each retry
+    :param exceptions: exceptions may raise in retry
+    :param logger: log for retry
+    :return: func result or None
+    """
+    def _inter_retry(caller, retry_time, retry_delay, es):
+        while retry_time:
+            try:
+                return caller()
+            except es as e:
+                retry_time -= 1
+                if not retry_time:
+                    logger.error("max tries for {} times, {} is raised, details: func name is {}, func args are {}".
+                                 format(times, e, caller.func.__name__, (caller.args, caller.keywords)))
+                    raise
+                time.sleep(retry_delay)
+
+    def retry_oper(func):
+        @wraps(func)
+        def _wraps(*args, **kwargs):
+            return _inter_retry(partial(func, *args, **kwargs), times, delay, exceptions)
+        return _wraps
+    return retry_oper

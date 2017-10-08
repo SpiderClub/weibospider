@@ -1,25 +1,22 @@
-# coding:utf-8
-from tasks.workers import app
-from page_get import user as user_get
-from db.seed_ids import (
-                         get_seed_ids,
-                         get_seed_by_id,
-                         insert_seeds,
-                         set_seed_other_crawled
-                        )
+from .workers import app
+from db.dao import SeedidsOper
+from page_get import (
+    get_fans_or_followers_ids,
+    get_profile
+)
 
 
 @app.task(ignore_result=True)
 def crawl_follower_fans(uid):
-    seed = get_seed_by_id(uid)
+    seed = SeedidsOper.get_seed_by_id(uid)
     if seed.other_crawled == 0:
-        rs = user_get.get_fans_or_followers_ids(uid, 1)
-        rs.extend(user_get.get_fans_or_followers_ids(uid, 2))
+        rs = get_fans_or_followers_ids(uid, 1)
+        rs.extend(get_fans_or_followers_ids(uid, 2))
         datas = set(rs)
         # If data already exits, just skip it
         if datas:
-            insert_seeds(datas)
-        set_seed_other_crawled(uid)
+            SeedidsOper.insert_seeds(datas)
+        SeedidsOper.set_seed_other_crawled(uid)
 
 
 @app.task(ignore_result=True)
@@ -34,10 +31,10 @@ def crawl_person_infos(uid):
     if not uid:
         return
 
-    user, is_crawled = user_get.get_profile(uid)
+    user, is_crawled = get_profile(uid)
     # If it's enterprise user, just skip it
     if user and user.verify_type == 2:
-        set_seed_other_crawled(uid)
+        SeedidsOper.set_seed_other_crawled(uid)
         return
 
     # Crawl fans and followers
@@ -47,8 +44,8 @@ def crawl_person_infos(uid):
 
 
 @app.task(ignore_result=True)
-def excute_user_task():
-    seeds = get_seed_ids()
+def execute_user_task():
+    seeds = SeedidsOper.get_seed_ids()
     if seeds:
         for seed in seeds:
             app.send_task('tasks.user.crawl_person_infos', args=(seed.uid,), queue='user_crawler',

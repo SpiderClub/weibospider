@@ -1,7 +1,9 @@
 import json
 import time
+
 import requests
-from logger.log import other
+
+from logger import other
 
 
 class YDMHttp:
@@ -133,12 +135,3 @@ def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_ke
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
     cid, result = yundama_obj.decode(file_name, code_type, time_out)
     return result, yundama_obj, cid
-
-
-if __name__ == '__main__':
-    # 云打码注册的登录用户名（通过用户注册）
-    username = 'xxx'
-    # 登录密码
-    password = 'xxx'
-
-    rs = code_verificate(username, password, 'pincode.png')

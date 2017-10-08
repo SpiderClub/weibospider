@@ -1,4 +1,3 @@
-# coding:utf-8
 import os
 import logging
 import logging.config as log_conf
@@ -62,5 +61,3 @@ crawler = logging.getLogger('crawler')
 parser = logging.getLogger('parser')
 other = logging.getLogger('other')
 storage = logging.getLogger('storage')
-
-__all__ = ['crawler', 'parser', 'other', 'storage']

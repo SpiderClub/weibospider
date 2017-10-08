@@ -1,8 +1,10 @@
 import json
+
 from bs4 import BeautifulSoup
-from logger.log import parser
+
+from logger import parser
 from db.models import WeiboComment
-from decorators.decorator import parse_decorator
+from decorators import parse_decorator
 
 
 @parse_decorator('')
