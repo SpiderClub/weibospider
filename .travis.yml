@@ -14,6 +14,8 @@ ignore:
   - .gitignore
   - Dockerfile
   - env.sh
+  - LICENSE
+  - tox.ini
 
 cache:
     - pip
