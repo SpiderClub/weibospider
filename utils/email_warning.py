@@ -12,8 +12,8 @@ from logger import other
 
 
 email_args = get_email_args()
-smtp_server = os.getenv('EMAIL_SERVER') or email_args['server']
-smtp_port = os.getenv('EMAIL_PORT') or email_args['port']
+smtp_server = email_args['server']
+smtp_port = email_args['port']
 from_addr = os.getenv('EMAIL_ACCOUNT') or email_args['from']
 from_password = os.getenv('EMAIL_PASS') or email_args['password']
 to_addr = os.getenv('EMAIL_TO') or email_args['to']
