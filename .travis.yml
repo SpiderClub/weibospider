@@ -8,7 +8,7 @@ services:
   - redis-server
 
 ignore:
-  - *.md
+  - README.md
   - requirements.txt
   - test-requirements.txt
   - .gitignore
