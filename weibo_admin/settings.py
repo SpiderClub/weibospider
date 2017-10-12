@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'weibo_admin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'spider',
-        'USER': 'anjian',
-        'PASSWORD': 'topcom123',
-        'HOST': '192.168.0.118',
-        'PORT': '33060',
+        'NAME': 'weibo',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
