@@ -1,4 +1,4 @@
-"""wechat_admin URL Configuration
+"""weibo_admin URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -18,7 +18,5 @@ from django.contrib import admin
 
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    # url(r'^wechat/loginuser/login_by_id', WeChatModel.views.LoginUserView.login_by_id),
-    # url(r'^wechat/wechatuser/fetch_by_id', WeChatModel.views.WechatUserView.fetch_by_id),
+    url(r'^admin/', admin.site.urls)
 ]

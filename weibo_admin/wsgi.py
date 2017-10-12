@@ -1,5 +1,5 @@
 """
-WSGI config for wechat_admin project.
+WSGI config for weibo_admin project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
