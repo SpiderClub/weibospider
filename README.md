@@ -1,7 +1,12 @@
-[![](https://img.shields.io/badge/python-3.4-green.svg)](https://www.python.org/download/releases/3.4.0/) [![](https://img.shields.io/badge/python-3.5-green.svg)](https://www.python.org/downloads/release/python-352/)
-[![](https://img.shields.io/badge/python-3.6-green.svg)](https://www.python.org/downloads/release/python-360/) [![](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+![weiblo spider logo](http://opqm8qbph.bkt.clouddn.com/weibospider.jpg)
+
+---
+
+[![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
+[![](https://travis-ci.org/ResolveWang/weibospider.svg?branch=master)](https://travis-ci.org/ResolveWang/weibospider)
+[![GitHub issues](https://img.shields.io/github/issues/ResolveWang/weibospider.svg)](https://github.com/ResolveWang/weibospider/issues)
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
-[![](https://travis-ci.org/ResolveWang/weibospider.svg?branch=master)](https://travis-ci.org/ResolveWang/weibospider.svg?branch=master)
+[![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 为何选择本项目 :star:
 - 功能全面：包括了**用户信息抓取**、**指定关键字搜索结果增量抓取**、**指定用户主页所有原创微博抓取**、**评论抓取**和**转发关系抓取**等
