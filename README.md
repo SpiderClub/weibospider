@@ -37,6 +37,7 @@
 ## 其它说明 :heavy_exclamation_mark:
 一些补充说明请查看[项目补充说明](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E)
 
+**重要补充**:务必请前往[release](https://github.com/ResolveWang/weibospider/releases)页面下载稳定版，master分支由于各种原因不保证能顺利运行！
 
 ## TODO :dart:
 关于项目下一步计划和已完成的目标可以查看[这篇文章](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%AE%A1%E5%88%92%E5%92%8C%E8%BF%9B%E5%B1%95)
