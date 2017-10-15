@@ -16,6 +16,7 @@ ignore:
   - env.sh
   - LICENSE
   - tox.ini
+  - AUTHORS.rst
 
 cache:
     - pip
