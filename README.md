@@ -56,7 +56,7 @@
 - 欢迎在[issue](https://github.com/ResolveWang/WeiboSpider/issues)中提有意义的future
 - 希望有仔细研究过微博反爬虫策略的同学积极提建议
 
-点击查看[贡献者名单](https://github.com/ResolveWang/WeiboSpider/wiki/%E8%B4%A1%E7%8C%AE%E8%80%85%E5%90%8D%E5%8D%95)
+点击查看[贡献者名单](./AUTHORS.rst)
 
 ## 重要声明 :loudspeaker:
 该项目开发的初衷是为了对部分信息进行监控，并且获取一些自然语言处理所需的语料，在**数据抓取的时候对爬虫访问频率进行了较为严格的控制**。
