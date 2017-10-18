@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
 
-class WeibomodelConfig(AppConfig):
-    name = 'admin_config'
+class WeiboConfig(AppConfig):
+    name = 'weibo_config'
+    verbose_name = '微博配置'
