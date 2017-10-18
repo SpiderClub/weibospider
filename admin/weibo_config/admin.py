@@ -1,50 +1,29 @@
-from django import forms
 from django.contrib import admin
+
+from admin.admin_config import Keywords, LoginInFo, Seeds
+
 
 # Register your models here.
 
-from WeiboModel.models import Keywords, LoginInFo, Save2kafkalog, Seeds, WbUser, WeiboData
-
-
-# 自定义表单
-class ImgForm(forms.ModelForm):
-    picture = forms.FileField(label='图片', required=False)
-
-
-# 覆盖 Django admin 代码
-def get_form(self, request, obj=None, **kwargs):
-    return ImgForm
-
 
 class KeywordsAdmin(admin.ModelAdmin):
-    list_display = ('keyword', 'enable')  # list
+    list_display = ('keyword', 'enable')
     search_fields = ['keyword']
     list_per_page = 20
 
 
 class LoginInFoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'password', 'enable')  # list
+    list_display = ('name', 'password', 'enable')
     search_fields = ['name', 'enable']
-    list_per_page = 20
-
-
-class Save2kafkalogAdmin(admin.ModelAdmin):
-    list_display = (
-        'createTime', 'lastWeiboId', 'spiderTime', 'type', 'uid', 'lastId')  # list
-    # fields = (
-    #     'nickname', 'alias', 'fakeid', ('crawl_history', 'crawled_history', 'monitored', 'enable'),
-    #     'description', 'round_head_img')  # list
-    ordering = ['spiderTime']
     list_per_page = 20
 
 
 class SeedsAdmin(admin.ModelAdmin):
     list_display = (
-        'uid', 'is_crawled', 'other_crawled', 'home_crawled')  # list
+        'uid', 'is_crawled', 'other_crawled', 'home_crawled')
     search_fields = ['uid']
     list_per_page = 20
     ordering = ['is_crawled']
-    # inlines = [LoginUserInline]
 
 
 class WbUserAdmin(admin.ModelAdmin):
@@ -63,8 +42,7 @@ class WeiboDataAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Keywords, KeywordsAdmin)
-admin.site.register(LoginInFo, LoginInFoAdmin)
-# admin.site.register(Save2kafkalog, Save2kafkalogAdmin)
 admin.site.register(Seeds, SeedsAdmin)
-admin.site.register(WbUser, WbUserAdmin)
-admin.site.register(WeiboData, WeiboDataAdmin)
+admin.site.register(LoginInFo, LoginInFoAdmin)
+#admin.site.register(WbUser, WbUserAdmin)
+#admin.site.register(WeiboData, WeiboDataAdmin)
