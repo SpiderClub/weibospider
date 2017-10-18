@@ -15,15 +15,15 @@ ALLOWED_HOSTS = [
 ]
 
 INSTALLED_APPS = [
-    'suit',  # 添加suit支持
-    # 'apps.SuitConfig',
+    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'WeiboModel.apps.WeibomodelConfig',
+    'weibo_config.apps.WeiboConfig',
+    'weibo_data.apps.WeiboDataConfig'
 ]
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +53,7 @@ TEMPLATES = [
         },
     },
 ]
+
 WSGI_APPLICATION = 'weibo_admin.wsgi.application'
 
 DATABASES = {
@@ -88,13 +89,19 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-DATETIME_FORMAT = 'Y-m-d H:i:s'  # suit在admin里设置时间的一个小bug。需要把时间格式指定一下
+# suit在admin里设置时间的一个小bug。需要把时间格式指定一下
 DATE_FORMAT = 'Y-m-d'
-SUIT_CONFIG = {  # suit页面配置
-    'ADMIN_NAME': '微博爬虫平台',  # 登录界面提示
-    'LIST_PER_PAGE': 10
+DATETIME_FORMAT = 'Y-m-d H:i:s'
+
+SUIT_CONFIG = {
+  'ADMIN_NAME': '微博爬虫平台',
+  'LIST_PER_PAGE': 10,
+  'MENU': (
+    'sites',
+    {'app': 'weibo_config', 'label': '微博配置'},
+    {'app': 'weibo_data', 'label': '微博数据'},
+    {'app': 'auth', 'label': '认证管理'},
+  ),
 }
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
