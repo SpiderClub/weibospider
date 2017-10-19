@@ -36,4 +36,6 @@ branches:
     - master
 
 after_success:
+    - coverage combine
     - codecov
+    - coveralls
