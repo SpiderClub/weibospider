@@ -17,6 +17,7 @@ LIMIT = get_max_search_page() + 1
 
 @app.task(ignore_result=True)
 def search_keyword(keyword, keyword_id):
+    crawler.info('We are searching keyword {}'.format(keyword))
     cur_page = 1
     encode_keyword = url_parse.quote(keyword)
     while cur_page < LIMIT:
