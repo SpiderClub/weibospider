@@ -23,8 +23,7 @@
 模版解析上做了大量工作。
 - 该项目会长期更新，目前已经迭代一年有余了。
 - 丰富文档支持：请点击[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)查看**所有文档**。如果文档仍然不能解
-决你的问题，欢迎提issue，维护者看到后都会积极回答，也可以通过加QQ群(群号：499500161, 暗号：微博爬虫，**务必备注加群信息，否则
-视为广告处理**)进行交流。
+决你的问题，欢迎提issue，维护者看到后都会积极回答。
 
 ## 配置和使用 :sparkles:
 
@@ -45,7 +44,7 @@
 
 ## 赞助本项目:thumbsup:
 
-如果本项目确实解决了你的刚需，或者对你有较大的启发，不妨请作者喝杯咖啡或者买本新书。
+如果本项目确实解决了你的刚需，或者对你有较大的启发，不妨请作者喝杯咖啡。
 
 - [微信或者支付宝打赏作者](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 - [捐赠记录](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
