@@ -49,11 +49,11 @@ def get_weibo_info(each, html):
     wb_data = WeiboData()
 
     user_cont = each.find(attrs={'class': 'face'})
-    user_href = user_cont.find('a').get('href', '')
-    if not user_href:
-        parser.warning('Failed to get user id')
+    usercard = user_cont.find('img').get('usercard', '')
+    if not usercard:
+        parser.warning('Failed to get user card')
         return None
-    wb_data.uid = parse_url(user_href).path[3:]
+    wb_data.uid = usercard.split('&')[0][3:]
 
     try:
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
