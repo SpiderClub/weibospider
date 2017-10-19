@@ -32,9 +32,9 @@ class LoginInFo(models.Model):
 
 class Seeds(models.Model):
     uid = models.CharField('用户ID', max_length=20, unique=True, blank=False)
-    is_crawled = models.IntegerField('是否采集', default=0)
-    other_crawled = models.IntegerField('是否采集粉丝', default=0)
-    home_crawled = models.IntegerField('是否过主页', default=0)
+    is_crawled = models.IntegerField('是否已采集个人信息', default=0)
+    other_crawled = models.IntegerField('是否已采集粉丝和关注', default=0)
+    home_crawled = models.IntegerField('是否已采集主页', default=0)
 
     def __str__(self):
         return self.uid
