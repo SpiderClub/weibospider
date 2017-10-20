@@ -6,7 +6,7 @@ class WbUser(models.Model):
     name = models.CharField('昵称', max_length=200)
     gender = models.IntegerField('性别', default=0)
     birthday = models.CharField('生日', max_length=200)
-    location = models.CharField('地域信息', max_length=100)
+    location = models.CharField('所在地', max_length=100)
     description = models.CharField('简介', max_length=500)
     register_time = models.CharField('注册时间', max_length=200)
     verify_type = models.IntegerField('认证', default=0)

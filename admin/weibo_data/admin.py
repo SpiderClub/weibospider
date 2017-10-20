@@ -22,15 +22,14 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
 
 
 class WbUserAdmin(ReadOnlyModelAdmin):
-    list_display = ('uid', 'name', 'gender', 'location', 'description', 'birthday', 'register_time', 'verify_type',
-                    'follows_num', 'fans_num', 'wb_num', 'level', 'tags', 'verify_info')
+    list_display = ('uid', 'name', 'gender', 'location', 'description', 'register_time', 'verify_type',
+                    'follows_num', 'fans_num', 'wb_num')
     search_fields = ['name', 'uid']
     list_per_page = 20
 
 
 class WeiboDataAdmin(ReadOnlyModelAdmin):
-    list_display = ('weibo_id', 'repost_num', 'comment_num', 'praise_num', 'uid', 'device', 'weibo_url', 'create_time',
-                    'weibo_cont', 'comment_crawled', 'repost_crawled')
+    list_display = ('weibo_id', 'uid', 'create_time', 'weibo_cont', 'repost_num', 'comment_num', 'praise_num')
     search_fields = ['weibo_cont', 'weibo_id']
     list_per_page = 20
 
