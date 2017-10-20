@@ -17,17 +17,15 @@ LIMIT = get_max_search_page() + 1
 
 @app.task(ignore_result=True)
 def search_keyword(keyword, keyword_id):
-    crawler.info('We are searching keyword {}'.format(keyword))
+    crawler.info('We are searching keyword "{}"'.format(keyword))
     cur_page = 1
     encode_keyword = url_parse.quote(keyword)
     while cur_page < LIMIT:
         cur_url = URL.format(encode_keyword, cur_page)
-        if cur_page == 1:
-            search_page = get_page(cur_url, auth_level=1)
-        else:
-            search_page = get_page(cur_url, auth_level=2)
+        # current only for login, maybe later crawling page one without login
+        search_page = get_page(cur_url, auth_level=2)
         if not search_page:
-            crawler.warning('No result for keyword {}, the source page is {}'.format(keyword, search_page))
+            crawler.warning('No search result for keyword {}, the source page is {}'.format(keyword, search_page))
             return
 
         search_list = parse_search.get_search_info(search_page)

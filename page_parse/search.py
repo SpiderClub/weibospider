@@ -3,13 +3,16 @@ import urllib.parse
 from datetime import datetime
 
 from bs4 import BeautifulSoup
+from urllib3.util import parse_url
 
-from page_get import status
+from page_get import (
+    status, get_page)
 from logger import parser
 from utils import url_filter
 from db.models import WeiboData
 from config import get_crawling_mode
 from decorators import parse_decorator
+from .user.public import get_userid
 
 
 CRAWLING_MODE = get_crawling_mode()
@@ -49,8 +52,8 @@ def get_weibo_info(each, html):
 
     user_cont = each.find(attrs={'class': 'face'})
     usercard = user_cont.find('img').get('usercard', '')
+    # this only for login user
     if not usercard:
-        parser.warning('Failed to get user card')
         return None
     wb_data.uid = usercard.split('&')[0][3:]
 

@@ -21,7 +21,7 @@ def test_parse_user_info(uid, expect_name):
 
 @pytest.mark.parametrize(
     'url, is_login', [
-        ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=1', 0),
+        ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=1', 1),
         ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=2', 1)
     ])
 def test_parse_search_info(url, is_login, cookies, session):
