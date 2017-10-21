@@ -75,11 +75,13 @@ python admin/manage.py createsuperuser
 
 如果项目对你有用或者对你有启发，不妨通过微信或者支付宝进行*小额捐赠*，以支持该项目的持续维护和发展。
 
-<figure class="half">
-    <img src="http://opqm8qbph.bkt.clouddn.com/weixin.png", width="120">
-    <img src="http://opqm8qbph.bkt.clouddn.com/alipay.png", width="220">
-</figure>
+- 通过微信捐赠作者
 
+ ![](http://opqm8qbph.bkt.clouddn.com/weixin.png?imageMogr2/thumbnail/!38p)
+
+- 通过支付宝捐赠作者
+
+ ![](http://opqm8qbph.bkt.clouddn.com/alipay.png?imageMogr2/thumbnail/!32p)
 
 ## 重要声明 :loudspeaker:
 该项目开发的初衷是为了对部分信息进行监控，并且获取一些自然语言处理所需的语料，在**数据抓取的时候对爬虫访问频率进行了较为严格的控制**。
