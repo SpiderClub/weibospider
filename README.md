@@ -1,6 +1,6 @@
-<center>
-    <img src="http://opqm8qbph.bkt.clouddn.com/weibospider.jpg", width="350">
-</center>
+<div align=center>
+![](http://opqm8qbph.bkt.clouddn.com/weibospider.jpg?imageMogr2/thumbnail/!50p)
+</div>
 
 ---
 
@@ -75,8 +75,8 @@ python admin/manage.py createsuperuser
 如果项目对你有用或者对你有启发，不妨通过微信或者支付宝进行*小额捐赠*，以支持该项目的持续维护和发展。
 
 <figure class="half">
-    <img src="http://opqm8qbph.bkt.clouddn.com/weixin.png", width="220">
-    <img src="http://opqm8qbph.bkt.clouddn.com/alipay.png", width="320">
+    <img src="http://opqm8qbph.bkt.clouddn.com/weixin.png", width="120">
+    <img src="http://opqm8qbph.bkt.clouddn.com/alipay.png", width="220">
 </figure>
 
 
