@@ -1,7 +1,6 @@
 <div align=center>
 
 ![](http://opqm8qbph.bkt.clouddn.com/weibospider.jpg?imageMogr2/thumbnail/!50p)
-
 </div>
 
 ---
