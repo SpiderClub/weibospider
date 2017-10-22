@@ -3,7 +3,6 @@
 ![](http://opqm8qbph.bkt.clouddn.com/weibospider.jpg?imageMogr2/thumbnail/!50p)
 </div>
 
----
 
 [![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
 [![](https://travis-ci.org/ResolveWang/weibospider.svg?branch=master)](https://travis-ci.org/ResolveWang/weibospider)
@@ -12,6 +11,10 @@
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+## 演示站点
+在新版的weibospider中，为了更方便进行抓取条件的配置，[545314690](https://github.com/545314690)提了一个可视化配置界面的PR，点击
+[https://weibospider.rookiefly.cn](https://weibospider.rookiefly.cn)进行访问，账号是`test`,密码是`weibospidertest`，
+请大家不要更改里面的数据。注意，该应用并不是weibospider的下游应用，请自行进行数据分析相关工作，本项目只着重解决数据采集的问题。
 
 ## 项目亮点 :star:
 - 功能全面：包括了**用户信息抓取**、**指定关键字搜索结果增量抓取**、**指定用户主页所有原创微博抓取**、**评论抓取**和**转发关系抓取**等
@@ -28,7 +31,6 @@
 - 该项目会长期更新，目前已经迭代一年有余了。
 - 丰富文档支持：点击[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)查看**所有文档**。如果文档仍然不能解
 决你的问题，欢迎提issue，维护者看到后都会积极回答。
-
 
 ## 快速开始 :octocat:
 
