@@ -44,7 +44,8 @@
 
 6.先通过手动创建一个名为`weibo`的数据库，然后使用`python config/create_all.py`来创建爬虫所需要的表，如果是v1.7.2及之前的版本，输入`python create_all.py`即可。
 
-7.(*可选*，v1.7.3新增)如果你想通过*Web UI*来进行爬虫关键词等信息的配置，那么还需要在项目根目录下运行
+7.(*可选*，v1.7.3新增)如果你想通过*Web UI*来进行爬虫关键词等信息的配置，那么还需要修改[admin/weibo_admin/settings.py](./admin/weibo_admin/settings.py)中`DATABSES`一栏的数据库连接信息。
+然后在项目根目录下运行
 ```shell
 python admin/manage.py makemigrations
 python admin/manage.py migrate
@@ -55,7 +56,8 @@ python admin/manage.py createsuperuser
 8.我们在爬虫程序启动之前，需要预插入微博账号和密码以及一些种子数据。比如你想抓取一个用户，那么就需要在`seed_ids`表中插入他的`uid`，`uid`可以通过打开该用户主页，点击**查看页面源代码**搜索`oid`获取到。如果你想通过通过微博的搜索接口搜索一个关键词，那么需要在`keywords`表中插入你想搜索的关键词。如果你完成了步骤7，那么可以通过*Web UI*来进行配置。通过运行
 > python admin/manage.py runserver 0.0.0.0:8000
 
-来启动爬虫配置后台。然后再在你的浏览器输入`http://127.0.0.1:8000/admin`来访问爬虫配置程序。在登录界面输入刚才创建的用户名`test`和密码`weibospider2017`即可，然后在*微博配置*一栏中进行配置。注意，django自带的web server**无法达到生产级别的稳定性**，如果需要在生产环境中使用，建议使用[gunicorn](http://gunicorn.org/)或者[uwsgi](https://github.com/unbit/uwsgi)作为web server。
+来启动爬虫配置后台。然后再在你的浏览器输入`http://127.0.0.1:8000/admin`来访问爬虫配置程序。在登录界面输入刚才创建的用户名`test`和密码`weibospider2017`即可，然后在*微博配置*一栏中进行配置。注意，django自带的web server**无法达到生产级别的稳定性**，如果需要
+在生产环境中使用，建议使用[gunicorn](http://gunicorn.org/)或者[uwsgi](https://github.com/unbit/uwsgi)作为web server,并且使用supervisor作为进程管理器。
 
 9.配置完成后，通过
 > celery -A tasks.workers -Q login_queue,user_crawler,fans_followers,search_crawler,home_crawler worker -l info -c 1
@@ -68,7 +70,7 @@ python admin/manage.py createsuperuser
 10.到这个时候，我们已经做好所有准备了。现在我们需要发送任务给worker。有两种方式：1）通过执行`python first_task_execution/login_first.py`来进行登录，其他任务发送操作也类似。2）由于我们采用定时的机制来应对**微博Cookie24小时失效**的问题和达到**不间断抓取**的目的，那么我们可以在任何一台节点执行
 > celery beat -A tasks.workers -l info
 
-以启动一个celery beater，它会定时将任务发送给Celery Worker进行执行，注意**beater只能有一个**，否则任务可能重复执行。定时设置在[tasks/workers.py]()这个文件。
+以启动一个celery beater，它会定时将任务发送给Celery Worker进行执行，注意**beater只能有一个**，否则任务可能重复执行。定时设置在[tasks/workers.py](./tasks/workers.py)这个文件。
 
 到这里所有配置已经结束了，如果大家在上述过程中遇到了问题，**请耐心浏览[项目所有文档](https://github.com/ResolveWang/weibospider/wiki)**，实在还是不懂或者使用过程中有任何问题可以提issue。
 
