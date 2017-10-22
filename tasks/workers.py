@@ -37,32 +37,32 @@ app.conf.update(
     CELERY_RESULT_SERIALIZER='json',
     CELERYBEAT_SCHEDULE={
         'login_task': {
-            'task': 'tasks.login.excute_login_task',
+            'task': 'tasks.login.execute_login_task',
             'schedule': timedelta(hours=20),
             'options': {'queue': 'login_queue', 'routing_key': 'for_login'}
         },
         'user_task': {
-            'task': 'tasks.user.excute_user_task',
+            'task': 'tasks.user.execute_user_task',
             'schedule': timedelta(minutes=3),
             'options': {'queue': 'user_crawler', 'routing_key': 'for_user_info'}
         },
         'search_task': {
-            'task': 'tasks.search.excute_search_task',
+            'task': 'tasks.search.execute_search_task',
             'schedule': timedelta(hours=2),
             'options': {'queue': 'search_crawler', 'routing_key': 'for_search_info'}
         },
         'home_task': {
-            'task': 'tasks.home.excute_home_task',
+            'task': 'tasks.home.execute_home_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'home_crawler', 'routing_key': 'home_info'}
         },
         'comment_task': {
-            'task': 'tasks.comment.excute_comment_task',
+            'task': 'tasks.comment.execute_comment_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'comment_crawler', 'routing_key': 'comment_info'}
         },
         'repost_task': {
-            'task': 'tasks.repost.excute_repost_task',
+            'task': 'tasks.repost.execute_repost_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'repost_crawler', 'routing_key': 'repost_info'}
         },
