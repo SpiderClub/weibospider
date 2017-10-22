@@ -1,5 +1,8 @@
-from django.http import HttpResponse
+from django.shortcuts import redirect
 
 
-def hello(request):
-    return HttpResponse("Hello world ! ")
+def index(request):
+    if not request.user.is_authenticated():
+        return redirect('/admin/login/?next=%s' % request.path)
+    else:
+        return redirect('/admin/')
