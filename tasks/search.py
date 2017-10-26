@@ -34,18 +34,19 @@ def search_keyword(keyword, keyword_id):
         # we need not crawl the same keyword in this turn
         for wb_data in search_list:
             rs = WbDataOper.get_wb_by_mid(wb_data.weibo_id)
+            KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)
+            # todo incremental crawling using time
             if rs:
-                crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
-                return
+                crawler.info('Weibo {} has been crawled, skip it.'.format(wb_data.weibo_id))
+                continue
             else:
                 WbDataOper.add_one(wb_data)
-                KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)
                 # send task for crawling user info
                 app.send_task('tasks.user.crawl_person_infos', args=(wb_data.uid,), queue='user_crawler',
                               routing_key='for_user_info')
         if cur_page == 1:
             cur_page += 1
-        elif 'page next S_txt1 S_line1' in search_page:
+        elif 'noresult_tit' not in search_page:
             cur_page += 1
         else:
             crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
