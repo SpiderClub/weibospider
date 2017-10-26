@@ -35,7 +35,16 @@ share_host_count: 5
 # the expire time(hours) of each weibo cookies
 cookie_expire_time: 23
 
+# true for allow download images, false otherwise
+images_allow: false
 
+# the default image path is '${user.home}/weibospider/images'
+# if you want to change another directory for download image, just set the path below
+images_path: ''
+
+# In large type, you will download the large image
+# In thumbnail type, you will download the thumbnail image
+image_type: large
 
 db:
     host: 127.0.0.1
@@ -48,7 +57,7 @@ db:
 redis:
     host: 127.0.0.1
     port: 6379
-    password: ''
+    password: 123456
     cookies: 1                   # store and fetch cookies
     # store fetched urls and results,so you can decide whether retry to crawl the urls or not
     urls: 2
@@ -67,7 +76,7 @@ redis:
     #                             #
     ###############################
     sentinel: ''
-    master: mymaster             # redis sentinel master name, if you don't need it, just set master: ''
+    master: ''             # redis sentinel master name, if you don't need it, just set master: ''
     socket_timeout: 5            # sockt timeout for redis sentinel, if you don't need it, just set master: ''
 
 

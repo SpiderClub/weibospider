@@ -1,5 +1,8 @@
 import re
+import os
 import urllib.parse
+import shutil
+import requests
 from datetime import datetime
 
 from bs4 import BeautifulSoup
@@ -11,11 +14,17 @@ from logger import parser
 from utils import url_filter
 from db.models import WeiboData
 from config import get_crawling_mode
+from config.conf import get_images_allow
+from config.conf import get_images_path
+from config.conf import get_images_type
 from decorators import parse_decorator
 from .user.public import get_userid
 
 
 CRAWLING_MODE = get_crawling_mode()
+IMG_ALLOW = get_images_allow()
+IMG_PATH = get_images_path()
+IMG_TYPE = get_images_type()
 
 
 @parse_decorator('')
@@ -73,6 +82,30 @@ def get_weibo_info(each, html):
         wb_data.weibo_img = ';'.join(imgs_url)
     except Exception:
         wb_data.weibo_img = ''
+
+    if IMG_ALLOW:
+        try:
+            imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
+            imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
+            count = 0
+            for img_url in imgs_url:
+                if IMG_TYPE == 'large':
+                    img_url = img_url.replace('thumbnail', 'large').replace('square', 'large')
+                suffix = img_url[img_url.rfind('.')+1:]
+                # skip gif images, which is used to show loading process
+                if(suffix != 'gif'):
+                    count += 1
+                    image_response = requests.get(img_url, stream=True)
+                    with open(os.path.join(IMG_PATH, '{}-{}.{}'.format(wb_data.weibo_id, count, suffix)), 'wb') as out_file:
+                        shutil.copyfileobj(image_response.raw, out_file)
+            if wb_data.weibo_img:
+                wb_data.weibo_img_path = IMG_PATH
+            else:
+                wb_data.weibo_img_path = ''
+        except Exception:
+            wb_data.weibo_img_path = ''
+    else:
+        wb_data.weibo_img_path = ''
 
     try:
         a_tag = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('a'))
