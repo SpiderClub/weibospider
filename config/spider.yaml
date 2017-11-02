@@ -35,15 +35,16 @@ share_host_count: 5
 # the expire time(hours) of each weibo cookies
 cookie_expire_time: 23
 
-# true for allow download images, false otherwise
-images_allow: false
+# 1 for allow download images, otherwise set it to 0
+images_allow: 1
 
 # the default image path is '${user.home}/weibospider/images'
 # if you want to change another directory for download image, just set the path below
 images_path: ''
 
-# In large type, you will download the large image
-# In thumbnail type, you will download the thumbnail image
+# the value can be large or thumbnail
+# in large type, you will download the large image
+# in thumbnail type, you will download the thumbnail image
 image_type: large
 
 db:
