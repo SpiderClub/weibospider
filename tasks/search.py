@@ -11,6 +11,7 @@ from db.dao import (
 
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
+# But if you change this url, maybe you have to rewrite some part of the parse code
 URL = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
 LIMIT = get_max_search_page() + 1
 
@@ -31,7 +32,7 @@ def search_keyword(keyword, keyword_id):
         search_list = parse_search.get_search_info(search_page)
 
         # Because the search results are sorted by time, if any result has been stored in mysql,
-        # we need not crawl the same keyword in this turn
+        # We need not crawl the same keyword in this turn
         for wb_data in search_list:
             rs = WbDataOper.get_wb_by_mid(wb_data.weibo_id)
             KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)

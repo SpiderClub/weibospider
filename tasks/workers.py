@@ -15,7 +15,11 @@ platforms.C_FORCE_ROOT = True
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'celery.log')
 beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'beat.log')
 broker_and_backend = get_broker_and_backend()
-tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment', 'tasks.repost']
+
+tasks = [
+    'tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment',
+    'tasks.repost', 'tasks.downloader'
+]
 
 if isinstance(broker_and_backend, list):
     broker, backend = broker_and_backend
@@ -84,6 +88,8 @@ app.conf.update(
         Queue('repost_crawler', exchange=Exchange('repost_crawler', type='direct'), routing_key='repost_info'),
         Queue('repost_page_crawler', exchange=Exchange('repost_page_crawler', type='direct'),
               routing_key='repost_page_info'),
+
+        Queue('download_queue', exchange=Exchange('download_queue', type='direct'), routing_key='for_download'),
     ),
 
 )

@@ -79,7 +79,8 @@ def get_weibo_info(each, html):
         wb_data.weibo_img = ''
 
     if IMG_ALLOW and imgs and imgs_url:
-        app.send_task('tasks.downloader.download_img_task', args=(wb_data.weibo_id, imgs_url))
+        app.send_task('tasks.downloader.download_img_task', args=(wb_data.weibo_id, imgs_url),
+                      queue='download_queue', routing_key='for_download')
         wb_data.weibo_img_path = IMG_PATH
     else:
         wb_data.weibo_img_path = ''
