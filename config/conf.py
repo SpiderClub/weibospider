@@ -1,5 +1,6 @@
 import os
 import random
+from pathlib import Path
 
 from yaml import load
 
@@ -102,4 +103,20 @@ def get_cookie_expire_time():
 
 def get_email_args():
     return cf.get('email')
+
+
+def get_images_allow():
+    return cf.get('images_allow')
+
+
+def get_images_path():
+    img_dir = cf.get('images_path') if cf.get('images_path') else os.path.join(str(Path.home()), 'weibospider', 'images')
+    if not os.path.exists(img_dir):
+        os.makedirs(img_dir)
+    return img_dir
+
+
+def get_images_type():
+    return cf.get('image_type')
+
 

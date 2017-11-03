@@ -1,6 +1,5 @@
 import pytest
 
-from config import create_all
 from db.basic import db_session
 from db.models import User
 from db.tables import (
@@ -18,15 +17,6 @@ FAKE_STR = 'test'
 
 
 class TestMysql:
-    def test_create_tables(self):
-        db_session.execute('drop database if exists weibo;')
-        db_session.execute('create database weibo;use weibo;')
-        rs = db_session.execute('show tables;')
-        assert rs.rowcount == 0
-        create_all.create_all_table()
-        rs = db_session.execute('show tables;')
-        assert rs.rowcount > 0
-
     def test_user_oper(self):
         user_list = list()
         for fake_id in FAKE_IDS:
@@ -34,7 +24,7 @@ class TestMysql:
         UserOper.add_all(user_list)
 
         rs = db_session.execute('select * from {}'.format(wbuser.name))
-        assert rs.rowcount == 2
+        assert rs.rowcount > 0
 
         assert UserOper.get_user_by_uid('5') is None
         assert UserOper.get_user_by_uid(FAKE_ID) is not None

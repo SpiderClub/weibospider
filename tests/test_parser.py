@@ -1,3 +1,4 @@
+import time
 import pytest
 import requests
 
@@ -6,19 +7,21 @@ from page_parse import search
 from page_parse import home
 from page_parse import comment
 from page_parse import repost
+from tests import REQUEST_INTERNAL
 
 
 @pytest.mark.parametrize(
-    'uid, expect_name', [('5576276117', '微博运动'), ('10503', 'TimYang')]
+    'uid, expect_name', [('1642351362', 'angelababy'), ('10503', 'TimYang')]
 )
 def test_parse_user_info(uid, expect_name):
     user_info = get_profile(uid)[0]
     assert user_info.name == expect_name
+    time.sleep(REQUEST_INTERNAL)
 
 
 @pytest.mark.parametrize(
     'url, is_login', [
-        ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=1', 0),
+        ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=1', 1),
         ('http://s.weibo.com/weibo/%E7%81%AB%E5%BD%B1&scope=ori&suball=1&page=2', 1)
     ])
 def test_parse_search_info(url, is_login, cookies, session):
@@ -28,6 +31,7 @@ def test_parse_search_info(url, is_login, cookies, session):
     else:
         content = requests.get(url, cookies=cookies).text
         assert len(search.get_search_info(content)) > 0
+    time.sleep(REQUEST_INTERNAL)
 
 
 @pytest.mark.parametrize(
@@ -52,15 +56,18 @@ def test_parse_home_info(url, is_login, is_ajax, cookies, session):
             assert len(home.get_data(content)) > 0
         else:
             assert len(home.get_ajax_data(content)) > 0
+    time.sleep(REQUEST_INTERNAL)
 
 
 def test_parse_comment_info(cookies):
     url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id=4141730615319112&page=4'
     content = requests.get(url, cookies=cookies).text
     assert len(comment.get_comment_list(content, '4141730615319112')) > 0
+    time.sleep(REQUEST_INTERNAL)
 
 
 def test_parse_repost_info(cookies):
     url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4159763183121316&&page=4'
     content = requests.get(url, cookies=cookies).text
     assert len(repost.get_repost_list(content, '4141730615319112')) > 0
+    time.sleep(REQUEST_INTERNAL)

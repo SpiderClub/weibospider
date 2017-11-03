@@ -15,7 +15,11 @@ platforms.C_FORCE_ROOT = True
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'celery.log')
 beat_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'beat.log')
 broker_and_backend = get_broker_and_backend()
-tasks = ['tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment', 'tasks.repost']
+
+tasks = [
+    'tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment',
+    'tasks.repost', 'tasks.downloader'
+]
 
 if isinstance(broker_and_backend, list):
     broker, backend = broker_and_backend
@@ -37,32 +41,32 @@ app.conf.update(
     CELERY_RESULT_SERIALIZER='json',
     CELERYBEAT_SCHEDULE={
         'login_task': {
-            'task': 'tasks.login.excute_login_task',
+            'task': 'tasks.login.execute_login_task',
             'schedule': timedelta(hours=20),
             'options': {'queue': 'login_queue', 'routing_key': 'for_login'}
         },
         'user_task': {
-            'task': 'tasks.user.excute_user_task',
+            'task': 'tasks.user.execute_user_task',
             'schedule': timedelta(minutes=3),
             'options': {'queue': 'user_crawler', 'routing_key': 'for_user_info'}
         },
         'search_task': {
-            'task': 'tasks.search.excute_search_task',
+            'task': 'tasks.search.execute_search_task',
             'schedule': timedelta(hours=2),
             'options': {'queue': 'search_crawler', 'routing_key': 'for_search_info'}
         },
         'home_task': {
-            'task': 'tasks.home.excute_home_task',
+            'task': 'tasks.home.execute_home_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'home_crawler', 'routing_key': 'home_info'}
         },
         'comment_task': {
-            'task': 'tasks.comment.excute_comment_task',
+            'task': 'tasks.comment.execute_comment_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'comment_crawler', 'routing_key': 'comment_info'}
         },
         'repost_task': {
-            'task': 'tasks.repost.excute_repost_task',
+            'task': 'tasks.repost.execute_repost_task',
             'schedule': timedelta(hours=10),
             'options': {'queue': 'repost_crawler', 'routing_key': 'repost_info'}
         },
@@ -84,6 +88,8 @@ app.conf.update(
         Queue('repost_crawler', exchange=Exchange('repost_crawler', type='direct'), routing_key='repost_info'),
         Queue('repost_page_crawler', exchange=Exchange('repost_page_crawler', type='direct'),
               routing_key='repost_page_info'),
+
+        Queue('download_queue', exchange=Exchange('download_queue', type='direct'), routing_key='for_download'),
     ),
 
 )

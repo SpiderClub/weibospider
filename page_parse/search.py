@@ -1,19 +1,22 @@
 import re
 import urllib.parse
-from urllib3.util import parse_url
 from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-from page_get import status
 from logger import parser
+from page_get import status
 from utils import url_filter
 from db.models import WeiboData
-from config import get_crawling_mode
 from decorators import parse_decorator
+from tasks.workers import app
+from config import (
+    get_crawling_mode, get_images_allow, get_images_path)
 
 
 CRAWLING_MODE = get_crawling_mode()
+IMG_ALLOW = get_images_allow()
+IMG_PATH = get_images_path()
 
 
 @parse_decorator('')
@@ -49,11 +52,11 @@ def get_weibo_info(each, html):
     wb_data = WeiboData()
 
     user_cont = each.find(attrs={'class': 'face'})
-    user_href = user_cont.find('a').get('href', '')
-    if not user_href:
-        parser.warning('Failed to get user id')
+    usercard = user_cont.find('img').get('usercard', '')
+    # this only for login user
+    if not usercard:
         return None
-    wb_data.uid = parse_url(user_href).path[3:]
+    wb_data.uid = usercard.split('&')[0][3:]
 
     try:
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
@@ -65,12 +68,22 @@ def get_weibo_info(each, html):
     except Exception as e:
         parser.error('Failed to get weibo url, the error is {}, the source page is {}'.format(e, html))
         return None
+
+    imgs = list()
+    imgs_url = list()
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
         imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
         wb_data.weibo_img = ';'.join(imgs_url)
     except Exception:
         wb_data.weibo_img = ''
+
+    if IMG_ALLOW and imgs and imgs_url:
+        app.send_task('tasks.downloader.download_img_task', args=(wb_data.weibo_id, imgs_url),
+                      queue='download_queue', routing_key='for_download')
+        wb_data.weibo_img_path = IMG_PATH
+    else:
+        wb_data.weibo_img_path = ''
 
     try:
         a_tag = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('a'))

@@ -1,31 +1,30 @@
 language: python
 sudo: false
 python:
-    - "3.4"
     - "3.5"
-    - "3.6"
 
 services:
-  - mysql
-  - redis-server
+    - mysql
+    - redis-server
 
 cache:
     - pip
 
 before_install:
-  - mysql -e 'CREATE DATABASE weibo;'
+    - mysql -e 'create database weibo DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'
 
 install:
-    - pip install codecov
+    - pip install -r test-requirements.txt
     - pip install -r requirements.txt
 
 script:
-  - coverage run -p -m pytest tests
+    - coverage run -p -m pytest tests
 
 branches:
-  only:
-    - master
+    only:
+        - master
 
 after_success:
     - coverage combine
     - codecov
+    - coveralls
