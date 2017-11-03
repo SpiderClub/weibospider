@@ -4,36 +4,25 @@ python:
     - "3.5"
 
 services:
-  - mysql
-  - redis-server
-
-ignore:
-  - README.md
-  - requirements.txt
-  - test-requirements.txt
-  - .gitignore
-  - Dockerfile
-  - env.sh
-  - LICENSE
-  - tox.ini
-  - AUTHORS.rst
+    - mysql
+    - redis-server
 
 cache:
     - pip
 
 before_install:
-  - mysql -e 'CREATE DATABASE weibo;'
+    - mysql -e 'create database weibo DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'
 
 install:
     - pip install -r test-requirements.txt
     - pip install -r requirements.txt
 
 script:
-  - coverage run -p -m pytest tests
+    - coverage run -p -m pytest tests
 
 branches:
-  only:
-    - master
+    only:
+        - master
 
 after_success:
     - coverage combine
