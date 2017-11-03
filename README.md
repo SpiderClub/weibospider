@@ -5,17 +5,11 @@
 
 
 [![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
-[![](https://travis-ci.org/ResolveWang/weibospider.svg?branch=master)](https://travis-ci.org/ResolveWang/weibospider)
+[![](https://travis-ci.org/SpiderClub/weibospider.svg?branch=master)](https://travis-ci.org/SpiderClub/weibospider)
 [![codecov](https://codecov.io/gh/ResolveWang/weibospider/branch/master/graph/badge.svg)](https://codecov.io/gh/ResolveWang/weibospider)
-[![GitHub issues](https://img.shields.io/github/issues/ResolveWang/weibospider.svg)](https://github.com/ResolveWang/weibospider/issues)
+[![GitHub issues](https://img.shields.io/github/issues/SpiderClub/weibospider.svg?style=plastic)](https://github.com/SpiderClub/weibospider/issues)
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-## 演示站点
-在新版的weibospider中，为了更方便进行抓取条件的配置，[545314690](https://github.com/545314690)提了一个可视化配置界面的PR，点击[https://weibospider.rookiefly.cn](https://weibospider.rookiefly.cn)进行访问，
-账号是`test`,密码是`weibospidertest`，请大家不要更改登录相关数据，否则爬虫将无法正常运行。由于定时原因，在修改了搜索词后，两个小时之后才会开始新词/词组的搜索。
-
-注意，该应用并不是weibospider的下游应用，请自行进行数据分析相关工作，本项目只着重解决数据采集的问题。
 
 ## 项目亮点 :star:
 - 功能全面：包括了**用户信息抓取**、**指定关键字搜索结果增量抓取**、**指定用户主页所有原创微博抓取**、**评论抓取**和**转发关系抓取**等
