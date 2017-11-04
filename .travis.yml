@@ -13,6 +13,9 @@ cache:
 before_install:
     - mysql -e 'create database weibo DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;'
 
+before_script:
+    - sudo redis-server /etc/redis/redis.conf --requirepass '123456'
+
 install:
     - pip install -r test-requirements.txt
     - pip install -r requirements.txt
