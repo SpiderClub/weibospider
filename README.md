@@ -6,7 +6,7 @@
 
 [![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
 [![](https://travis-ci.org/SpiderClub/weibospider.svg?branch=master)](https://travis-ci.org/SpiderClub/weibospider)
-[![codecov](https://codecov.io/gh/ResolveWang/weibospider/branch/master/graph/badge.svg)](https://codecov.io/gh/ResolveWang/weibospider)
+[![codecov](https://codecov.io/gh/SpiderClub/weibospider/branch/master/graph/badge.svg)](https://codecov.io/gh/SpiderClub/weibospider)
 [![GitHub issues](https://img.shields.io/github/issues/SpiderClub/weibospider.svg?style=plastic)](https://github.com/SpiderClub/weibospider/issues)
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
