@@ -3,8 +3,8 @@ import json
 from bs4 import BeautifulSoup
 
 from logger import parser
-from db.models import WeiboRepost
 from db.redis_db import IdNames
+from db.models import WeiboRepost
 from decorators import parse_decorator
 
 
@@ -32,7 +32,7 @@ def get_total_page(html):
 
 
 @parse_decorator([])
-def get_repost_list(html, mid):
+def stroe_and_get_reposts(html, mid):
     """
        Get repost details
        :param html: page source

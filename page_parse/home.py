@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from page_get import status
 from logger import parser
 from db.models import WeiboData
-from config import get_crawling_mode
+from config import crawl_args
 from decorators import parse_decorator
 
 
@@ -15,7 +15,7 @@ from decorators import parse_decorator
 ORIGIN = 'http'
 PROTOCOL = 'https'
 ROOT_URL = 'weibo.com'
-CRAWLING_MODE = get_crawling_mode()
+CRAWLING_MODE = crawl_args.get('crawling_mode')
 
 
 # todo 重构搜索解析代码和主页解析代码，使其可重用；捕获所有具体异常，而不是笼统的使用Exception

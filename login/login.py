@@ -16,16 +16,15 @@ from page_parse import is_403
 from exceptions import LoginException
 from db.redis_db import Cookies
 from db.dao import LoginInfoOper
-from config import (
-    get_code_username, get_code_password)
+from config import chapcha_args
 from logger import (
     crawler, other)
 
 
 VERIFY_CODE_PATH = './{}{}.png'
 
-YUMDAMA_USERNAME = os.getenv('YUMDAMA_ACCOUNT') or get_code_username()
-YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or get_code_password()
+YUMDAMA_USERNAME = os.getenv('YUMDAMA_ACCOUNT') or chapcha_args.get('name')
+YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or chapcha_args.get('password')
 
 
 def get_pincode_url(pcid):

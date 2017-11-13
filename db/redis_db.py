@@ -7,44 +7,46 @@ from redis.sentinel import Sentinel
 
 from logger import crawler
 from config import (
-    get_redis_args,
-    get_share_host_count,
-    get_running_mode,
-    get_cookie_expire_time
-)
+    redis_args, crawl_args)
 
+MODE = crawl_args.get('running_mode')
+SHARE_HOST_COUNT = crawl_args.get('share_host_count')
 
-MODE = get_running_mode()
-SHARE_HOST_COUNT = get_share_host_count()
-REDIS_ARGS = get_redis_args()
+password = redis_args.get('password', '')
+cookies_db = redis_args.get('cookies', 1)
+urls_db = redis_args.get('urls', 2)
+broker_db = redis_args.get('broker', 5)
+backend_db = redis_args.get('backend', 6)
+id_name_db = redis_args.get('id_name', 8)
+cookie_expire_time = crawl_args.get('cookie_expire_time')
+data_expire_time = redis_args.get('expire_time') * 60 * 60
 
-password = REDIS_ARGS.get('password', '')
-cookies_db = REDIS_ARGS.get('cookies', 1)
-urls_db = REDIS_ARGS.get('urls', 2)
-broker_db = REDIS_ARGS.get('broker', 5)
-backend_db = REDIS_ARGS.get('backend', 6)
-id_name_db = REDIS_ARGS.get('id_name', 8)
-cookie_expire_time = get_cookie_expire_time()
-data_expire_time = REDIS_ARGS.get('expire_time') * 60 * 60
-
-sentinel_args = REDIS_ARGS.get('sentinel', '')
+sentinel_args = redis_args.get('sentinel', '')
 if sentinel_args:
     # default socket timeout is 2 secs
-    master_name = REDIS_ARGS.get('master')
-    socket_timeout = int(REDIS_ARGS.get('socket_timeout', 2))
-    sentinel = Sentinel([(args['host'], args['port']) for args in sentinel_args], password=password,
-                        socket_timeout=socket_timeout)
-    cookies_con = sentinel.master_for(master_name, socket_timeout=socket_timeout, db=cookies_db)
-    broker_con = sentinel.master_for(master_name, socket_timeout=socket_timeout, db=broker_db)
-    urls_con = sentinel.master_for(master_name, socket_timeout=socket_timeout, db=urls_db)
-    id_name_con = sentinel.master_for(master_name, socket_timeout=socket_timeout, db=id_name_db)
+    master_name = redis_args.get('master')
+    socket_timeout = int(redis_args.get('socket_timeout', 2))
+
+    sentinel = Sentinel([(args['host'], args['port']) for args in sentinel_args],
+                        password=password,
+                        socket_timeout=socket_timeout
+                        )
+
+    cookies_con = sentinel.master_for(
+        master_name, socket_timeout=socket_timeout, db=cookies_db)
+    broker_con = sentinel.master_for(
+        master_name, socket_timeout=socket_timeout, db=broker_db)
+    urls_con = sentinel.master_for(
+        master_name, socket_timeout=socket_timeout, db=urls_db)
+    id_name_con = sentinel.master_for(
+        master_name, socket_timeout=socket_timeout, db=id_name_db)
 else:
-    host = REDIS_ARGS.get('host', '127.0.0.1')
-    port = REDIS_ARGS.get('port', 6379)
-    cookies_con = redis.Redis(host=host, port=port, password=password, db=cookies_db)
-    broker_con = redis.Redis(host=host, port=port, password=password, db=broker_db)
-    urls_con = redis.Redis(host=host, port=port, password=password, db=urls_db)
-    id_name_con = redis.Redis(host=host, port=port, password=password, db=id_name_db)
+    host = redis_args.get('host', '127.0.0.1')
+    port = redis_args.get('port', 6379)
+    cookies_con = redis.StrictRedis(host=host, port=port, password=password, db=cookies_db)
+    broker_con = redis.StrictRedis(host=host, port=port, password=password, db=broker_db)
+    urls_con = redis.StrictRedis(host=host, port=port, password=password, db=urls_db)
+    id_name_con = redis.StrictRedis(host=host, port=port, password=password, db=id_name_db)
 
 
 class Cookies(object):

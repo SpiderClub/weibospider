@@ -1,6 +1,7 @@
 import os
 import time
 import signal
+import random
 
 import requests
 
@@ -15,14 +16,14 @@ from page_parse import (
     is_403, is_404, is_complete)
 from decorators import (
     timeout_decorator, timeout)
-from config import (
-    get_timeout, get_crawl_interal, get_excp_interal, get_max_retries)
+from config import crawl_args
 
 
-TIME_OUT = get_timeout()
-INTERAL = get_crawl_interal()
-MAX_RETRIES = get_max_retries()
-EXCP_INTERAL = get_excp_interal()
+TIME_OUT = crawl_args.get('time_out')
+INTERAL = random.randint(
+    crawl_args.get('min_crawl_interal'), crawl_args.get('max_crawl_interal'))
+MAX_RETRIES = crawl_args.get('max_retries')
+EXCP_INTERAL = crawl_args.get('excp_interal')
 COOKIES = get_cookies()
 
 

@@ -1,44 +1,45 @@
+from celery import group
+
 from .workers import app
 from page_parse import repost
 from logger import crawler
 from db.redis_db import IdNames
+from config import crawl_args
 from db.dao import (
     WbDataOper, RepostOper)
 from page_get import (
     get_page, get_profile)
-from config import get_max_repost_page
 
 
 BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
+LIMIT = crawl_args.get('max_repost_page')
 
 
 @app.task
 def crawl_repost_by_page(mid, page_num):
+    total_page = 1
     cur_url = BASE_URL.format(mid, page_num)
     html = get_page(cur_url, auth_level=1, is_ajax=True)
-    repost_datas = repost.get_repost_list(html, mid)
+    repost_datas = repost.stroe_and_get_reposts(html, mid)
     if page_num == 1:
+        total_page = repost.get_total_page(html)
         WbDataOper.set_weibo_repost_crawled(mid)
-    return html, repost_datas
+    return total_page, repost_datas
 
 
-@app.task(ignore_result=True)
+@app.task
 def crawl_repost_page(mid, uid):
-    limit = get_max_repost_page() + 1
-    first_repost_data = crawl_repost_by_page(mid, 1)
-    total_page = repost.get_total_page(first_repost_data[0])
-    repost_datas = first_repost_data[1]
+    total_page, repost_datas = crawl_repost_by_page(mid, 1)
 
     if not repost_datas:
         return
 
     root_user, _ = get_profile(uid)
 
-    if total_page < limit:
-        limit = total_page + 1
+    to_crawl_page = total_page if total_page < LIMIT else LIMIT
 
-    for page_num in range(2, limit):
-        cur_repost_datas = crawl_repost_by_page(mid, page_num)[1]
+    for page_num in range(2, to_crawl_page+1):
+        _, cur_repost_datas = crawl_repost_by_page(mid, page_num)
         if cur_repost_datas:
             repost_datas.extend(cur_repost_datas)
 
@@ -55,12 +56,10 @@ def crawl_repost_page(mid, uid):
     RepostOper.add_all(repost_datas)
 
 
-@app.task(ignore_result=True)
+@app.task
 def execute_repost_task():
     # regard current weibo url as the original url, you can also analyse from the root url
     weibo_datas = WbDataOper.get_weibo_repost_not_crawled()
     crawler.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))
-
-    for weibo_data in weibo_datas:
-        app.send_task('tasks.repost.crawl_repost_page', args=(weibo_data.weibo_id, weibo_data.uid),
-                      queue='repost_crawler', routing_key='repost_info')
+    caller = group(crawl_repost_page.s(data.weibo_id, data.uid) for data in weibo_datas)
+    caller.delay()
