@@ -14,7 +14,6 @@ BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
 def get_user_detail(user_id, html):
     user = person.get_detail(html, user_id)
     if user is not None:
-        user.uid = user_id
         user.follows_num = person.get_friends(html)
         user.fans_num = person.get_fans(html)
         user.wb_num = person.get_status(html)
