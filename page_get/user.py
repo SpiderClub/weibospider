@@ -29,6 +29,14 @@ def get_enterprise_detail(user_id, html):
     return user
 
 
+def set_public_attrs(user, html):
+    user.name = public.get_username(html)
+    user.head_img = public.get_headimg(html)
+    user.verify_type = public.get_verifytype(html)
+    user.verify_info = public.get_verifyreason(html, user.verify_type)
+    user.level = public.get_level(html)
+
+
 def get_url_from_web(user_id):
     """
     Get user info according to user id.
@@ -42,13 +50,14 @@ def get_url_from_web(user_id):
         return None
 
     url = BASE_URL.format('100505', user_id)
+    # todo find a better way to get domain and user info
     html = get_page(url, auth_level=1)
 
     if not is_404(html):
         domain = public.get_userdomain(html)
 
         # writers(special users)
-        if domain == '103505' or domain == '100306':
+        if domain in ['103505', '100306', '100605']:
             url = BASE_URL.format(domain, user_id)
             html = get_page(url)
             user = get_user_detail(user_id, html)
@@ -62,11 +71,7 @@ def get_url_from_web(user_id):
         if user is None:
             return None
 
-        user.name = public.get_username(html)
-        user.head_img = public.get_headimg(html)
-        user.verify_type = public.get_verifytype(html)
-        user.verify_info = public.get_verifyreason(html, user.verify_type)
-        user.level = public.get_level(html)
+        set_public_attrs(user, html)
 
         if user.name:
             UserOper.add_one(user)
@@ -87,7 +92,7 @@ def get_profile(user_id):
     user = UserOper.get_user_by_uid(user_id)
 
     if user:
-        storage.info('user {id} has already crawled'.format(id=user_id))
+        storage.info('user {} has already crawled'.format(user_id))
         SeedidsOper.set_seed_crawled(user_id, 1)
         is_crawled = 1
     else:
