@@ -6,11 +6,10 @@ from email.mime.text import MIMEText
 from email.utils import (
     parseaddr, formataddr)
 
-from config import get_email_args
+from config import email_args
 from logger import other
 
 
-email_args = get_email_args()
 smtp_server = email_args['server']
 smtp_port = email_args['port']
 from_addr = email_args['from']
