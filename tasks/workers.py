@@ -20,7 +20,7 @@ tasks = [
     'tasks.repost', 'tasks.downloader'
 ]
 
-if isinstance(broker_and_backend, list):
+if isinstance(broker_and_backend, tuple):
     broker, backend = broker_and_backend
     app = Celery('weibo_spider', include=tasks, broker=broker, backend=backend)
 else:
