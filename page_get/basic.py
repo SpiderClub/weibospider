@@ -20,8 +20,8 @@ from config import crawl_args
 
 
 TIME_OUT = crawl_args.get('time_out')
-INTERAL = random.randint(
-    crawl_args.get('min_crawl_interal'), crawl_args.get('max_crawl_interal'))
+MIN_CRAWL_INTERAL = crawl_args.get('min_crawl_interal')
+MAX_CRAWL_INTERAL = crawl_args.get('max_crawl_interal')
 MAX_RETRIES = crawl_args.get('max_retries')
 EXCP_INTERAL = crawl_args.get('excp_interal')
 COOKIES = get_cookies()
@@ -79,7 +79,8 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             continue
         if auth_level == 2:
             # slow down to aviod being banned
-            time.sleep(INTERAL)
+            interal = random.randint(MIN_CRAWL_INTERAL, MAX_CRAWL_INTERAL)
+            time.sleep(interal)
             if is_banned(resp.url) or is_403(page):
                 crawler.warning('Account {} has been banned'.format(name_cookies[0]))
                 LoginInfoOper.freeze_account(name_cookies[0], 0)

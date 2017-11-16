@@ -8,6 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from config import db_args
 
 
+__all__ = ['eng', 'Base', 'db_session', 'metadata']
+
+
 def get_engine():
     password = os.getenv('DB_PASS', db_args['password'])
     connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(
@@ -24,4 +27,3 @@ Session = sessionmaker(bind=eng)
 db_session = Session()
 metadata = MetaData(get_engine())
 
-__all__ = ['eng', 'Base', 'db_session', 'metadata']
