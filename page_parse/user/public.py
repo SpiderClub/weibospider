@@ -41,9 +41,10 @@ def get_verifytype(html):
     :param html: page source
     :return: 0 stands for unauthorized，1 stands for persional authentication，2 stands for enterprise authentication
     """
-    if 'icon_pf_approve_co' in html:
+    cont = _get_header(html)
+    if 'icon_pf_approve_co' in cont:
         return 2
-    elif 'icon_pf_approve' in html:
+    elif 'icon_pf_approve' in cont:
         return 1
     else:
         return 0

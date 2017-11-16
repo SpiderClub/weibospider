@@ -1,13 +1,12 @@
 import time
+
 import pytest
 import requests
 
 from page_get import get_profile
-from page_parse import search
-from page_parse import home
-from page_parse import comment
-from page_parse import repost
 from tests import REQUEST_INTERNAL
+from page_parse import (
+    search, home, comment, repost)
 
 
 @pytest.mark.parametrize(
@@ -69,5 +68,5 @@ def test_parse_comment_info(cookies):
 def test_parse_repost_info(cookies):
     url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4159763183121316&&page=4'
     content = requests.get(url, cookies=cookies).text
-    assert len(repost.get_repost_list(content, '4141730615319112')) > 0
+    assert len(repost.stroe_and_get_reposts(content, '4141730615319112')) > 0
     time.sleep(REQUEST_INTERNAL)

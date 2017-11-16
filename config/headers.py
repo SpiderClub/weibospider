@@ -1,5 +1,8 @@
 import random
 
+
+__all__ = ['FakeChromeUA', 'headers']
+
 first_num = random.randint(55, 62)
 third_num = random.randint(0, 3200)
 fourth_num = random.randint(0, 140)

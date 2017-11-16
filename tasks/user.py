@@ -1,3 +1,5 @@
+from celery import group
+
 from .workers import app
 from db.dao import SeedidsOper
 from page_get import (
@@ -39,15 +41,13 @@ def crawl_person_infos(uid):
 
     # Crawl fans and followers
     if not is_crawled:
-        app.send_task('tasks.user.crawl_follower_fans', args=(uid,), queue='fans_followers',
-                      routing_key='for_fans_followers')
+        app.send_task('tasks.user.crawl_follower_fans', args=(uid,),
+                      queue='fans_followers', routing_key='for_fans_followers')
 
 
 @app.task(ignore_result=True)
 def execute_user_task():
     seeds = SeedidsOper.get_seed_ids()
-    if seeds:
-        for seed in seeds:
-            app.send_task('tasks.user.crawl_person_infos', args=(seed.uid,), queue='user_crawler',
-                          routing_key='for_user_info')
+    caller = group(crawl_person_infos.s(seed.uid) for seed in seeds)
+    caller.delay()
 

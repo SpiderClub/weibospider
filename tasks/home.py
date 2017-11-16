@@ -1,10 +1,12 @@
 import time
 
+from celery import group
+
 from logger import crawler
 from .workers import app
 from page_parse.user import public
 from page_get import get_page
-from config import get_max_home_page
+from config import crawl_args
 from db.dao import (
     WbDataOper, SeedidsOper)
 from page_parse.home import (
@@ -15,6 +17,7 @@ from page_parse.home import (
 HOME_URL = 'http://weibo.com/u/{}?is_ori=1&is_tag=0&profile_ftype=1&page={}'
 AJAX_URL = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}' \
            '&pre_page={}&__rnd={}'
+LIMIT = crawl_args.get('max_home_page')
 
 
 @app.task(ignore_result=True)
@@ -35,9 +38,9 @@ def crawl_ajax_page(url, auth_level):
 
 @app.task(ignore_result=True)
 def crawl_weibo_datas(uid):
-    limit = get_max_home_page()
     cur_page = 1
-    while cur_page <= limit:
+    to_crawl_page = LIMIT
+    while cur_page <= to_crawl_page:
         url = HOME_URL.format(uid, cur_page)
         if cur_page == 1:
             html = get_page(url, auth_level=1)
@@ -59,12 +62,10 @@ def crawl_weibo_datas(uid):
         if cur_page == 1:
             # here we use local call to get total page number
             total_page = get_total_page(crawl_ajax_page(ajax_url_1, 2))
+            to_crawl_page = total_page if total_page < LIMIT else LIMIT
             auth_level = 1
         else:
             auth_level = 2
-
-        if total_page < limit:
-            limit = total_page
 
         app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0, auth_level), queue='ajax_home_crawler',
                       routing_key='ajax_home_info')
@@ -81,6 +82,5 @@ def execute_home_task():
     # you can have many strategies to crawl user's home page, here we choose table seed_ids's uid
     # whose home_crawl is 0
     id_objs = SeedidsOper.get_home_ids()
-    for id_obj in id_objs:
-        app.send_task('tasks.home.crawl_weibo_datas', args=(id_obj.uid,), queue='home_crawler',
-                      routing_key='home_info')
+    caller = group(crawl_weibo_datas.s(obj.uid for obj in id_objs))
+    caller.delay()

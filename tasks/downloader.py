@@ -6,11 +6,10 @@ import requests
 
 from .workers import app
 from logger import crawler
-from config import (
-    get_images_path, get_images_type)
+from config import crawl_args
 
-IMG_PATH = get_images_path()
-IMG_TYPE = get_images_type()
+IMG_PATH = crawl_args.get('images_path')
+IMG_TYPE = crawl_args.get('image_type')
 
 
 @app.task(ignore_result=True)
@@ -28,7 +27,6 @@ def download_img_task(mid, urls):
             except Exception as e:
                 crawler.error('fail to down image {}, {} is raised'.format(img_url, e))
             else:
-                with open(os.path.join(IMG_PATH, '{}-{}.{}'.format(mid, count, suffix)), 'wb') as out_file:
+                with open(os.path.join(IMG_PATH, '{}-{}.{}'.
+                          format(mid, count, suffix)), 'wb') as out_file:
                     shutil.copyfileobj(image_response.raw, out_file)
-
-

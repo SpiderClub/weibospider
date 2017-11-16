@@ -10,13 +10,12 @@ from utils import url_filter
 from db.models import WeiboData
 from decorators import parse_decorator
 from tasks.workers import app
-from config import (
-    get_crawling_mode, get_images_allow, get_images_path)
+from config import crawl_args
 
 
-CRAWLING_MODE = get_crawling_mode()
-IMG_ALLOW = get_images_allow()
-IMG_PATH = get_images_path()
+CRAWLING_MODE = crawl_args.get('crawling_mode')
+IMG_ALLOW = crawl_args.get('images_allow')
+IMG_PATH = crawl_args.get('images_path')
 
 
 @parse_decorator('')
