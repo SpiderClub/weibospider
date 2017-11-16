@@ -3,6 +3,14 @@ sudo: false
 python:
     - "3.5"
 
+ignore_changes:
+  - *.md
+  - *.rst
+  - Dockerfile
+  - tox.ini
+  - env.sh
+  - .gitignore
+
 services:
   - mysql
   - redis-server
