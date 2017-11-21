@@ -3,6 +3,7 @@ import time
 import signal
 import random
 
+import urllib3
 import requests
 
 from config import headers
@@ -19,6 +20,7 @@ from decorators import (
 from config import crawl_args
 
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 TIME_OUT = crawl_args.get('time_out')
 MIN_CRAWL_INTERAL = crawl_args.get('min_crawl_interal')
 MAX_CRAWL_INTERAL = crawl_args.get('max_crawl_interal')
@@ -28,9 +30,14 @@ COOKIES = get_cookies()
 
 
 def is_banned(url):
-    if 'unfreeze' in url or 'accessdeny' in url or 'userblock' in url or 'verifybmobile' in url:
-        return True
-    return False
+    def _contains(str1, str2):
+        return str1 in str2
+
+    judge_condition = [
+        'unfreeze', 'accessdeny', 'userblock', 'verifybmobile'
+    ]
+
+    return any(_contains(x,  url) for x in judge_condition)
 
 
 @timeout(200)
@@ -43,7 +50,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
     :param need_proxy: whether the request need a http/https proxy
     :return: response text, when a exception is raised, return ''
     """
-    crawler.info('the crawling url is {url}'.format(url=url))
+    crawler.info('the crawling url is {}'.format(url))
     count = 0
 
     while count < MAX_RETRIES:
