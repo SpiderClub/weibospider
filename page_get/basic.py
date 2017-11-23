@@ -3,8 +3,8 @@ import time
 import signal
 import random
 
-import urllib3
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from config import headers
 from logger import crawler
@@ -20,7 +20,8 @@ from decorators import (
 from config import crawl_args
 
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 TIME_OUT = crawl_args.get('time_out')
 MIN_CRAWL_INTERAL = crawl_args.get('min_crawl_interal')
 MAX_CRAWL_INTERAL = crawl_args.get('max_crawl_interal')
