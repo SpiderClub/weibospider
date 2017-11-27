@@ -16,7 +16,7 @@ PASSPORT_URL = 'https://passport.weibo.com/visitor/visitor?entry=miniblog&a=ente
 POST_URL = 'https://passport.weibo.com/visitor/genvisitor'
 INRARNATE_URL = 'https://passport.weibo.com/visitor/visitor?a=incarnate&t={}&w={}&c={}&gc=&cb=cross_domain&from=' \
                 'weibo&_rand={}'
-CHECK_URL = 'http://weibo.com/1319066361/Flttyxak8'
+CHECK_URL = 'https://weibo.com/1319066361/Flttyxak8'
 
 user_agent = FakeChromeUA.get_ua()
 brower_type, brower_version = user_agent.split(' ')[-2].split('/')

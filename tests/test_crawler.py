@@ -10,7 +10,7 @@ from tasks.repost import crawl_repost_by_page
 from tests import REQUEST_INTERNAL
 
 
-HOME_AJAX_URL = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}' \
+HOME_AJAX_URL = 'https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}' \
            '&pre_page={}&__rnd={}'
 
 
@@ -25,7 +25,7 @@ def test_crawl_longtext_of_weibo(mid):
 
 def test_crawl_first_home_page():
     from page_parse.home import get_ajax_data
-    url = 'http://weibo.com/u/1800822823?is_ori=1&is_tag=0&profile_ftype=1&page=1'
+    url = 'https://weibo.com/u/1800822823?is_ori=1&is_tag=0&profile_ftype=1&page=1'
     content = get_page(url, auth_level=1)
     assert "['islogin']" in content
     time.sleep(REQUEST_INTERNAL)

@@ -169,7 +169,7 @@ def get_rooturl(cururl, html):
             return ''
         soup = BeautifulSoup(cont, 'html.parser')
         try:
-            url = 'http://weibo.com'+soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'WB_from'}).find(attrs={'class': 'S_txt2'})['href']
+            url = 'https://weibo.com'+soup.find(attrs={'node-type': 'feed_list_forwardContent'}).find(attrs={'class': 'WB_from'}).find(attrs={'class': 'S_txt2'})['href']
         except TypeError:
             return ''
         except AttributeError:
@@ -189,7 +189,7 @@ def get_reposturls(repostinfo):
     """
     try:
         repost_urls = []
-        prestring = 'http://weibo.com'
+        prestring = 'https://weibo.com'
         soup = BeautifulSoup(repostinfo, 'html.parser')
         contents = soup.find_all(attrs={'node-type': 'feed_list_item_date'})
         for content in contents:

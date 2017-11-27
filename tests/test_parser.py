@@ -35,11 +35,11 @@ def test_parse_search_info(url, is_login, cookies, session):
 
 @pytest.mark.parametrize(
     'url, is_login, is_ajax', [
-        ('http://weibo.com/u/10503?is_ori=1&is_tag=0&profile_ftype=1&page=1', 0, 0),
-        ('http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&pagebar=0&is_ori=1&id=10050510503&page=1&'
+        ('https://weibo.com/u/10503?is_ori=1&is_tag=0&profile_ftype=1&page=1', 0, 0),
+        ('https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&pagebar=0&is_ori=1&id=10050510503&page=1&'
          'pre_page=1', 0, 1),
-        ('http://weibo.com/u/10503?is_ori=1&is_tag=0&profile_ftype=1&page=2', 1, 0),
-        ('http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&pagebar=0&is_ori=1&id=10050510503&page=2&'
+        ('https://weibo.com/u/10503?is_ori=1&is_tag=0&profile_ftype=1&page=2', 1, 0),
+        ('https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&pagebar=0&is_ori=1&id=10050510503&page=2&'
          'pre_page=2', 1, 1)
     ], ids=['req_without_login', 'ajax_req_without_login', 'req_with_login', 'ajax_req_with_login'])
 def test_parse_home_info(url, is_login, is_ajax, cookies, session):
@@ -59,14 +59,14 @@ def test_parse_home_info(url, is_login, is_ajax, cookies, session):
 
 
 def test_parse_comment_info(cookies):
-    url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id=4141730615319112&page=4'
+    url = 'https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4141730615319112&page=4'
     content = requests.get(url, cookies=cookies).text
     assert len(comment.get_comment_list(content, '4141730615319112')) > 0
     time.sleep(REQUEST_INTERNAL)
 
 
 def test_parse_repost_info(cookies):
-    url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4159763183121316&&page=4'
+    url = 'https://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4159763183121316&&page=4'
     content = requests.get(url, cookies=cookies).text
     assert len(repost.stroe_and_get_reposts(content, '4141730615319112')) > 0
     time.sleep(REQUEST_INTERNAL)

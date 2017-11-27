@@ -8,7 +8,7 @@ def is_404(html):
     soup = BeautifulSoup(html, 'html.parser')
     try:
         # request is redirected by js code
-        if "http://weibo.com/sorry?pagenotfound" in html:
+        if "weibo.com/sorry?pagenotfound" in html:
             return True
         elif soup.title.text == '404错误':
             return True

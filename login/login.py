@@ -232,7 +232,7 @@ def get_session(name, password):
         m = re.search(u_pattern, login_info)
         if m and m.group(1):
             # check if account is valid
-            check_url = 'http://weibo.com/2671109275/about'
+            check_url = 'https://weibo.com/2671109275/about'
             resp = session.get(check_url, headers=headers)
 
             if is_403(resp.text):

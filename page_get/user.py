@@ -8,7 +8,7 @@ from page_parse.user import (
     enterprise, person, public)
 
 
-BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
+BASE_URL = 'https://weibo.com/p/{}{}/info?mod=pedit_more'
 
 
 def get_user_detail(user_id, html):
@@ -117,9 +117,9 @@ def get_fans_or_followers_ids(user_id, crawl_type):
     # todo check fans and followers the special users,such as writers
     # todo deal with conditions that fans and followers more than 5 pages
     if crawl_type == 1:
-        fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = 'https://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
     else:
-        fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = 'https://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
 
     cur_page = 1
     max_page = 6

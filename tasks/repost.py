@@ -11,7 +11,7 @@ from page_get import (
     get_page, get_profile)
 
 
-BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
+BASE_URL = 'https://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
 LIMIT = crawl_args.get('max_repost_page')
 
 

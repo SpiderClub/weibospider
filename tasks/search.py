@@ -14,7 +14,7 @@ from db.dao import (
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
 # But if you change this url, maybe you have to rewrite some part of the parse code
-URL = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
+URL = 'https://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
 LIMIT = crawl_args.get('max_search_page')
 
 

@@ -47,7 +47,7 @@ def test_send_email(email_from, email_pass, email_to, expect):
                                                                            '1fk6b8ooq4rj30ku0qsww5.jpg'),
         ('//gslb.miaopai.com/stream/LWuG0Ng0AyTCYkzSzt9l0fh6usQP2mSqH~i9rQ__.mp4',
          'http://gslb.miaopai.com/stream/LWuG0Ng0AyTCYkzSzt9l0fh6usQP2mSqH~i9rQ__.mp4'),
-        ('/p/1002061402977920/service', 'http://weibo.com/p/1002061402977920/service'),
+        ('/p/1002061402977920/service', 'https://weibo.com/p/1002061402977920/service'),
         ('http://company.verified.weibo.com/bluev/verify/index', 'http://company.verified.weibo.com/bluev/verify/index')
     ]
 )

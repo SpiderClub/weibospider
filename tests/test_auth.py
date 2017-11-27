@@ -9,8 +9,8 @@ from tests import REQUEST_INTERNAL
 class TestWithoutLogin:
     @pytest.mark.parametrize(
         'unique_str, url', [
-            ('$CONFIG', 'http://weibo.com/1752613937/Afa5SFjJc'),
-            ('$CONFIG', 'http://weibo.com/1319066361/Flttyxak8')
+            ('$CONFIG', 'https://weibo.com/1752613937/Afa5SFjJc'),
+            ('$CONFIG', 'https://weibo.com/1319066361/Flttyxak8')
         ])
     def test_crawl_weibo_info_without_login(self, unique_str, url, cookies):
         resp = requests.get(url, cookies=cookies)
@@ -22,7 +22,7 @@ class TestWithoutLogin:
         assert unique_str not in resp.text
 
     def test_crawl_weibo_comment_without_login(self, cookies):
-        comment_url = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id=4158045430832830&page=1'
+        comment_url = 'https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4158045430832830&page=1'
         resp = requests.get(comment_url, cookies=cookies)
         assert 'Sina Visitor System' not in resp.text
         time.sleep(REQUEST_INTERNAL)
@@ -32,7 +32,7 @@ class TestWithoutLogin:
         time.sleep(REQUEST_INTERNAL)
 
     def test_crawl_weibo_repost_without_login(self, cookies):
-        repost_url = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4158045430832830&page=12'
+        repost_url = 'https://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id=4158045430832830&page=12'
         resp = requests.get(repost_url, cookies=cookies)
         assert 'Sina Visitor System' not in resp.text
         time.sleep(REQUEST_INTERNAL)
