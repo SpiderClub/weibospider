@@ -29,7 +29,7 @@ YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or chapcha_args.get('password')
 
 def get_pincode_url(pcid):
     size = 0
-    url = "http://login.sina.com.cn/cgi/pin.php"
+    url = "https://login.sina.com.cn/cgi/pin.php"
     pincode_url = '{}?r={}&s={}&p={}'.format(url, math.floor(random.random() * 100000000), size, pcid)
     return pincode_url
 
@@ -58,7 +58,7 @@ def get_encodename(name):
 
 # prelogin for servertime, nonce, pubkey, rsakv
 def get_server_data(su, session):
-    pre_url = "http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
+    pre_url = "https://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
     pre_url = pre_url + su + "&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)&_="
     prelogin_url = pre_url + str(int(time.time() * 1000))
     pre_data_res = session.get(prelogin_url, headers=headers)
@@ -105,7 +105,7 @@ def get_redirect(name, data, post_url, session):
 
 
 def login_no_pincode(name, password, session, server_data):
-    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+    post_url = 'https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
     nonce = server_data['nonce']
@@ -141,7 +141,7 @@ def login_no_pincode(name, password, session, server_data):
 
 
 def login_by_pincode(name, password, session, server_data, retry_count):
-    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+    post_url = 'https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
     nonce = server_data['nonce']
