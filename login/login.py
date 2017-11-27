@@ -58,7 +58,7 @@ def get_encodename(name):
 
 # prelogin for servertime, nonce, pubkey, rsakv
 def get_server_data(su, session):
-    pre_url = "https://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
+    pre_url = "http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
     pre_url = pre_url + su + "&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)&_="
     prelogin_url = pre_url + str(int(time.time() * 1000))
     pre_data_res = session.get(prelogin_url, headers=headers)
@@ -105,7 +105,7 @@ def get_redirect(name, data, post_url, session):
 
 
 def login_no_pincode(name, password, session, server_data):
-    post_url = 'https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
     nonce = server_data['nonce']
@@ -132,7 +132,7 @@ def login_no_pincode(name, password, session, server_data):
         'su': get_encodename(name),
         'useticket': '1',
         'vsnf': '1',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+        'url': 'https://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
 
     rs = get_redirect(name, data, post_url, session)
@@ -141,7 +141,7 @@ def login_no_pincode(name, password, session, server_data):
 
 
 def login_by_pincode(name, password, session, server_data, retry_count):
-    post_url = 'https://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
+    post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
     nonce = server_data['nonce']
@@ -170,7 +170,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
         'su': get_encodename(name),
         'useticket': '1',
         'vsnf': '1',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
+        'url': 'https://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
         'pcid': pcid
     }
 
