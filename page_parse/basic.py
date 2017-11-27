@@ -14,9 +14,6 @@ def is_404(html):
             return True
         elif html == '':
             return True
-        # repost weibo info is deleted
-        elif '抱歉，此微博已被作者删除' in html:
-            return True
         else:
             return False
     except AttributeError:
