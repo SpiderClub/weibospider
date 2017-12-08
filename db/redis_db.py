@@ -49,6 +49,7 @@ else:
     id_name_con = redis.StrictRedis(host=host, port=port, password=password, db=id_name_db)
 
 
+# todo share a public connection pool
 class Cookies(object):
     @classmethod
     def store_cookies(cls, name, cookies):
