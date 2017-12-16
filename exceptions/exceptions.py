@@ -15,3 +15,8 @@ class LoginException(Exception):
     Login error for weibo login
     """
 
+
+class NoCookieException(Exception):
+    """
+    No available cookie
+    """

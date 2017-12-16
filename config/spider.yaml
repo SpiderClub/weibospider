@@ -8,7 +8,8 @@ spider:
     max_home_page: 50              # max user home page for crawling
     max_comment_page: 2000         # max comment page for crawling
     max_repost_page: 2000          # max repost page for crawling
-    excp_interal: 5*60  # time for sleeping when crawling raises exceptions
+    # sleep excp_interal seconds if exception is raised when crawling
+    excp_interal: 300
 
     # The value of running_mode can be normal or quick.
     # In normal mode, it will be more stable, while in quick mode, the crawling speed will
@@ -37,6 +38,8 @@ spider:
     share_host_count: 3
     # the expire time(hours) of each weibo cookies
     cookie_expire_time: 23
+    # the expire time(days) of each no login cookies, depending on ips
+    nologin_cookie_expire_time: 30
 
 # You should set the args below if you login from uncommon place
 # It's for verification code indentified
