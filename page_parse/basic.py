@@ -3,6 +3,11 @@ from bs4 import BeautifulSoup
 from decorators import parse_decorator
 
 
+__all__ = [
+    'is_404', 'is_403', 'is_complete'
+]
+
+
 @parse_decorator(False)
 def is_404(html):
     soup = BeautifulSoup(html, 'html.parser')

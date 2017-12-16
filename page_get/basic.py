@@ -38,7 +38,11 @@ def is_banned(url):
         'unfreeze', 'accessdeny', 'userblock', 'verifybmobile'
     ]
 
-    return any(_contains(x,  url) for x in judge_condition)
+    return any(_contains(x, url) for x in judge_condition)
+
+
+def temp_banned(url):
+    return True if 'userblock&is_viewer&code=20003' in url else False
 
 
 @timeout(200)
@@ -46,7 +50,8 @@ def is_banned(url):
 def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
     """
     :param url: url to crawl
-    :param auth_level: 0 stands for need nothing,1 stands for no login but need cookies,2 stands for need login.
+    :param auth_level: 0 stands for need nothing,1 stands for no
+    login but need cookies,2 stands for need login.
     :param is_ajax: whether the request is ajax
     :param need_proxy: whether the request need a http/https proxy
     :return: response text, when a exception is raised, return ''
@@ -59,18 +64,24 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             name_cookies = Cookies.fetch_cookies()
 
             if name_cookies is None:
-                crawler.warning('No cookie in cookies pool. Maybe all accounts are banned, or all cookies are expired')
+                crawler.warning('No cookie in cookies pool. Maybe all accounts are '
+                                'banned, or all cookies are expired')
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
         try:
             if auth_level == 2:
-                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, headers=headers, cookies=name_cookies[1],
+                                    timeout=TIME_OUT, verify=False)
+            # todo no login cookies stores in redis
             elif auth_level == 1:
-                resp = requests.get(url, headers=headers, cookies=COOKIES, timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, headers=headers, cookies=COOKIES,
+                                    timeout=TIME_OUT, verify=False)
             else:
                 resp = requests.get(url, headers=headers, timeout=TIME_OUT, verify=False)
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, AttributeError) as e:
-            crawler.warning('Excepitons are raised when crawling {}.Here are details:{}'.format(url, e))
+        except (requests.exceptions.ReadTimeout,
+                requests.exceptions.ConnectionError, AttributeError) as e:
+            crawler.warning('Excepitons are raised when crawling {}.'
+                            'Here are details:{}'.format(url, e))
             count += 1
             time.sleep(EXCP_INTERAL)
             continue
@@ -80,15 +91,25 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             if not need_proxy:
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
+
         if resp.text:
             page = resp.text.encode('utf-8', 'ignore').decode('utf-8')
         else:
             count += 1
             continue
+
         if auth_level == 2:
             # slow down to aviod being banned
             interal = random.randint(MIN_CRAWL_INTERAL, MAX_CRAWL_INTERAL)
             time.sleep(interal)
+
+            if temp_banned(resp.url):
+                crawler.warning('Account {} is temporarily blocked'.format
+                                (name_cookies[0]))
+                count += 1
+                time.sleep(EXCP_INTERAL)
+                continue
+
             if is_banned(resp.url) or is_403(page):
                 crawler.warning('Account {} has been banned'.format(name_cookies[0]))
                 LoginInfoOper.freeze_account(name_cookies[0], 0)
