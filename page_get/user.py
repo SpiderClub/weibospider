@@ -1,14 +1,20 @@
 from db.models import User
 from logger import storage
-from .basic import get_page
 from page_parse import is_404
 from db.dao import (
     UserOper, SeedidsOper)
 from page_parse.user import (
     enterprise, person, public)
+from .basic import get_page
 
 
+DEFAULT_DOMAIN = '100505'
+MAX_FANS_FOLLOWS_PAGE = 5
 BASE_URL = 'https://weibo.com/p/{}{}/info?mod=pedit_more'
+FOLLOW_URL = 'https://weibo.com/p/{}{}/follow?page={}' \
+             '#Pl_Official_HisRelation__60'
+FANS_URL = 'https://weibo.com/p/{}{}/follow?' \
+           'relate=fans&page={}#Pl_Official_HisRelation__60'
 
 
 def get_user_detail(user_id, html):
@@ -114,25 +120,34 @@ def get_fans_or_followers_ids(user_id, crawl_type):
     :return: lists of fans or followers
     """
 
-    # todo check fans and followers the special users,such as writers
     # todo deal with conditions that fans and followers more than 5 pages
     if crawl_type == 1:
-        fans_or_follows_url = 'https://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = FANS_URL
     else:
-        fans_or_follows_url = 'https://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
+        fans_or_follows_url = FOLLOW_URL
 
     cur_page = 1
-    max_page = 6
+    max_page = MAX_FANS_FOLLOWS_PAGE
+    domain = DEFAULT_DOMAIN
     user_ids = list()
-    while cur_page < max_page:
-        url = fans_or_follows_url.format(user_id, cur_page)
+
+    while cur_page <= max_page:
+        url = fans_or_follows_url.format(domain, user_id, cur_page)
         page = get_page(url)
         if cur_page == 1:
+            user_domain = public.get_userdomain(page)
+            if domain != user_domain:
+                domain = user_domain
+                continue
+
             urls_length = public.get_max_crawl_pages(page)
             if max_page > urls_length:
                 max_page = urls_length + 1
         # get ids and store relations
-        user_ids.extend(public.get_fans_or_follows(page, user_id, crawl_type))
+        follow_or_fans_ids = public.get_fans_or_follows(
+            page, user_id, crawl_type)
+        if follow_or_fans_ids:
+            user_ids.extend(follow_or_fans_ids)
 
         cur_page += 1
 
