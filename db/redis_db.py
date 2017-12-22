@@ -92,7 +92,11 @@ class Cookies(object):
     def fetch_cookies_of_normal(cls):
         # look for available accounts
         for i in range(cookies_con.llen(cls.account_queue)):
-            name = cookies_con.lpop(cls.account_queue).decode('utf-8')
+            # not use lpoprpush here,for the cookies have to be checked
+            # todo there may be concurrency problem when there is just one
+            # cookie, but more than one thread.Might we should use blpop and
+            # timeout args to aviod this.
+            name = cookies_con.blpop(cls.account_queue, timeout=10).decode('utf-8')
             # during the crawling, some cookies can be banned
             # some account fetched from account_queue can be unavailable
             j_account = cookies_con.hget(cls.account_hash_set, name)
