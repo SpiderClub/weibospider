@@ -96,12 +96,15 @@ class Cookies(object):
             # todo there may be concurrency problem when there is just one
             # cookie, but more than one thread.Might we should use blpop and
             # timeout args to aviod this.
-            name = cookies_con.blpop(cls.account_queue, timeout=10).decode('utf-8')
+            try:
+                name = cookies_con.blpop(cls.account_queue, timeout=10).decode('utf-8')
+            except AttributeError:
+                return
             # during the crawling, some cookies can be banned
             # some account fetched from account_queue can be unavailable
             j_account = cookies_con.hget(cls.account_hash_set, name)
             if not j_account:
-                return None
+                return
             else:
                 j_account = j_account.decode('utf-8')
                 if cls.check_cookies_timeout(j_account):
@@ -110,7 +113,7 @@ class Cookies(object):
                 cookies_con.rpush(cls.account_queue, name)
                 account = json.loads(j_account)
                 return name, account['cookies']
-        return None
+        return
 
     @classmethod
     def fetch_cookies_of_quick(cls):
@@ -131,9 +134,9 @@ class Cookies(object):
 
         while True:
             try:
-                name = cookies_con.lpop(cls.account_queue).decode('utf-8')
+                name = cookies_con.blpop(cls.account_queue, timeout=10).decode('utf-8')
             except AttributeError:
-                return None
+                return
             else:
                 j_account = cookies_con.hget(cls.account_hash_set, name)
 
