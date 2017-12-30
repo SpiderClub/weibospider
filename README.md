@@ -77,7 +77,7 @@ python admin/manage.py createsuperuser
 
 - 通过微信捐赠作者
 
- ![](http://opqm8qbph.bkt.clouddn.com/weixin.png?imageMogr2/thumbnail/!38p)
+ ![](http://opqm8qbph.bkt.clouddn.com/8371514638056_.pic.jpg?imageMogr2/thumbnail/!38p)
 
 - 通过支付宝捐赠作者
 
