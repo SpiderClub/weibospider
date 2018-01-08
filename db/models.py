@@ -58,4 +58,8 @@ class UserRelation(Base):
         self.type = type
 
 
+class WeiboDialoggue(Base):
+    __table__ = weibo_dialogue
 
+    def __repr__(self):
+        return 'weibo_id:{},dialogue_id:{},dialogue_cont:{}'.format(self.weibo_id, self.dialogue_id, self.dialogue_cont)

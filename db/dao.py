@@ -6,7 +6,7 @@ from sqlalchemy.exc import InvalidRequestError
 from .basic import db_session
 from .models import (
     LoginInfo, KeywordsWbdata, KeyWords, SeedIds,
-    WeiboComment, WeiboRepost, User,  WeiboData
+    WeiboComment, WeiboRepost, User, WeiboData
 )
 from decorators import db_commit_decorator
 
@@ -172,6 +172,10 @@ class WbDataOper(CommonOper):
         return db_session.query(WeiboData.weibo_id, WeiboData.uid).filter(text('repost_crawled=0')).all()
 
     @classmethod
+    def get_weibo_dialogue_not_crawled(cls):
+        return db_session.query(WeiboData.weibo_id).filter(text('dialogue_crawled=0')).all()
+
+    @classmethod
     @db_commit_decorator
     def set_weibo_comment_crawled(cls, mid):
         data = cls.get_wb_by_mid(mid)
@@ -185,6 +189,14 @@ class WbDataOper(CommonOper):
         data = cls.get_wb_by_mid(mid)
         if data:
             data.repost_crawled = 1
+            db_session.commit()
+
+    @classmethod
+    @db_commit_decorator
+    def set_weibo_dialogue_crawled(cls, mid):
+        data = cls.get_wb_by_mid(mid)
+        if data:
+            data.dialogue_crawled = 1
             db_session.commit()
 
 
