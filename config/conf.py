@@ -4,9 +4,7 @@ from pathlib import Path
 
 from yaml import load
 
-
 config_path = os.path.join(os.path.dirname(__file__), 'spider.yaml')
-
 
 with open(config_path, encoding='utf-8') as f:
     cont = f.read()
@@ -49,6 +47,10 @@ def get_max_home_page():
 
 def get_max_comment_page():
     return cf.get('max_comment_page')
+
+
+def get_max_dialogue_page():
+    return cf.get('max_dialogue_page')
 
 
 def get_max_retries():
@@ -118,5 +120,3 @@ def get_images_path():
 
 def get_images_type():
     return cf.get('image_type')
-
-

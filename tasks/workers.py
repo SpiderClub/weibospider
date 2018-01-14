@@ -9,7 +9,6 @@ from config import (
     get_redis_master
 )
 
-
 platforms.C_FORCE_ROOT = True
 
 worker_log_path = os.path.join(os.path.dirname(os.path.dirname(__file__)) + '/logs', 'celery.log')
@@ -70,6 +69,11 @@ app.conf.update(
             'schedule': timedelta(hours=10),
             'options': {'queue': 'repost_crawler', 'routing_key': 'repost_info'}
         },
+        'dialogue_task': {
+            'task': 'tasks.dialogue.execute_dialogue_task',
+            'schedule': timedelta(hours=10),
+            'options': {'queue': 'dialogue_crawler', 'routing_key': 'dialogue_info'}
+        },
     },
     CELERY_QUEUES=(
         Queue('login_queue', exchange=Exchange('login_queue', type='direct'), routing_key='for_login'),
@@ -88,6 +92,10 @@ app.conf.update(
         Queue('repost_crawler', exchange=Exchange('repost_crawler', type='direct'), routing_key='repost_info'),
         Queue('repost_page_crawler', exchange=Exchange('repost_page_crawler', type='direct'),
               routing_key='repost_page_info'),
+
+        Queue('dialogue_crawler', exchange=Exchange('dialogue_crawler', type='direct'), routing_key='dialogue_info'),
+        Queue('dialogue_page_crawler', exchange=Exchange('dialogue_page_crawler', type='direct'),
+              routing_key='dialogue_page_info'),
 
         Queue('download_queue', exchange=Exchange('download_queue', type='direct'), routing_key='for_download'),
     ),

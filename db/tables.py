@@ -3,7 +3,6 @@ from sqlalchemy import (
 
 from .basic import metadata
 
-
 # login table
 login_info = Table("login_info", metadata,
                    Column("id", INTEGER, primary_key=True, autoincrement=True),
@@ -69,6 +68,7 @@ weibo_data = Table('weibo_data', metadata,
                    Column("create_time", String(200)),
                    Column("comment_crawled", INTEGER, default=0, server_default='0'),
                    Column("repost_crawled", INTEGER, default=0, server_default='0'),
+                   Column("dialogue_crawled", INTEGER, default=0, server_default='0'),
                    )
 
 # keywords and weibodata relationship
@@ -81,7 +81,7 @@ keywords_wbdata = Table('keywords_wbdata', metadata,
 # comment table
 weibo_comment = Table('weibo_comment', metadata,
                       Column("id", INTEGER, primary_key=True, autoincrement=True),
-                      Column("comment_id", String(50)),
+                      Column("comment_id", String(50), unique=True),
                       Column("comment_cont", Text),
                       Column("weibo_id", String(200)),
                       Column("user_id", String(20)),
@@ -110,5 +110,13 @@ user_relation = Table("user_relation", metadata,
                       Column('type', INTEGER),  # 1 stands for fans, 2 stands for follows
                       )
 
+# dialogue table
+weibo_dialogue = Table("weibo_dialogue", metadata,
+                       Column("id", INTEGER, primary_key=True, autoincrement=True),
+                       Column("dialogue_id", String(50), unique=True),
+                       Column("weibo_id", String(200)),
+                       Column("dialogue_cont", Text),
+                       )
+
 __all__ = ['login_info', 'wbuser', 'seed_ids', 'keywords', 'weibo_data', 'keywords_wbdata', 'weibo_comment',
-           'weibo_repost', 'user_relation']
+           'weibo_repost', 'user_relation', 'weibo_dialogue']
