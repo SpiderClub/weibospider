@@ -9,6 +9,7 @@ max_search_page: 50            # max search page for crawling
 max_home_page: 50              # max user home page for crawling
 max_comment_page: 2000         # max comment page for crawling
 max_repost_page: 2000          # max repost page for crawling
+max_dialogue_page: 2000        # max dialogue page for crawling
 max_retries: 5                 # retry times for crawling
 
 # You should set the args below if you login from uncommon place
