@@ -6,6 +6,7 @@ from logger import parser
 from db.models import WeiboDialoggue
 from decorators import parse_decorator
 from .comment import get_html_cont
+from db.dao import SeedidsOper
 
 
 @parse_decorator([])
@@ -51,13 +52,17 @@ def get_dialogue(html, wb_id, cid):
     if len(dialogues) < 2:
         return None
     weibo_dialogue = WeiboDialoggue()
+    uids = []
     try:
         for dialogue in dialogues:
             # print(dialogue.text.strip())
-            dialogue_list.append(dialogue.text.strip())
+            user_id = dialogue.find('a').get('usercard')[3:]
+            uids.append(user_id)
+            dialogue_list.append({'uid': user_id, 'text': dialogue.text.strip()})
         weibo_dialogue.weibo_id = wb_id
         weibo_dialogue.dialogue_id = cid
         weibo_dialogue.dialogue_cont = json.dumps(dialogue_list)
+        SeedidsOper.insert_seeds_dont_crawled(uids)
     except Exception as e:
         parser.error('解析对话失败，具体信息是{}'.format(e))
     return weibo_dialogue
