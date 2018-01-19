@@ -4,9 +4,7 @@ from config import conf
 from page_get import get_page
 from db.dao import (WbDataOper, CommonOper)
 import time
-from .user import crawl_person_infos_not_in_seed_ids
 
-# unk:type is_more
 AJAX_URL = 'https://weibo.com/aj/v6/comment/conversation?ajwvr=6&cid={}&type=small&ouid=&cuid=&is_more=1&__rnd={}'
 COMMENT_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
 
