@@ -2,7 +2,7 @@ from .workers import app
 from db.dao import SeedidsOper
 from page_get import (
     get_fans_or_followers_ids,
-    get_profile
+    get_profile, get_user_profile
 )
 
 
@@ -44,10 +44,20 @@ def crawl_person_infos(uid):
 
 
 @app.task(ignore_result=True)
+def crawl_person_infos_not_in_seed_ids(uid):
+    """
+    Crawl user info not in seed_ids
+    """
+    if not uid:
+        return
+
+    get_user_profile(uid)
+
+
+@app.task(ignore_result=True)
 def execute_user_task():
     seeds = SeedidsOper.get_seed_ids()
     if seeds:
         for seed in seeds:
             app.send_task('tasks.user.crawl_person_infos', args=(seed.uid,), queue='user_crawler',
                           routing_key='for_user_info')
-

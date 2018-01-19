@@ -118,13 +118,6 @@ class SeedidsOper:
 
     @classmethod
     @db_commit_decorator
-    def insert_seeds_dont_crawled(cls, ids):
-        db_session.execute(SeedIds.__table__.insert().prefix_with('IGNORE'),
-                           [{'uid': i, 'other_crawled': 1, 'home_crawled': 1} for i in ids])
-        db_session.commit()
-
-    @classmethod
-    @db_commit_decorator
     def set_seed_other_crawled(cls, uid):
         """
         update it if user id already exists, else insert

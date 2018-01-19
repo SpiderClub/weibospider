@@ -7,7 +7,6 @@ from db.dao import (
 from page_parse.user import (
     enterprise, person, public)
 
-
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
 
 
@@ -102,6 +101,20 @@ def get_profile(user_id):
     return user, is_crawled
 
 
+def get_user_profile(user_id):
+    """
+    :param user_id: uid
+    :return: user info and is crawled or not
+    """
+    user = UserOper.get_user_by_uid(user_id)
+
+    if user:
+        storage.info('user {id} has already crawled'.format(id=user_id))
+    else:
+        user = get_url_from_web(user_id)
+    return user
+
+
 def get_fans_or_followers_ids(user_id, crawl_type):
     """
     Get followers or fans
@@ -133,4 +146,3 @@ def get_fans_or_followers_ids(user_id, crawl_type):
         cur_page += 1
 
     return user_ids
-
