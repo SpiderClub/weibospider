@@ -6,7 +6,7 @@ from db.dao import (
     WbDataOper, CommentOper)
 
 
-BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
+BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
 
 @app.task(ignore_result=True)

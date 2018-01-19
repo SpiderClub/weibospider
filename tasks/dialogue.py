@@ -6,7 +6,7 @@ from db.dao import (WbDataOper, CommonOper)
 import time
 
 AJAX_URL = 'https://weibo.com/aj/v6/comment/conversation?ajwvr=6&cid={}&type=small&ouid=&cuid=&is_more=1&__rnd={}'
-COMMENT_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
+COMMENT_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
 
 @app.task(ignore_result=True)
