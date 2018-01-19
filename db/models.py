@@ -58,7 +58,7 @@ class UserRelation(Base):
         self.type = type
 
 
-class WeiboDialoggue(Base):
+class WeiboDialogue(Base):
     __table__ = weibo_dialogue
 
     def __repr__(self):

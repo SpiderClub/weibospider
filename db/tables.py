@@ -116,6 +116,7 @@ weibo_dialogue = Table("weibo_dialogue", metadata,
                        Column("dialogue_id", String(50), unique=True),
                        Column("weibo_id", String(200)),
                        Column("dialogue_cont", Text),
+                       Column("dialogue_rounds", INTEGER),
                        )
 
 __all__ = ['login_info', 'wbuser', 'seed_ids', 'keywords', 'weibo_data', 'keywords_wbdata', 'weibo_comment',
