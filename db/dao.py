@@ -153,6 +153,10 @@ class UserOper(CommonOper):
     def get_user_by_uid(cls, uid):
         return db_session.query(User).filter(User.uid == uid).first()
 
+    @classmethod
+    def get_user_by_name(cls,user_name):
+        return db_session.query(User).filter(User.name == user_name).first()
+
 
 class UserRelationOper(CommonOper):
     pass
