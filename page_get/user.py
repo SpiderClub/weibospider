@@ -1,3 +1,8 @@
+import json
+import re
+import requests
+from urllib.parse import quote
+
 from db.models import User
 from logger import storage
 from .basic import get_page
@@ -6,7 +11,6 @@ from db.dao import (
     UserOper, SeedidsOper)
 from page_parse.user import (
     enterprise, person, public)
-
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
 
 
@@ -146,3 +150,23 @@ def get_fans_or_followers_ids(user_id, crawl_type):
         cur_page += 1
 
     return user_ids
+
+
+def get_uid_by_name(user_name):
+    """通过用户名获取用户uid"""
+    user = UserOper.get_user_by_name(user_name)
+    if user:
+        return user.uid
+    url = "http://s.weibo.com/ajax/topsuggest.php?key={}&_k=14995588919022710&uid=&_t=1&_v=STK_14995588919022711"
+    url = url.format(quote(user_name))
+    info = requests.get(url).content.decode()
+
+    pattern = r'try\{.*\((.*)\).*\}catch.*'
+    pattern = re.compile(pattern)
+    info = pattern.match(info).groups()[0]
+    info = json.loads(info)
+    try:
+        return info["data"]["user"][0]['u_id']
+    except Exception as e:
+        print(e)
+        return None
