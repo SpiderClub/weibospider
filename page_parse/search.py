@@ -73,7 +73,7 @@ def get_weibo_info(each, html):
     imgs_url = list()
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
-        imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
+        imgs_url = list(map(url_filter, re.findall(r"src=\"(.+?)\"", imgs)))
         wb_data.weibo_img = ';'.join(imgs_url)
     except Exception:
         wb_data.weibo_img = ''
