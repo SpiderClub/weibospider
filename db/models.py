@@ -38,6 +38,12 @@ class WeiboComment(Base):
     def __repr__(self):
         return 'weibo_id:{},comment_id:{},comment_cont:{}'.format(self.weibo_id, self.comment_id, self.comment_cont)
 
+class WeiboPraise(Base):
+    __table__ = weibo_praise
+
+    def __repr__(self):
+        return 'user_id:{},weibo_id:{}'.format(self.user_id, self.weibo_id)
+
 
 class WeiboRepost(Base):
     __table__ = weibo_repost
