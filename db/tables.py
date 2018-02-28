@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Table, Column, INTEGER, String, Text)
+    Table, Column, INTEGER, String, Text, TIMESTAMP)
 
 from .basic import metadata
 
@@ -69,6 +69,7 @@ weibo_data = Table('weibo_data', metadata,
                    Column("comment_crawled", INTEGER, default=0, server_default='0'),
                    Column("repost_crawled", INTEGER, default=0, server_default='0'),
                    Column("dialogue_crawled", INTEGER, default=0, server_default='0'),
+                   Column("praise_crawled", INTEGER, default=0, server_default='0'),
                    )
 
 # keywords and weibodata relationship
@@ -86,6 +87,14 @@ weibo_comment = Table('weibo_comment', metadata,
                       Column("weibo_id", String(200)),
                       Column("user_id", String(20)),
                       Column("create_time", String(200)),
+                      )
+
+# praise table
+weibo_praise = Table('weibo_praise', metadata,
+                      Column("id", INTEGER, primary_key=True, autoincrement=True),
+                      Column("user_id", String(20)),
+                      Column("weibo_id", String(200)),
+                      Column("crawl_time", TIMESTAMP, server_default='CURRENT_TIMESTAMP'),
                       )
 
 # repost table
@@ -120,4 +129,4 @@ weibo_dialogue = Table("weibo_dialogue", metadata,
                        )
 
 __all__ = ['login_info', 'wbuser', 'seed_ids', 'keywords', 'weibo_data', 'keywords_wbdata', 'weibo_comment',
-           'weibo_repost', 'user_relation', 'weibo_dialogue']
+           'weibo_repost', 'user_relation', 'weibo_dialogue', 'weibo_praise']

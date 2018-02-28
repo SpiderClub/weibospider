@@ -17,7 +17,7 @@ broker_and_backend = get_broker_and_backend()
 
 tasks = [
     'tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment',
-    'tasks.repost', 'tasks.downloader'
+    'tasks.repost', 'tasks.downloader', 'tasks.praise'
 ]
 
 if isinstance(broker_and_backend, list):
@@ -88,6 +88,10 @@ app.conf.update(
         Queue('comment_crawler', exchange=Exchange('comment_crawler', type='direct'), routing_key='comment_info'),
         Queue('comment_page_crawler', exchange=Exchange('comment_page_crawler', type='direct'),
               routing_key='comment_page_info'),
+
+        Queue('praise_crawler', exchange=Exchange('praise_crawler', type='direct'), routing_key='praise_info'),
+        Queue('praise_page_crawler', exchange=Exchange('praise_page_crawler', type='direct'),
+              routing_key='praise_page_info'),
 
         Queue('repost_crawler', exchange=Exchange('repost_crawler', type='direct'), routing_key='repost_info'),
         Queue('repost_page_crawler', exchange=Exchange('repost_page_crawler', type='direct'),

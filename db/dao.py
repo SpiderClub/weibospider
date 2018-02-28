@@ -6,7 +6,7 @@ from sqlalchemy.exc import InvalidRequestError
 from .basic import db_session
 from .models import (
     LoginInfo, KeywordsWbdata, KeyWords, SeedIds,
-    WeiboComment, WeiboRepost, User, WeiboData
+    WeiboComment, WeiboRepost, User, WeiboData, WeiboPraise
 )
 from decorators import db_commit_decorator
 
@@ -172,6 +172,10 @@ class WbDataOper(CommonOper):
         return db_session.query(WeiboData.weibo_id).filter(text('comment_crawled=0')).all()
 
     @classmethod
+    def get_weibo_praise_not_crawled(cls):
+        return db_session.query(WeiboData.weibo_id).filter(text('praise_crawled=0')).all()
+
+    @classmethod
     def get_weibo_repost_not_crawled(cls):
         return db_session.query(WeiboData.weibo_id, WeiboData.uid).filter(text('repost_crawled=0')).all()
 
@@ -185,6 +189,14 @@ class WbDataOper(CommonOper):
         data = cls.get_wb_by_mid(mid)
         if data:
             data.comment_crawled = 1
+            db_session.commit()
+
+    @classmethod
+    @db_commit_decorator
+    def set_weibo_praise_crawled(cls, mid):
+        data = cls.get_wb_by_mid(mid)
+        if data:
+            data.praise_crawled = 1
             db_session.commit()
 
     @classmethod
@@ -209,6 +221,10 @@ class CommentOper(CommonOper):
     def get_comment_by_id(cls, cid):
         return db_session.query(WeiboComment).filter(WeiboComment.comment_id == cid).first()
 
+class PraiseOper(CommonOper):
+    @classmethod
+    def get_Praise_by_id(cls, pid):
+        return db_session.query(WeiboPraise).filter(WeiboPraise.weibo_id == pid).first()
 
 class RepostOper(CommonOper):
     @classmethod
