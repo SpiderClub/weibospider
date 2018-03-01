@@ -17,6 +17,9 @@ max_retries: 5                 # retry times for crawling
 yundama_username: xxxxxx           # account for yundama
 yundama_passwd: xxxxxx             # password for yundama
 
+# only crawl weibo(bowen) after
+# only affect to home crawler
+time_after: '1970-01-01 00:00:00'
 
 # The value of running_mode can be normal or quick.
 # In normal mode, it will be more stable, while in quick mode, the crawling speed will
