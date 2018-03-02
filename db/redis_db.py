@@ -123,7 +123,7 @@ class Cookies(object):
                     continue
 
                 j_account = j_account.decode('utf-8')
-                # one account maps many hosts（one to many）
+                # one account maps many hosts (one to many)
                 hosts = cookies_con.hget('cookies_host', name)
                 if not hosts:
                     hosts = dict()

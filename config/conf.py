@@ -120,3 +120,7 @@ def get_images_path():
 
 def get_images_type():
     return cf.get('image_type')
+
+
+def get_time_after():
+    return cf.get('time_after')
