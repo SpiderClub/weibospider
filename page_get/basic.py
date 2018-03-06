@@ -64,6 +64,8 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             name_cookies = Cookies.fetch_cookies()
 
             if name_cookies is None:
+                # todo relogin if there are accounts avariable,block the session getter function
+                # by using blpop
                 crawler.warning('No cookie in cookies pool. Maybe all accounts are '
                                 'banned, or all cookies are expired')
                 send_email()
