@@ -49,9 +49,9 @@ else:
 
 class Cookies(object):
     @classmethod
-    def store_cookies(cls, name, cookies):
+    def store_cookies(cls, name, cookies, proxy):
         pickled_cookies = json.dumps(
-            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp()})
+            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp(), 'proxy': proxy})
         cookies_con.hset('account', name, pickled_cookies)
         cls.push_in_queue(name)
 
@@ -106,7 +106,7 @@ class Cookies(object):
             # if cookies is expired, fetch a new one
             if not cls.check_cookies_timeout(my_cookies):
                 my_cookies = json.loads(my_cookies.decode('utf-8'))
-                return my_cookies_name, my_cookies['cookies']
+                return my_cookies_name, my_cookies['cookies'], my_cookies['proxy']
             else:
                 cls.delete_cookies(my_cookies_name)
 
@@ -123,7 +123,7 @@ class Cookies(object):
                     continue
 
                 j_account = j_account.decode('utf-8')
-                # one account maps many hosts (one to many)
+                # one account maps many hosts（one to many）
                 hosts = cookies_con.hget('cookies_host', name)
                 if not hosts:
                     hosts = dict()
