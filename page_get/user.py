@@ -7,11 +7,14 @@ from db.models import User
 from logger import storage
 from .basic import get_page
 from page_parse import is_404
+from config import get_samefollow_uid
 from db.dao import (
     UserOper, SeedidsOper)
 from page_parse.user import (
     enterprise, person, public)
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
+SAMEFOLLOW_URL = 'https://weibo.com/p/100505{}/follow?relate=same_follow&amp;from=page_100505_profile&amp;wvr=6&amp;mod=bothfollow'
+# SAMEFOLLOW: only crawl user with 10050 domain
 
 
 def get_user_detail(user_id, html):
@@ -59,6 +62,11 @@ def get_url_from_web(user_id):
         # normal users
         elif domain == '100505':
             user = get_user_detail(user_id, html)
+            samefollow_uid = get_samefollow_uid()
+            if samefollow_uid:
+                url = SAMEFOLLOW_URL.format(user_id)
+                isFanHtml = get_page(url, auth_level=2)
+                user.isFan = person.get_isFan(isFanHtml, samefollow_uid)
         # enterprise or service
         else:
             user = get_enterprise_detail(user_id, html)

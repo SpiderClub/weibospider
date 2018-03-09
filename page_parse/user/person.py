@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 
 from ..user import public
@@ -130,3 +132,21 @@ def get_detail(html, uid):
             print('解析出错，具体原因为{why}'.format(why=why))
 
     return user
+
+
+@parse_decorator(None)
+def get_isFan(html, uid):
+    """
+    :param html: samefollow page
+    :param uid : whether this account follows uid
+    :return: 1 for yes 0 for no
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    scripts = soup.find_all('script')
+    pattern = re.compile(r'FM.view\((.*)\)')
+
+    for script in scripts:
+        m = pattern.search(script.string)
+        if m and uid in script.string:
+            return 1
+    return 0

@@ -1,4 +1,7 @@
 import requests
 
 def getIP(param):
-    return {}
+    return {
+        'http': '',
+        'https': '',
+    }

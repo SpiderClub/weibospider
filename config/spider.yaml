@@ -21,6 +21,9 @@ yundama_passwd: xxxxxx             # password for yundama
 # only affect to home crawler
 time_after: '1970-01-01 00:00:00'
 
+# whether account follows the uid below
+samefollow_uid: ''
+
 # The value of running_mode can be normal or quick.
 # In normal mode, it will be more stable, while in quick mode, the crawling speed will
 # be much faster, and the weibo account almostly will be banned
