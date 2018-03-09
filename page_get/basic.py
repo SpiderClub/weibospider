@@ -48,6 +48,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
     while count < MAX_RETRIES:
         if auth_level == 2:
             name_cookies = Cookies.fetch_cookies()
+            proxy = {'http': name_cookies[2], 'https': name_cookies[2],}
 
             if name_cookies is None:
                 crawler.warning('No cookie in cookies pool. Maybe all accounts are banned, or all cookies are expired')
@@ -55,7 +56,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
                 os.kill(os.getppid(), signal.SIGTERM)
         try:
             if auth_level == 2:
-                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False, proxies=proxy)
             elif auth_level == 1:
                 resp = requests.get(url, headers=headers, cookies=COOKIES, timeout=TIME_OUT, verify=False)
             else:
