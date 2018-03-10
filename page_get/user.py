@@ -14,7 +14,7 @@ from page_parse.user import (
     enterprise, person, public)
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
 SAMEFOLLOW_URL = 'https://weibo.com/p/100505{}/follow?relate=same_follow&amp;from=page_100505_profile&amp;wvr=6&amp;mod=bothfollow'
-# SAMEFOLLOW: only crawl user with 10050 domain
+# SAMEFOLLOW: only crawl user with 100505 domain
 
 
 def get_user_detail(user_id, html):
