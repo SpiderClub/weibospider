@@ -95,7 +95,7 @@ weibo_praise = Table('weibo_praise', metadata,
                       Column("id", INTEGER, primary_key=True, autoincrement=True),
                       Column("user_id", String(20)),
                       Column("weibo_id", String(200)),
-                      Column("crawl_time", TIMESTAMP, server_default='CURRENT_TIMESTAMP'),
+                      Column("crawl_time", TIMESTAMP),
                       )
 
 # repost table
