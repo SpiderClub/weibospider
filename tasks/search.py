@@ -23,6 +23,7 @@ LIMIT = crawl_args.get('max_search_page')
 def search_keyword(keyword, keyword_id):
     crawler.info('We are searching keyword "{}"'.format(keyword))
     cur_page = 1
+    duplicate = 1
     encode_keyword = url_parse.quote(keyword)
     while cur_page < LIMIT:
         cur_url = URL.format(encode_keyword, cur_page)
@@ -32,31 +33,37 @@ def search_keyword(keyword, keyword_id):
             crawler.warning('No search result for keyword {}, the source page is {}'.
                             format(keyword, search_page))
             return
+        # it has reached the last page
+        if 'noresult_tit' in search_page and 'noresult_support' in search_page and 'pl_noresult' in search_page:
+            crawler.info('Keyword {} has been crawled in this turn, not find result.'.format(keyword))
+            return
 
         search_list = parse_search.get_search_info(search_page)
 
-        # Because the search results are sorted by time, if any result has been stored in mysql,
+        # Because the search results are sorted by time, if any result has been stored in keywordsWbdata,
         # We need not crawl the same keyword in this turn
         for wb_data in search_list:
-            rs = WbDataOper.get_wb_by_mid(wb_data.weibo_id)
+            # judge if the weibo has been insert into keywordsWbdata before
+            # if there contains 3 duplicate, this turn is finish.
+            for keywordsWbdata in KeywordsDataOper.get_weibo_ids(keyword_id):
+                if (wb_data.weibo_id == keywordsWbdata.wb_id):
+                    duplicate += 1
+                    if (duplicate == 3):
+                        crawler.info('Keyword {} has been crawled in this turn, find identity keyword'.format(keyword))
+                        return
+                    else:
+                        continue
             KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)
-            # todo incremental crawling using time
-            if rs:
-                crawler.info('Weibo {} has been crawled, skip it.'.
-                             format(wb_data.weibo_id))
+            # if wb_data.uid == '-1', it's has be crawler so we skip it.
+            if wb_data.uid == '-1':
+                crawler.info('Weibo {} has been crawled, skip it.'.format(wb_data.weibo_id))
                 continue
             else:
                 WbDataOper.add_one(wb_data)
                 # todo: only add seed ids and remove this task
                 app.send_task('tasks.user.crawl_person_infos', args=(wb_data.uid,), queue='user_crawler',
                               routing_key='for_user_info')
-        if cur_page == 1:
-            cur_page += 1
-        elif 'noresult_tit' not in search_page:
-            cur_page += 1
-        else:
-            crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
-            return
+        cur_page += 1
 
 
 @app.task(ignore_result=True)
