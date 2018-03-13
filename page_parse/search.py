@@ -11,6 +11,7 @@ from db.models import WeiboData
 from decorators import parse_decorator
 from tasks.workers import app
 from config import crawl_args
+from db.dao import WbDataOper
 
 
 CRAWLING_MODE = crawl_args.get('crawling_mode')
@@ -57,8 +58,13 @@ def get_weibo_info(each, html):
         return None
     wb_data.uid = usercard.split('&')[0][3:]
 
+    # If the weibo has been crawled, we don't need to parse it again
     try:
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
+        rs = WbDataOper.get_wb_by_mid(wb_data.weibo_id)
+        if rs:
+            wb_data.uid = '-1'
+            return wb_data, 0
     except (AttributeError, IndexError, TypeError):
         return None
 
