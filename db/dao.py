@@ -58,6 +58,10 @@ class KeywordsDataOper:
         db_session.add(keyword_wbdata)
         db_session.commit()
 
+    @classmethod
+    def get_weibo_ids(cls, keyword_id):
+        return db_session.query(KeywordsWbdata).filter(KeywordsWbdata.keyword_id == keyword_id).all()
+
 
 class KeywordsOper:
     @classmethod
