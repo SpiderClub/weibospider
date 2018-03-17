@@ -69,7 +69,7 @@ def crawl_weibo_datas(uid):
 
         WbDataOper.add_all(weibo_datas)
 
-        # If not create after the given time, jump out the loop
+        # If the weibo isn't created after the given time, jump out the loop
         if i != length_weibo_datas - 1:
             break
 
