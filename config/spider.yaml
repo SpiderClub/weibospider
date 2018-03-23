@@ -72,7 +72,7 @@ redis:
     urls: 2
     broker: 5                    # broker for celery
     backend: 6                   # backed for celery
-    id_name: 8                   # user id and names，for repost info analysis
+    id_name: 8                   # user id and names，for repost info analysis. Could be safely deleted after repost tasks
     # expire_time (hours) for redis db2, if they are useless to you, you can set the value smaller
     expire_time: 48
     # redis sentinel for ha. if you neet it, just add sentinel host and port below the sentinel args,like this:
