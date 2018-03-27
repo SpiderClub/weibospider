@@ -4,7 +4,7 @@ requests==2.13.0
 rsa==3.4.2
 redis==2.10.5
 celery==4.1.0
-SQLAlchemy==1.1.9
+SQLAlchemy==1.1.15
 PyMySQL==0.7.11
 flower==0.9.1
 urllib3==1.22
