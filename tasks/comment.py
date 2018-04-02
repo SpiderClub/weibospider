@@ -1,12 +1,12 @@
-from .workers import app
 from page_parse import comment
-from config import conf
+from config import max_comment_page
 from page_get import get_page
 from db.dao import (
     WbDataOper, CommentOper)
+from .workers import app
 
 
-BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
+BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
 
 @app.task(ignore_result=True)
@@ -22,7 +22,7 @@ def crawl_comment_by_page(mid, page_num):
 
 @app.task(ignore_result=True)
 def crawl_comment_page(mid):
-    limit = conf.get_max_comment_page() + 1
+    limit = max_comment_page + 1
     # 这里为了马上拿到返回结果，采用本地调用的方式
     first_page = crawl_comment_by_page(mid, 1)[0]
     total_page = comment.get_total_page(first_page)

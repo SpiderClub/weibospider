@@ -5,7 +5,7 @@ import urllib.parse
 from bs4 import BeautifulSoup
 
 from page_get import status
-from logger import parser
+from logger import parser_logger
 from db.models import WeiboData
 from config import crawl_args
 from decorators import parse_decorator
@@ -51,7 +51,7 @@ def get_weibo_info_detail(each, html):
     if m:
         wb_data.uid = m.group(1)
     else:
-        parser.warning("fail to get user'sid, the page source is{}".format(html))
+        parser_logger.warning("fail to get user'sid, the page source is{}".format(html))
         return None
 
     weibo_pattern = 'mid=(\\d+)'
@@ -59,7 +59,7 @@ def get_weibo_info_detail(each, html):
     if m:
         wb_data.weibo_id = m.group(1)
     else:
-        parser.warning("fail to get weibo's id,the page source {}".format(html))
+        parser_logger.warning("fail to get weibo's id,the page source {}".format(html))
         return None
 
     time_url = each.find(attrs={'node-type': 'feed_list_item_date'})

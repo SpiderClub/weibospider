@@ -18,7 +18,7 @@ def rm_logs():
 
 @pytest.mark.parametrize(
     'logger, expected', [
-        (crawler, 'crawler'), (parser, 'parser'), (storage, 'storage'), (other, 'other')
+        (crawler_logger, 'crawler'), (parser_logger, 'parser'), (db_logger, 'storage'), (other_logger, 'other')
     ])
 def test_loggers(logger, expected):
     assert logger.name == expected

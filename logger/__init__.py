@@ -1,4 +1,4 @@
-from .log import crawler, parser, other, storage
+from .log import crawler_logger, parser_logger, other_logger, db_logger
 
 
-__all__ = ['crawler', 'parser', 'other', 'storage']
+__all__ = ['crawler_logger', 'parser_logger', 'other_logger', 'db_logger']

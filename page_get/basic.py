@@ -6,7 +6,7 @@ import random
 import requests
 
 from config import headers
-from logger import crawler
+from logger import crawler_logger
 from login import get_cookies
 from db.dao import LoginInfoOper
 from utils import send_email
@@ -20,10 +20,10 @@ from config import crawl_args
 
 
 TIME_OUT = crawl_args.get('time_out')
-MIN_CRAWL_INTERAL = crawl_args.get('min_crawl_interal')
-MAX_CRAWL_INTERAL = crawl_args.get('max_crawl_interal')
+MIN_CRAWL_interval = crawl_args.get('min_crawl_interval')
+MAX_CRAWL_interval = crawl_args.get('max_crawl_interval')
 MAX_RETRIES = crawl_args.get('max_retries')
-EXCP_INTERAL = crawl_args.get('excp_interal')
+EXCP_interval = crawl_args.get('excp_interval')
 COOKIES = get_cookies()
 
 
@@ -43,32 +43,33 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
     :param need_proxy: whether the request need a http/https proxy
     :return: response text, when a exception is raised, return ''
     """
-    crawler.info('the crawling url is {url}'.format(url=url))
+    crawler_logger.info('the crawling url is {url}'.format(url=url))
     count = 0
 
     while count < MAX_RETRIES:
         if auth_level == 2:
             name_cookies = Cookies.fetch_cookies()
+            proxy = {'http': name_cookies[2], 'https': name_cookies[2],}
 
             if name_cookies is None:
-                crawler.warning('No cookie in cookies pool. Maybe all accounts are banned, or all cookies are expired')
+                crawler_logger.warning('No cookie in cookies pool. Maybe all accounts are banned, or all cookies are expired')
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
         try:
             if auth_level == 2:
-                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False, proxies=proxy)
             elif auth_level == 1:
                 resp = requests.get(url, headers=headers, cookies=COOKIES, timeout=TIME_OUT, verify=False)
             else:
                 resp = requests.get(url, headers=headers, timeout=TIME_OUT, verify=False)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, AttributeError) as e:
-            crawler.warning('Excepitons are raised when crawling {}.Here are details:{}'.format(url, e))
+            crawler_logger.warning('Excepitons are raised when crawling {}.Here are details:{}'.format(url, e))
             count += 1
-            time.sleep(EXCP_INTERAL)
+            time.sleep(EXCP_interval)
             continue
 
         if resp.status_code == 414:
-            crawler.warning('This ip has been blocked by weibo system')
+            crawler_logger.warning('This ip has been blocked by weibo system')
             if not need_proxy:
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
@@ -79,10 +80,10 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             continue
         if auth_level == 2:
             # slow down to aviod being banned
-            interal = random.randint(MIN_CRAWL_INTERAL, MAX_CRAWL_INTERAL)
-            time.sleep(interal)
+            interval = random.randint(MIN_CRAWL_interval, MAX_CRAWL_interval)
+            time.sleep(interval)
             if is_banned(resp.url) or is_403(page):
-                crawler.warning('Account {} has been banned'.format(name_cookies[0]))
+                crawler_logger.warning('Account {} has been banned'.format(name_cookies[0]))
                 LoginInfoOper.freeze_account(name_cookies[0], 0)
                 Cookies.delete_cookies(name_cookies[0])
                 count += 1
@@ -93,7 +94,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
                 continue
 
         if is_404(page):
-            crawler.warning('{} seems to be 404'.format(url))
+            crawler_logger.warning('{} seems to be 404'.format(url))
             return ''
         Urls.store_crawl_url(url, 1)
         return page

@@ -1,11 +1,11 @@
 from celery import group
 
-from .workers import app
 from db.dao import SeedidsOper
 from page_get import (
     get_fans_or_followers_ids,
-    get_profile
+    get_profile, get_user_profile
 )
+from .workers import app
 
 
 @app.task(ignore_result=True)
@@ -46,8 +46,20 @@ def crawl_person_infos(uid):
 
 
 @app.task(ignore_result=True)
+def crawl_person_infos_not_in_seed_ids(uid):
+    """
+    Crawl user info not in seed_ids
+    """
+    if not uid:
+        return
+
+    get_user_profile(uid)
+
+
+@app.task(ignore_result=True)
 def execute_user_task():
     seeds = SeedidsOper.get_seed_ids()
     caller = group(crawl_person_infos.s(seed.uid) for seed in seeds)
     caller.delay()
+
 

@@ -36,19 +36,19 @@ log_config = {
         },
     },
     'loggers': {
-        'crawler': {
+        'crawler_logger': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
         },
-        'parser': {
+        'parser_logger': {
             'handlers': ['file'],
             'level': 'INFO',
         },
-        'other': {
+        'other_logger': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
-        'storage': {
+        'db_logger': {
             'handlers': ['file'],
             'level': 'INFO',
         }
@@ -57,7 +57,7 @@ log_config = {
 
 log_conf.dictConfig(log_config)
 
-crawler = logging.getLogger('crawler')
-parser = logging.getLogger('parser')
-other = logging.getLogger('other')
-storage = logging.getLogger('storage')
+crawler_logger = logging.getLogger('crawler_logger')
+parser_logger = logging.getLogger('parser_logger')
+db_logger = logging.getLogger('db_logger')
+other_logger = logging.getLogger('other_logger')

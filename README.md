@@ -1,8 +1,3 @@
-<div align=center>
-
-![](http://opqm8qbph.bkt.clouddn.com/weibospider.jpg?imageMogr2/thumbnail/!50p)
-</div>
-
 
 [![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
 [![](https://travis-ci.org/SpiderClub/weibospider.svg?branch=master)](https://travis-ci.org/SpiderClub/weibospider)
@@ -77,7 +72,7 @@ python admin/manage.py createsuperuser
 
 - 通过微信捐赠作者
 
- ![](http://opqm8qbph.bkt.clouddn.com/weixin.png?imageMogr2/thumbnail/!38p)
+ ![](http://opqm8qbph.bkt.clouddn.com/8371514638056_.pic.jpg?imageMogr2/thumbnail/!19p)
 
 - 通过支付宝捐赠作者
 

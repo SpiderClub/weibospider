@@ -1,18 +1,17 @@
 from celery import group
 
-from .workers import app
 from page_parse import repost
-from logger import crawler
+from logger import crawler_logger
 from db.redis_db import IdNames
-from config import crawl_args
+from config import max_repost_page
 from db.dao import (
     WbDataOper, RepostOper)
 from page_get import (
     get_page, get_profile)
+from .workers import app
 
 
 BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
-LIMIT = crawl_args.get('max_repost_page')
 
 
 @app.task
@@ -36,7 +35,7 @@ def crawl_repost_page(mid, uid):
 
     root_user, _ = get_profile(uid)
 
-    to_crawl_page = total_page if total_page < LIMIT else LIMIT
+    to_crawl_page = total_page if total_page < max_repost_page else max_repost_page
 
     for page_num in range(2, to_crawl_page+1):
         _, cur_repost_datas = crawl_repost_by_page(mid, page_num)
@@ -60,6 +59,6 @@ def crawl_repost_page(mid, uid):
 def execute_repost_task():
     # regard current weibo url as the original url, you can also analyse from the root url
     weibo_datas = WbDataOper.get_weibo_repost_not_crawled()
-    crawler.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))
+    crawler_logger.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))
     caller = group(crawl_repost_page.s(data.weibo_id, data.uid) for data in weibo_datas)
     caller.delay()

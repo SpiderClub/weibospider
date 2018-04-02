@@ -2,7 +2,7 @@ import json
 
 from bs4 import BeautifulSoup
 
-from logger import parser
+from logger import parser_logger
 from db.redis_db import IdNames
 from db.models import WeiboRepost
 from decorators import parse_decorator
@@ -25,7 +25,7 @@ def get_total_page(html):
     try:
         page_count = json.loads(html, encoding='utf-8').get('data', '').get('page', '').get('totalpage', 1)
     except Exception as e:
-        parser.error('Errors occurred when parsing total page of repost，specification is {}'.format(e))
+        parser_logger.error('Errors occurred when parsing total page of repost，specification is {}'.format(e))
         page_count = 1
 
     return page_count
@@ -78,11 +78,11 @@ def stroe_and_get_reposts(html, mid):
                     else:
                         wb_repost.parent_user_name = ''
                 except Exception as e:
-                    parser.error("error occurred when parsing the parent's name ，the detail is {}".format(e))
+                    parser_logger.error("error occurred when parsing the parent's name ，the detail is {}".format(e))
                     wb_repost.parent_user_name = ''
 
         except Exception as e:
-            parser.error('repost parse error occurred，the detail is {}'.format(e))
+            parser_logger.error('repost parse error occurred，the detail is {}'.format(e))
         else:
             repost_list.append(wb_repost)
 

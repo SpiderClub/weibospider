@@ -4,7 +4,7 @@ import json
 from bs4 import BeautifulSoup
 
 from decorators import parse_decorator
-from logger import parser
+from logger import parser_logger
 
 
 @parse_decorator('')
@@ -48,8 +48,8 @@ def _get_statushtml(html):
         except TypeError:
             return ''
         except Exception as e:
-            parser.error('__get__statushtml()错误,具体错误是'.format(e=e))
-            parser.error('网页代码为{page}'.format(page=html))
+            parser_logger.error('__get__statushtml()错误,具体错误是'.format(e=e))
+            parser_logger.error('网页代码为{page}'.format(page=html))
     return cont
 
 
@@ -64,7 +64,7 @@ def get_mid(html):
         mid_matcher = re.search(mid_pattern, html)
         return mid_matcher.group(1) if mid_matcher else ''
     except Exception as e:
-        parser.error('get_mid()发生异常,具体异常为{e}'.format(e=e))
+        parser_logger.error('get_mid()发生异常,具体异常为{e}'.format(e=e))
 
 
 @parse_decorator('')
@@ -115,7 +115,7 @@ def get_repostcounts(html):
         counts = int(reposts)
         return counts
     except (ValueError, AttributeError) as e:
-        parser.error(e)
+        parser_logger.error(e)
         return 0
 
 
@@ -130,7 +130,7 @@ def get_commentcounts(html):
         counts = int(comments)
         return counts
     except (ValueError, AttributeError) as e:
-        parser.error(e)
+        parser_logger.error(e)
         return 0
 
 
@@ -148,7 +148,7 @@ def get_likecounts(html):
         else:
             return int(likes)
     except (ValueError, AttributeError) as e:
-        parser.error(e)
+        parser_logger.error(e)
         return 0
 
 
@@ -210,7 +210,7 @@ def get_upperusername(html, defaultname):
         except AttributeError:
             return defaultname
         except Exception as e:
-            parser.error(e)
+            parser_logger.error(e)
             return defaultname
     else:
         return defaultname

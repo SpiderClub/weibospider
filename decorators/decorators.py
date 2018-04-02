@@ -2,9 +2,8 @@ import time
 from functools import wraps, partial
 from traceback import format_tb
 
-from db.basic import db_session
 from logger import (
-    parser, crawler, storage, other)
+    parser_logger, crawler_logger, other_logger)
 from utils import KThread
 from exceptions import Timeout
 
@@ -15,23 +14,11 @@ def timeout_decorator(func):
         try:
             return func(*args, **kargs)
         except Exception as e:
-            crawler.error('failed to crawl {url}，here are details:{e}, stack is {stack}'.
-                          format(url=args[0], e=e, stack=format_tb(e.__traceback__)[0]))
+            crawler_logger.error('failed to crawl {url}，here are details:{e}, stack is {stack}'.
+                                 format(url=args[0], e=e, stack=format_tb(e.__traceback__)[0]))
             return ''
 
     return time_limit
-
-
-def db_commit_decorator(func):
-    @wraps(func)
-    def session_commit(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            storage.error('DB operation error，here are details:{}'.format(e))
-            db_session.rollback()
-
-    return session_commit
 
 
 def parse_decorator(return_value):
@@ -46,8 +33,8 @@ def parse_decorator(return_value):
             try:
                 return func(*keys)
             except Exception as e:
-                parser.error('Failed to parse the page, {} is raised, here are details:{}'.
-                             format(e, format_tb(e.__traceback__)[0]))
+                parser_logger.error('Failed to parse the page, {} is raised, here are details:{}'.
+                                    format(e, format_tb(e.__traceback__)[0]))
                 return return_value
 
         return handle_error
@@ -95,7 +82,7 @@ def timeout(seconds):
     return crwal_decorator
 
 
-def retry(times=-1, delay=0, exceptions=Exception, logger=other):
+def retry(times=-1, delay=0, exceptions=Exception, logger=other_logger):
     """
     inspired by https://github.com/invl/retry
     :param times: retry times

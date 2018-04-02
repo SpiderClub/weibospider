@@ -5,55 +5,49 @@ import datetime
 import redis
 from redis.sentinel import Sentinel
 
-from logger import crawler
+from logger import crawler_logger
 from config import (
-    redis_args, crawl_args)
+    running_mode, share_host_count,
+    redis_pass, redis_host,
+    redis_port, master,
+    sentinel as sentinel_args, socket_timeout,
+    cookies as cookies_db, broker as broker_db,
+    urls as urls_db, id_name as id_name_db,
+    cookie_expire_time, data_expire_time
+)
 
-MODE = crawl_args.get('running_mode')
-SHARE_HOST_COUNT = crawl_args.get('share_host_count')
 
-password = redis_args.get('password', '')
-cookies_db = redis_args.get('cookies', 1)
-urls_db = redis_args.get('urls', 2)
-broker_db = redis_args.get('broker', 5)
-backend_db = redis_args.get('backend', 6)
-id_name_db = redis_args.get('id_name', 8)
-cookie_expire_time = crawl_args.get('cookie_expire_time')
-data_expire_time = redis_args.get('expire_time') * 60 * 60
-
-sentinel_args = redis_args.get('sentinel', '')
-if sentinel_args:
-    # default socket timeout is 2 secs
-    master_name = redis_args.get('master')
-    socket_timeout = int(redis_args.get('socket_timeout', 2))
-
-    sentinel = Sentinel([(args['host'], args['port']) for args in sentinel_args],
-                        password=password,
+if master and sentinel_args:
+    sentinel = Sentinel([(args[0], args[1]) for args in sentinel_args],
+                        password=redis_pass,
                         socket_timeout=socket_timeout
                         )
 
     cookies_con = sentinel.master_for(
-        master_name, socket_timeout=socket_timeout, db=cookies_db)
+        master, socket_timeout=socket_timeout, db=cookies_db)
     broker_con = sentinel.master_for(
-        master_name, socket_timeout=socket_timeout, db=broker_db)
+        master, socket_timeout=socket_timeout, db=broker_db)
     urls_con = sentinel.master_for(
-        master_name, socket_timeout=socket_timeout, db=urls_db)
+        master, socket_timeout=socket_timeout, db=urls_db)
     id_name_con = sentinel.master_for(
-        master_name, socket_timeout=socket_timeout, db=id_name_db)
+        master, socket_timeout=socket_timeout, db=id_name_db)
 else:
-    host = redis_args.get('host', '127.0.0.1')
-    port = redis_args.get('port', 6379)
-    cookies_con = redis.StrictRedis(host=host, port=port, password=password, db=cookies_db)
-    broker_con = redis.StrictRedis(host=host, port=port, password=password, db=broker_db)
-    urls_con = redis.StrictRedis(host=host, port=port, password=password, db=urls_db)
-    id_name_con = redis.StrictRedis(host=host, port=port, password=password, db=id_name_db)
+    redis_args = {
+        'host': redis_host,
+        'port': redis_port,
+        'password': redis_pass
+    }
+    cookies_con = redis.StrictRedis(**redis_args, db=cookies_db)
+    broker_con = redis.StrictRedis(**redis_args, db=broker_db)
+    urls_con = redis.StrictRedis(**redis_args, db=urls_db)
+    id_name_con = redis.StrictRedis(**redis_args, db=id_name_db)
 
 
 class Cookies(object):
     @classmethod
-    def store_cookies(cls, name, cookies):
+    def store_cookies(cls, name, cookies, proxy):
         pickled_cookies = json.dumps(
-            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp()})
+            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp(), 'proxy': proxy})
         cookies_con.hset('account', name, pickled_cookies)
         cls.push_in_queue(name)
 
@@ -69,7 +63,7 @@ class Cookies(object):
 
     @classmethod
     def fetch_cookies(cls):
-        if MODE == 'normal':
+        if running_mode == 'normal':
             return cls.fetch_cookies_of_normal()
 
         else:
@@ -108,7 +102,7 @@ class Cookies(object):
             # if cookies is expired, fetch a new one
             if not cls.check_cookies_timeout(my_cookies):
                 my_cookies = json.loads(my_cookies.decode('utf-8'))
-                return my_cookies_name, my_cookies['cookies']
+                return my_cookies_name, my_cookies['cookies'], my_cookies['proxy']
             else:
                 cls.delete_cookies(my_cookies_name)
 
@@ -125,7 +119,7 @@ class Cookies(object):
                     continue
 
                 j_account = j_account.decode('utf-8')
-                # one account maps many hosts（one to many）
+                # one account maps many hosts (one to many)
                 hosts = cookies_con.hget('cookies_host', name)
                 if not hosts:
                     hosts = dict()
@@ -140,14 +134,14 @@ class Cookies(object):
                 cookies_con.hset('host', hostname, name)
 
                 # push the cookie to the head
-                if len(hosts) < SHARE_HOST_COUNT:
+                if len(hosts) < share_host_count:
                     cookies_con.lpush('account_queue', name)
                 return name, account['cookies']
 
     @classmethod
     def delete_cookies(cls, name):
         cookies_con.hdel('account', name)
-        if MODE == 'quick':
+        if running_mode == 'quick':
             cookies_con.hdel('cookies_host', name)
         return True
 
@@ -164,8 +158,9 @@ class Cookies(object):
             cookies = cookies.decode('utf-8')
         cookies = json.loads(cookies)
         login_time = datetime.datetime.fromtimestamp(cookies['loginTime'])
-        if datetime.datetime.now() - login_time > datetime.timedelta(hours=cookie_expire_time):
-            crawler.warning('The account has been expired')
+        if datetime.datetime.now() - login_time > datetime.timedelta(
+                hours=cookie_expire_time):
+            crawler_logger.warning('The account has been expired')
             return True
         return False
 

@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from logger import other
+from logger import other_logger
 
 
 class YDMHttp:
@@ -130,7 +130,7 @@ def code_verificate(name, passwd, file_name, code_type=1005, app_id=3510, app_ke
     if rest <= 0:
         raise Exception('云打码已经欠费了，请及时充值')
     if rest <= 100:
-        other.warning('云打码余额已不多，请注意及时充值')
+        other_logger.warning('云打码余额已不多，请注意及时充值')
 
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
     cid, result = yundama_obj.decode(file_name, code_type, time_out)

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-from logger import parser
+from logger import parser_logger
 from page_get import status
 from utils import url_filter
 from db.models import WeiboData
@@ -42,7 +42,7 @@ def get_feed_info(feed_infos, goal):
             info_num = info.text.replace(goal, '')
             break
     if info_num is None:
-        parser.error('unexcept template:{}'.format(feed_infos))
+        parser_logger.error('unexcept template:{}'.format(feed_infos))
     return int(info_num)
 
 
@@ -65,14 +65,14 @@ def get_weibo_info(each, html):
     try:
         wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
     except Exception as e:
-        parser.error('Failed to get weibo url, the error is {}, the source page is {}'.format(e, html))
+        parser_logger.error('Failed to get weibo url, the error is {}, the source page is {}'.format(e, html))
         return None
 
     imgs = list()
     imgs_url = list()
     try:
         imgs = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('li'))
-        imgs_url = map(url_filter, re.findall(r"src=\"(.+?)\"", imgs))
+        imgs_url = list(map(url_filter, re.findall(r"src=\"(.+?)\"", imgs)))
         wb_data.weibo_img = ';'.join(imgs_url)
     except Exception:
         wb_data.weibo_img = ''
@@ -107,7 +107,7 @@ def get_weibo_info(each, html):
     try:
         feed_action = each.find(attrs={'class': 'feed_action'})
     except Exception as why:
-        parser.error('Failed to get feed_action, the error is {},the page source is {}'.format(why, each))
+        parser_logger.error('Failed to get feed_action, the error is {},the page source is {}'.format(why, each))
     else:
         feed_infos = feed_action.find_all('li')
         try:
@@ -126,7 +126,7 @@ def get_weibo_info(each, html):
     try:
         wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
     except Exception as why:
-        parser.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
+        parser_logger.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
         return None
 
     if '展开全文' in str(each):

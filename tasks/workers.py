@@ -6,30 +6,48 @@ from kombu import (
     Exchange, Queue)
 
 from config import (
-    redis_args,
-    get_broker_and_backend
+    redis_pass, redis_host,
+    redis_port, master,
+    sentinel as sentinel_args, broker as broker_db,
+    backend as backend_db
 )
 
 
-platforms.C_FORCE_ROOT = True
-
-broker_and_backend = get_broker_and_backend()
-
 tasks = [
     'tasks.login', 'tasks.user', 'tasks.search', 'tasks.home', 'tasks.comment',
-    'tasks.repost', 'tasks.downloader'
+    'tasks.repost', 'tasks.downloader', 'tasks.praise'
 ]
+
+platforms.C_FORCE_ROOT = True
+
+
+def _get_broker_and_backend():
+    if sentinel_args and master:
+        broker_url = ";".join('sentinel://:{}@{}:{}/{}'.format(
+            redis_pass, sentinel[0], sentinel[1], broker_db) for
+                              sentinel in sentinel_args)
+        return broker_url
+    else:
+        broker_url = 'redis://:{}@{}:{}/{}'.format(
+            redis_pass, redis_host, redis_port, broker_db)
+        backend_url = 'redis://:{}@{}:{}/{}'.format(
+            redis_pass, redis_host, redis_port, backend_db)
+        return broker_url, backend_url
+
+
+broker_and_backend = _get_broker_and_backend()
 
 if isinstance(broker_and_backend, tuple):
     broker, backend = broker_and_backend
     app = Celery('weibo_spider', include=tasks, broker=broker, backend=backend)
 else:
-    master = redis_args.get('master')
     app = Celery('weibo_spider', include=tasks, broker=broker_and_backend)
     app.conf.update(
         BROKER_TRANSPORT_OPTIONS={'master_name': master},
     )
 
+
+# todo config from file
 app.conf.update(
     CELERY_TIMEZONE='Asia/Shanghai',
     CELERY_ENABLE_UTC=True,
@@ -67,6 +85,11 @@ app.conf.update(
             'schedule': timedelta(hours=10),
             'options': {'queue': 'repost_crawler', 'routing_key': 'repost_info'}
         },
+        'dialogue_task': {
+            'task': 'tasks.dialogue.execute_dialogue_task',
+            'schedule': timedelta(hours=10),
+            'options': {'queue': 'dialogue_crawler', 'routing_key': 'dialogue_info'}
+        },
     },
     CELERY_QUEUES=(
         Queue('login_queue', exchange=Exchange('login_queue', type='direct'), routing_key='for_login'),
@@ -82,9 +105,17 @@ app.conf.update(
         Queue('comment_page_crawler', exchange=Exchange('comment_page_crawler', type='direct'),
               routing_key='comment_page_info'),
 
+        Queue('praise_crawler', exchange=Exchange('praise_crawler', type='direct'), routing_key='praise_info'),
+        Queue('praise_page_crawler', exchange=Exchange('praise_page_crawler', type='direct'),
+              routing_key='praise_page_info'),
+
         Queue('repost_crawler', exchange=Exchange('repost_crawler', type='direct'), routing_key='repost_info'),
         Queue('repost_page_crawler', exchange=Exchange('repost_page_crawler', type='direct'),
               routing_key='repost_page_info'),
+
+        Queue('dialogue_crawler', exchange=Exchange('dialogue_crawler', type='direct'), routing_key='dialogue_info'),
+        Queue('dialogue_page_crawler', exchange=Exchange('dialogue_page_crawler', type='direct'),
+              routing_key='dialogue_page_info'),
 
         Queue('download_queue', exchange=Exchange('download_queue', type='direct'), routing_key='for_download'),
     ),

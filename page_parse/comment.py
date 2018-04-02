@@ -2,7 +2,7 @@ import json
 
 from bs4 import BeautifulSoup
 
-from logger import parser
+from logger import parser_logger
 from db.models import WeiboComment
 from decorators import parse_decorator
 
@@ -25,7 +25,7 @@ def get_total_page(html):
             json.loads(html, encoding='utf-8').get('data', '').get('tag', '')
             page_count = 1
         except Exception as e:
-            parser.error('Get total page error, the reason is {}'.format(e))
+            parser_logger.error('Get total page error, the reason is {}'.format(e))
             page_count = 1
 
     return page_count
@@ -78,7 +78,7 @@ def get_comment_list(html, wb_id):
             wb_comment.create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
             wb_comment.weibo_id = wb_id
         except Exception as e:
-            parser.error('解析评论失败，具体信息是{}'.format(e))
+            parser_logger.error('解析评论失败，具体信息是{}'.format(e))
         else:
             comment_list.append(wb_comment)
     return comment_list

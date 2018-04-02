@@ -2,35 +2,34 @@ from urllib import parse as url_parse
 
 from celery import group
 
-from logger import crawler
-from .workers import app
+from logger import crawler_logger
 from page_get import get_page
-from config import crawl_args
+from config import max_search_page
 from page_parse import search as parse_search
 from db.dao import (
     KeywordsOper, KeywordsDataOper, WbDataOper)
+from .workers import app
 
 
 # This url is just for original weibos.
 # If you want other kind of search, you can change the url below
 # But if you change this url, maybe you have to rewrite some part of the parse code
 URL = 'http://s.weibo.com/weibo/{}&scope=ori&suball=1&page={}'
-LIMIT = crawl_args.get('max_search_page')
 
 
 # todo 找到total page
 @app.task(ignore_result=True)
 def search_keyword(keyword, keyword_id):
-    crawler.info('We are searching keyword "{}"'.format(keyword))
+    crawler_logger.info('We are searching keyword "{}"'.format(keyword))
     cur_page = 1
     encode_keyword = url_parse.quote(keyword)
-    while cur_page < LIMIT:
+    while cur_page < max_search_page:
         cur_url = URL.format(encode_keyword, cur_page)
         # current only for login, maybe later crawling page one without login
         search_page = get_page(cur_url, auth_level=2)
         if not search_page:
-            crawler.warning('No search result for keyword {}, the source page is {}'.
-                            format(keyword, search_page))
+            crawler_logger.warning('No search result for keyword {}, the source page is {}'.
+                                   format(keyword, search_page))
             return
 
         search_list = parse_search.get_search_info(search_page)
@@ -42,8 +41,8 @@ def search_keyword(keyword, keyword_id):
             KeywordsDataOper.insert_keyword_wbid(keyword_id, wb_data.weibo_id)
             # todo incremental crawling using time
             if rs:
-                crawler.info('Weibo {} has been crawled, skip it.'.
-                             format(wb_data.weibo_id))
+                crawler_logger.info('Weibo {} has been crawled, skip it.'.
+                                    format(wb_data.weibo_id))
                 continue
             else:
                 WbDataOper.add_one(wb_data)
@@ -55,7 +54,7 @@ def search_keyword(keyword, keyword_id):
         elif 'noresult_tit' not in search_page:
             cur_page += 1
         else:
-            crawler.info('Keyword {} has been crawled in this turn'.format(keyword))
+            crawler_logger.info('Keyword {} has been crawled in this turn'.format(keyword))
             return
 
 

@@ -1,9 +1,11 @@
+import re
+
 from bs4 import BeautifulSoup
 
 from ..user import public
 from decorators import parse_decorator
 from db.models import User
-from logger import parser
+from logger import parser_logger
 
 
 @parse_decorator(0)
@@ -128,6 +130,24 @@ def get_detail(html, uid):
                         contact_info.append('msn:' + each.find(attrs={'class': 'pt_detail'}).get_text())
                 user.contact_info = ';'.join(contact_info)
         except Exception as why:
-            parser.error('解析出错，具体原因为{why}'.format(why=why))
+            parser_logger.error('解析出错，具体原因为{why}'.format(why=why))
 
     return user
+
+
+@parse_decorator(None)
+def get_isFan(html, uid):
+    """
+    :param html: samefollow page
+    :param uid : whether this account follows uid
+    :return: 1 for yes 0 for no
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    scripts = soup.find_all('script')
+    pattern = re.compile(r'FM.view\((.*)\)')
+
+    for script in scripts:
+        m = pattern.search(script.string)
+        if m and uid in script.string:
+            return 1
+    return 0

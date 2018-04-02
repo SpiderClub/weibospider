@@ -1,2 +1,4 @@
 from .headers import *
-from .conf import *
+from .settings import *
+
+

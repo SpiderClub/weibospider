@@ -4,19 +4,18 @@ import shutil
 
 import requests
 
+from logger import crawler_logger
+from config import (
+    image_type, images_path
+)
 from .workers import app
-from logger import crawler
-from config import crawl_args
-
-IMG_PATH = crawl_args.get('images_path')
-IMG_TYPE = crawl_args.get('image_type')
 
 
 @app.task(ignore_result=True)
 def download_img_task(mid, urls):
     count = 0
     for img_url in urls:
-        if IMG_TYPE == 'large':
+        if image_type == 'large':
             img_url = img_url.replace('thumbnail', 'large').replace('square', 'large')
         suffix = img_url[img_url.rfind('.') + 1:]
         # skip gif images, which is used to show loading process
@@ -25,8 +24,8 @@ def download_img_task(mid, urls):
             try:
                 image_response = requests.get(img_url, stream=True)
             except Exception as e:
-                crawler.error('fail to down image {}, {} is raised'.format(img_url, e))
+                crawler_logger.error('fail to down image {}, {} is raised'.format(img_url, e))
             else:
-                with open(os.path.join(IMG_PATH, '{}-{}.{}'.
+                with open(os.path.join(images_path, '{}-{}.{}'.
                           format(mid, count, suffix)), 'wb') as out_file:
                     shutil.copyfileobj(image_response.raw, out_file)
