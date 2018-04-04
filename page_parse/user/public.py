@@ -188,9 +188,11 @@ def get_fans_or_follows(html, uid, type):
                     r = m.group(1)
                     # filter invalid ids
                     if r.isdigit():
-                        user_ids.append(r)
-                        relations.append(UserRelation(uid, r, type))
-
+                        isDuplicate = UserRelationOper.get_user_by_uid(uid, r, type)
+                        if not isDuplicate:
+                            user_ids.append(r)
+                            relations.append(UserRelation(uid, r, type))
+                            
     UserRelationOper.add_all(relations)
     return user_ids
 

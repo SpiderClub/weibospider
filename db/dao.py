@@ -5,7 +5,7 @@ from sqlalchemy.exc import InvalidRequestError
 
 from .basic import db_session
 from .models import (
-    LoginInfo, KeywordsWbdata, KeyWords, SeedIds,
+    LoginInfo, KeywordsWbdata, KeyWords, SeedIds, UserRelation,
     WeiboComment, WeiboRepost, User, WeiboData, WeiboPraise
 )
 from decorators import db_commit_decorator
@@ -159,7 +159,13 @@ class UserOper(CommonOper):
 
 
 class UserRelationOper(CommonOper):
-    pass
+    @classmethod
+    def get_user_by_uid(cls, uid, other_id, type):
+        user = db_session.query(UserRelation).filter_by(user_id = uid, follow_or_fans_id = other_id).first()
+        if user:
+            return True
+        else:
+            return False 
 
 
 class WbDataOper(CommonOper):
