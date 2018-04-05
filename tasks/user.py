@@ -48,7 +48,7 @@ def crawl_person_infos(uid):
     # By adding '--soft-time-limit secs' when you start celery, this will resend task to broker
     # e.g. celery -A tasks.workers -Q user_crawler worker -l info -c 1 --soft-time-limit 10
     except SoftTimeLimitExceeded:
-        crawler.error("Exception SoftTimeLimitExceeded    uid={uid}".format(uid=uid))
+        crawler.error("user SoftTimeLimitExceeded    uid={uid}".format(uid=uid))
         app.send_task('tasks.user.crawl_person_infos', args=(uid, ), queue='user_crawler',
                       routing_key='for_user_info')
 
