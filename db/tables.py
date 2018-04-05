@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Table, Column, INTEGER, String, Text, TIMESTAMP)
+    Table, Column, INTEGER, String, Text, TIMESTAMP, DateTime, func)
 
 from .basic import metadata
 
@@ -118,6 +118,8 @@ user_relation = Table("user_relation", metadata,
                       Column('user_id', String(20)),
                       Column('follow_or_fans_id', String(20)),
                       Column('type', INTEGER),  # 1 stands for fans, 2 stands for follows
+                      Column('crawl_time', DateTime(3), default=func.now())  # DATETIME(6) means save 6 digits milliseconds
+                                                                           # time is stored in UTC
                       )
 
 # dialogue table

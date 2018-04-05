@@ -6,6 +6,7 @@ from logger import crawler
 from config import conf
 from page_get import get_page
 from db.dao import (WbDataOper, PraiseOper)
+from celery.exceptions import SoftTimeLimitExceeded
 
 
 BASE_URL = 'http://weibo.com/aj/v6/like/big?ajwvr=6&mid={}&page={}&__rnd={}'
@@ -13,10 +14,20 @@ BASE_URL = 'http://weibo.com/aj/v6/like/big?ajwvr=6&mid={}&page={}&__rnd={}'
 
 @app.task(ignore_result=True)
 def crawl_praise_by_page(mid, page_num):
-    cur_time = int(time.time() * 1000)
-    cur_url = BASE_URL.format(mid, page_num, cur_time)
-    html = get_page(cur_url, auth_level=2, is_ajax=True)
-    praise_datas = praise.get_praise_list(html, mid)
+    try:
+        cur_time = int(time.time() * 1000)
+        cur_url = BASE_URL.format(mid, page_num, cur_time)
+        html = get_page(cur_url, auth_level=2, is_ajax=True)
+        praise_datas = praise.get_praise_list(html, mid)
+    except SoftTimeLimitExceeded:
+        crawler.error(
+            "praise SoftTimeLimitExceeded    mid={mid} page_num={page_num}".
+            format(mid=mid, page_num=page_num))
+        app.send_task(
+            'tasks.praise.crawl_praise_by_page',
+            args=(mid, page_num),
+            queue='praise_page_crawler',
+            routing_key='praise_page_info')
     PraiseOper.add_all(praise_datas)
     if page_num == 1:
         WbDataOper.set_weibo_praise_crawled(mid)

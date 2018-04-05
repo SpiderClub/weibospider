@@ -4,6 +4,8 @@ from config import conf
 from page_get import get_page
 from db.dao import (
     WbDataOper, CommentOper)
+from logger import crawler
+from celery.exceptions import SoftTimeLimitExceeded
 
 
 BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
@@ -11,9 +13,19 @@ BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
 @app.task(ignore_result=True)
 def crawl_comment_by_page(mid, page_num):
-    cur_url = BASE_URL.format(mid, page_num)
-    html = get_page(cur_url, auth_level=1, is_ajax=True)
-    comment_datas = comment.get_comment_list(html, mid)
+    try:
+        cur_url = BASE_URL.format(mid, page_num)
+        html = get_page(cur_url, auth_level=1, is_ajax=True)
+        comment_datas = comment.get_comment_list(html, mid)
+    except SoftTimeLimitExceeded:
+        crawler.error(
+            "comment SoftTimeLimitExceeded    mid={mid} page_num={page_num}".
+            format(mid=mid, page_num=page_num))
+        app.send_task(
+            'tasks.comment.crawl_comment_by_page',
+            args=(mid, page_num),
+            queue='comment_page_crawler',
+            routing_key='comment_page_info')
     CommentOper.add_all(comment_datas)
     if page_num == 1:
         WbDataOper.set_weibo_comment_crawled(mid)
