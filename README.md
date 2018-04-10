@@ -6,23 +6,19 @@
 [![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 项目亮点 :star:
-- 功能全面：包括了**用户信息抓取**、**指定关键字搜索结果增量抓取**、**指定用户主页所有原创微博抓取**、**评论抓取**和**转发关系抓取**等
-- 数据全面：**PC端展现的数据量比移动端更加丰富**。并且相比于*其它同类项目*对微博的简单分析，本项目做了大量细致的工作，
-比如不同`domain`不同用户的解析策略、不同`domain`不同用户的主页分析策略等
-- 稳定！**项目可以长期稳定运行**。
-  - 为了保证程序能长期稳定运行，数据所有的网络请求都是通过抓包手动分析的，未用任何自动化工具，包括模拟登陆！
-  从另一个方面来说，抓取速度也是比较有保证的
+## Features :star:
+- 支持多种类型的微博数据抓取
+- 抓取数据的信息内容非常全面
+- **项目可以长期稳定运行**
+  - 为了保证程序能长期稳定运行，数据所有的网络请求都是通过抓包手动分析的
   - 通过合理的阈值设定，账号可以保证安全。**但是不推荐用户使用自己的常用账号**
   - 即使账号不可用或者登陆失败，项目都对其做了处理（智能冻结账号，出错重试等），以保证每次请求都是有效的，并及时把错误反馈给用户
   - 通过大量的异常检测和处理，几乎捕获了所有的解析和抓取异常。编写了大量的解析代码来获取足够全面的信息
-- 复用性和扩展性好。项目很多地方都有详细的代码注释，方便阅读。即使本项目不能完全满足你对微博数据采集和分析的需求，你完全可以在该项目的基础上
-做二次开发，项目已经在微博数据采集和模版解析上做了大量工作。
-- 该项目会长期更新，目前已经迭代一年有余了。
-- 丰富文档支持：点击[wiki](https://github.com/ResolveWang/WeiboSpider/wiki)查看**所有文档**。如果文档仍然不能解
-决你的问题，欢迎提issue，维护者看到后都会积极回答。
+- 复用性和扩展性好
+- 项目支持长期更新
+- 丰富的开发者文档支持
 
-## 快速开始 :octocat:
+## Quick Start :octocat:
 
 1.阅读[项目环境配置](https://github.com/ResolveWang/WeiboSpider/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E7%88%AC%E8%99%AB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE)以配置项目所需的环境。
 
@@ -66,7 +62,7 @@ python admin/manage.py createsuperuser
 
 到这里所有配置已经结束了，如果大家在上述过程中遇到了问题，**请耐心浏览[项目所有文档](https://github.com/ResolveWang/weibospider/wiki)**，实在还是不懂或者使用过程中有任何问题可以提issue。
 
-## 捐赠作者 :thumbsup:
+## Donation :thumbsup:
 
 如果项目对你有用或者对你有启发，不妨通过微信或者支付宝进行*小额捐赠*，以支持该项目的持续维护和发展。
 
@@ -78,21 +74,12 @@ python admin/manage.py createsuperuser
 
  ![](http://opqm8qbph.bkt.clouddn.com/alipay.png?imageMogr2/thumbnail/!32p)
 
-## 重要声明 :loudspeaker:
-该项目开发的初衷是为了对部分信息进行监控，并且获取一些自然语言处理所需的语料，在**数据抓取的时候对爬虫访问频率进行了较为严格的控制**。
-后来在技术和兴趣的驱动下，才慢慢扩展了分布式和对微博反爬虫策略的探究。
 
-所以作者希望用户能合理使用该项目（通过[配置文件](./config/spider.yaml)控制访问频率），本着`够用就行`的原则，不要做`竭泽而渔`
-的事情，对微博系统的正常运行和维护造成较大的困扰。
+## Developer docs :heavy_exclamation_mark:
+点击 [wiki](https://github.com/SpiderClub/weibospider/wiki) 查看开发者文档
 
-## 其他 :heavy_exclamation_mark:
-
-### [项目使用常见问题](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E4%BD%BF%E7%94%A8%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
-### [项目补充说明](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E)
-### [项目进程](https://github.com/ResolveWang/weibospider/wiki/%E9%A1%B9%E7%9B%AE%E8%AE%A1%E5%88%92%E5%92%8C%E8%BF%9B%E5%B1%95)
-
-## 致谢:heart:
-- 感谢大神[Ask](https://github.com/ask)的[celery](https://github.com/celery/celery)分布式任务调度框架和大神[kennethreitz](https://github.com/kennethreitz/requests)的[requests](https://github.com/kennethreitz/requests)库
+## Acknowledgements :heart:
+- 感谢　[celery](https://github.com/celery/celery)　分布式任务调度框架和　[requests](https://github.com/kennethreitz/requests) 网络库
 - 感谢为项目贡献源码的朋友，点击查看[贡献者列表](./AUTHORS.rst)
 - 感谢所有捐赠本项目的朋友，点击查看[捐赠者列表](https://github.com/ResolveWang/WeiboSpider/wiki/%E6%8D%90%E8%B5%A0%E8%AF%A5%E9%A1%B9%E7%9B%AE)
 - 感谢`star`支持的网友和在使用过程中提issue或者给出宝贵建议的朋友
