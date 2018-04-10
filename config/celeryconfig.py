@@ -7,7 +7,7 @@ class CeleryConfig:
     task_ignore_result = True
     worker_prefetch_multiplier = 2
     # timeout for celery worker to execute a task
-    task_soft_time_limit = 300
+    # task_soft_time_limit = 5 * 60 * 60
 
     timezone = 'Asia/Shanghai'
     accept_content = ['json']

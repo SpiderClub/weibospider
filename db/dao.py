@@ -234,8 +234,8 @@ class KeywordsDataOper(CommonOper):
     @classmethod
     def get_weibo_ids(cls, keyword_id, wb_id):
         conditions = 'keyword_id={} and wb_id={}'.format(keyword_id, wb_id)
-        return cls.get_attrs_by_key([KeywordsWbdata.keyword_id, KeywordsWbdata.wb_id],
-                                    conditions)
+        return cls.get_attrs_by_key([KeywordsWbdata.keyword_id,
+                                     KeywordsWbdata.wb_id], conditions)
 
 
 class RelationOper(CommonOper):

@@ -52,8 +52,8 @@ def search_keyword(keyword, keyword_id):
             # if there contains 3 duplicate, this turn is finish.
             datas = KeywordsDataOper.get_weibo_ids(keyword_id, wb_data.weibo_id)
             if datas:
-                crawler_logger.info('Keyword {} has been crawled in this turn, '
-                                    'find identity keyword'.format(keyword))
+                crawler_logger.info('Keyword {} has been crawled in this turn'.
+                                    format(keyword))
                 return
 
             KeywordsDataOper.add_one(
