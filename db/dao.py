@@ -6,8 +6,8 @@ from sqlalchemy.exc import InvalidRequestError
 from logger import db_logger
 from .basic import get_db_session
 from .models import (
-    LoginInfo, KeywordsWbdata, KeyWords, SeedIds,
-    WeiboComment, WeiboRepost, User, WeiboData, WeiboPraise
+    LoginInfo, KeyWords, SeedIds,
+    User, WeiboData
 )
 
 
@@ -40,13 +40,56 @@ class CommonOper:
                     count += cls.add_one(data)
         return count
 
+    @classmethod
+    def get_attrs_by_key(cls, attrs, conditions):
+        """
+        get entities' assigned atters according to conditons
+        :param attrs: attrs that will be return, it's a list
+        :param conditions: filter conditions
+        """
+        with get_db_session() as db:
+            return db.query(*attrs).filter(text(conditions)).all()
 
-class LoginInfoOper:
+    @classmethod
+    def get_entity_by_key(cls, model, conditions):
+        """get one entity according to the conditions"""
+        with get_db_session() as db:
+            return db.query(model).filter(text(conditions)).first()
+
+    @classmethod
+    def set_entity_attrs(cls, model, conditions, attr_maps):
+        """set attrs for the entity"""
+        entity = cls.get_entity_by_key(model, conditions)
+        if not entity:
+            return
+
+        with get_db_session() as db:
+            for attr, value in attr_maps.items():
+                setattr(entity, attr, value)
+            db.merge(entity)
+            db.commit()
+
+    @classmethod
+    def update_or_insert_entity(cls, model, conditions, attr_maps):
+        entity = cls.get_entity_by_key(model, conditions)
+        with get_db_session() as db:
+            if not entity:
+                entity = model()
+                for attr, value in attr_maps.items():
+                    setattr(entity, attr, value)
+                cls.add_one(entity)
+            else:
+                for attr, value in attr_maps.items():
+                    setattr(entity, attr, value)
+                db.merge(entity)
+            db.commit()
+
+
+class LoginInfoOper(CommonOper):
     @classmethod
     def get_login_info(cls):
-        with get_db_session() as db:
-            return db.query(LoginInfo.name, LoginInfo.password,
-                            LoginInfo.enable).filter(text('enable=1')).all()
+        attrs = [LoginInfo.name, LoginInfo.password, LoginInfo.enable]
+        return cls.get_attrs_by_key(attrs, 'enable=1')
 
     @classmethod
     def freeze_account(cls, name, rs):
@@ -56,80 +99,35 @@ class LoginInfoOper:
         2 stands for name or password is invalid
         :return:
         """
-        with get_db_session() as db:
-            account = db.query(LoginInfo).filter(LoginInfo.name == name).first()
-            account.enable = rs
-            db.commit()
+        # notice that if it's a str in conditions, use double quote like "str"
+        conditions = 'name="{}"'.format(name)
+        maps = {'enable': rs}
+        cls.set_entity_attrs(LoginInfo, conditions, maps)
 
 
-class KeywordsDataOper:
-    @classmethod
-    def insert_keyword_wbid(cls, keyword_id, wbid):
-        with get_db_session() as db:
-            keyword_wbdata = KeywordsWbdata()
-            keyword_wbdata.wb_id = wbid
-            keyword_wbdata.keyword_id = keyword_id
-            db.add(keyword_wbdata)
-            db.commit()
-
-
-class KeywordsOper:
+class KeywordsOper(CommonOper):
     @classmethod
     def get_search_keywords(cls):
-        with get_db_session() as db:
-            return db.query(KeyWords.keyword, KeyWords.id). \
-                filter(text('enable=1')).all()
-
-    @classmethod
-    def set_useless_keyword(cls, keyword):
-        with get_db_session() as db:
-            search_word = db.query(KeyWords).filter \
-                (KeyWords.keyword == keyword).first()
-            search_word.enable = 0
-            db.commit()
+        attrs = [KeyWords.keyword, KeyWords.id]
+        return cls.get_attrs_by_key(attrs, 'enable=1')
 
 
-class SeedidsOper:
+class SeedidsOper(CommonOper):
     @classmethod
     def get_seed_ids(cls):
-        """
-        Get all user id to be crawled
-        :return: user ids
-        """
-        with get_db_session() as db:
-            return db.query(SeedIds.uid).filter(text('is_crawled=0')).all()
+        return cls.get_attrs_by_key([SeedIds.uid], 'is_crawled=0')
 
     @classmethod
     def get_home_ids(cls):
-        """
-        Get all user id who's home pages need to be crawled
-        :return: user ids
-        """
-        with get_db_session() as db:
-            return db.query(SeedIds.uid).filter(text('home_crawled=0')).all()
+        return cls.get_attrs_by_key([SeedIds.uid], 'home_crawled=0')
 
     @classmethod
-    def set_seed_crawled(cls, uid, result):
-        """
-        :param uid: user id that is crawled
-        :param result: crawling result, 1 stands for succeed, 2 stands for fail
-        :return: None
-        """
-        # todo make sure whether the seed variable should be inside or outside
-        with get_db_session() as db:
-            seed = db.query(SeedIds).filter(SeedIds.uid == uid).first()
-
-            if seed and seed.is_crawled == 0:
-                seed.is_crawled = result
-            else:
-                seed = SeedIds(uid=uid, is_crawled=result)
-                db.add(seed)
-            db.commit()
+    def get_relation_ids(cls):
+        return cls.get_attrs_by_key([SeedIds.uid], 'other_crawled=0')
 
     @classmethod
     def get_seed_by_id(cls, uid):
-        with get_db_session() as db:
-            return db.query(SeedIds).filter(SeedIds.uid == uid).first()
+        return cls.get_entity_by_key(SeedIds, 'uid={}'.format(uid))
 
     @classmethod
     def insert_seeds(cls, ids):
@@ -139,131 +137,119 @@ class SeedidsOper:
             db.commit()
 
     @classmethod
-    def set_seed_other_crawled(cls, uid):
+    def set_seed_crawled(cls, uid, result):
         """
-        update it if user id already exists, else insert
-        :param uid: user id
-        :return: None
+        :param uid: user id that is crawled
+        :param result: crawling result, 1 stands for success,
+        2 stands for failure
         """
-        with get_db_session() as db:
-            seed = cls.get_seed_by_id(uid)
-            if seed is None:
-                seed = SeedIds(uid=uid, is_crawled=1, other_crawled=1, home_crawled=1)
-                db.add(seed)
-            else:
-                seed.other_crawled = 1
-            db.commit()
+        maps = {
+            'uid': uid,
+            'is_crawled': result,
+        }
+        cls.update_or_insert_entity(SeedIds, 'uid={}'.format(uid), maps)
 
     @classmethod
-    def set_seed_home_crawled(cls, uid):
-        """
-        :param uid: user id
-        :return: None
-        """
-        with get_db_session() as db:
-            seed = cls.get_seed_by_id(uid)
-            if seed is None:
-                seed = SeedIds(uid=uid, is_crawled=0, other_crawled=0, home_crawled=1)
-                db.add(seed)
-            else:
-                seed.home_crawled = 1
-            db.commit()
+    def set_relation_crawled(cls, uid):
+        maps = {
+            'uid': uid,
+            'other_crawled': 1,
+        }
+        cls.update_or_insert_entity(SeedIds, 'uid={}'.format(uid), maps)
+
+    @classmethod
+    def set_home_crawled(cls, uid):
+        maps = {
+            'uid': uid,
+            'home_crawled': 1
+        }
+        cls.update_or_insert_entity(SeedIds, 'uid={}'.format(uid), maps)
 
 
 class UserOper(CommonOper):
     @classmethod
     def get_user_by_uid(cls, uid):
-        with get_db_session() as db:
-            return db.query(User).filter(User.uid == uid).first()
+        return cls.get_entity_by_key(User, 'uid={}'.format(uid))
 
     @classmethod
     def get_user_by_name(cls, user_name):
-        with get_db_session() as db:
-            return db.query(User).filter(User.name == user_name).first()
-
-
-class UserRelationOper(CommonOper):
-    pass
+        return cls.get_entity_by_key(User, 'name="{}"'.format(user_name))
 
 
 class WbDataOper(CommonOper):
     @classmethod
-    def get_wb_by_mid(cls, mid):
-        with get_db_session() as db:
-            return db.query(WeiboData).filter(WeiboData.weibo_id == mid).first()
+    def get_weibo_by_mid(cls, mid):
+        return cls.get_entity_by_key(WeiboData, 'weibo_id={}'.format(mid))
 
     @classmethod
-    def get_weibo_comment_not_crawled(cls):
-        with get_db_session() as db:
-            return db.query(WeiboData.weibo_id).filter(text('comment_crawled=0')).all()
+    def get_comment_not_crawled(cls):
+        return cls.get_attrs_by_key([WeiboData.weibo_id], 'comment_crawled=0')
 
     @classmethod
-    def get_weibo_praise_not_crawled(cls):
-        with get_db_session() as db:
-            return db.query(WeiboData.weibo_id).filter(text('praise_crawled=0')).all()
+    def get_praise_not_crawled(cls):
+        return cls.get_attrs_by_key([WeiboData.weibo_id], 'praise_crawled=0')
 
     @classmethod
-    def get_weibo_repost_not_crawled(cls):
-        with get_db_session() as db:
-            return db.query(WeiboData.weibo_id, WeiboData.uid).filter(
-                text('repost_crawled=0')).all()
+    def get_repost_not_crawled(cls):
+        return cls.get_attrs_by_key([WeiboData.weibo_id], 'repost_crawled=0')
 
     @classmethod
-    def get_weibo_dialogue_not_crawled(cls):
-        with get_db_session() as db:
-            return db.query(WeiboData.weibo_id).filter(text('dialogue_crawled=0')).all()
+    def get_dialogue_not_crawled(cls):
+        return cls.get_attrs_by_key([WeiboData.weibo_id], 'dialogue_crawled=0')
+
+    @classmethod
+    def get_img_not_download(cls):
+        conditions = 'image_download=0 and weibo_img!=""'
+        return cls.get_attrs_by_key([WeiboData.weibo_id, WeiboData.weibo_img],
+                                    conditions)
 
     # todo find a better way to do all the below
     @classmethod
-    def set_weibo_comment_crawled(cls, mid):
-        with get_db_session() as db:
-            data = cls.get_wb_by_mid(mid)
-            if data:
-                data.comment_crawled = 1
-                db.commit()
+    def set_comment_crawled(cls, mid):
+        maps = {'comment_crawled': 1}
+        cls.set_entity_attrs(WeiboData, 'weibo_id={}'.format(mid), maps)
 
     @classmethod
-    def set_weibo_praise_crawled(cls, mid):
-        with get_db_session() as db:
-            data = cls.get_wb_by_mid(mid)
-            if data:
-                data.praise_crawled = 1
-                db.commit()
+    def set_praise_crawled(cls, mid):
+        maps = {'praise_crawled': 1}
+        cls.set_entity_attrs(WeiboData, 'weibo_id={}'.format(mid), maps)
 
     @classmethod
-    def set_weibo_repost_crawled(cls, mid):
-        with get_db_session() as db:
-            data = cls.get_wb_by_mid(mid)
-            if data:
-                data.repost_crawled = 1
-                db.commit()
+    def set_repost_crawled(cls, mid):
+        maps = {'repost_crawled': 1}
+        cls.set_entity_attrs(WeiboData, 'weibo_id={}'.format(mid), maps)
 
     @classmethod
-    def set_weibo_dialogue_crawled(cls, mid):
-        with get_db_session() as db:
-            data = cls.get_wb_by_mid(mid)
-            if data:
-                data.dialogue_crawled = 1
-                db.commit()
+    def set_dialogue_crawled(cls, mid):
+        maps = {'dialogue_crawled': 1}
+        cls.set_entity_attrs(WeiboData, 'weibo_id={}'.format(mid), maps)
 
-
-class CommentOper(CommonOper):
     @classmethod
-    def get_comment_by_id(cls, cid):
-        with get_db_session() as db:
-            return db.query(WeiboComment).filter(
-                WeiboComment.comment_id == cid).first()
+    def set_img_downloaded(cls, mid):
+        maps = {'image_download': 1}
+        cls.set_entity_attrs(WeiboData, 'weibo_id={}'.format(mid), maps)
 
 
-class PraiseOper(CommonOper):
-    @classmethod
-    def get_Praise_by_id(cls, pid):
-        with get_db_session() as db:
-            return db.query(WeiboPraise).filter(WeiboPraise.weibo_id == pid).first()
+class KeywordsDataOper(CommonOper):
+    pass
+
+
+class RelationOper(CommonOper):
+    pass
 
 
 class RepostOper(CommonOper):
-    @classmethod
-    def get_repost_by_rid(cls, rid):
-        with get_db_session() as db:
-            return db.query(WeiboRepost).filter(WeiboRepost.weibo_id == rid).first()
+    pass
+
+
+class CommentOper(CommonOper):
+    pass
+
+
+class PraiseOper(CommonOper):
+    pass
+
+
+class Dialogue(CommonOper):
+    pass
+

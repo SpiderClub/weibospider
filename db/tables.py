@@ -64,7 +64,7 @@ weibo_data = Table('weibo_data', metadata,
                    Column("id", INTEGER, primary_key=True, autoincrement=True),
                    Column("weibo_id", String(200), unique=True),
                    Column("weibo_cont", Text),
-                   Column("weibo_img", String(1000)),
+                   Column("weibo_img", String(1000), server_default=''),
                    Column("weibo_img_path", String(1000), server_default=''),
                    Column("weibo_video", String(1000)),
                    Column("repost_num", INTEGER, default=0, server_default='0'),
@@ -79,6 +79,7 @@ weibo_data = Table('weibo_data', metadata,
                    Column("repost_crawled", INTEGER, default=0, server_default='0'),
                    Column("dialogue_crawled", INTEGER, default=0, server_default='0'),
                    Column("praise_crawled", INTEGER, default=0, server_default='0'),
+                   Column("image_download", INTEGER, default=0, server_default='0'),
                    )
 
 # keywords and weibodata relationship
@@ -104,7 +105,6 @@ weibo_praise = Table('weibo_praise', metadata,
                      Column("id", INTEGER, primary_key=True, autoincrement=True),
                      Column("user_id", String(20)),
                      Column("weibo_id", String(200)),
-                     Column("crawl_time", TIMESTAMP),
                      )
 
 # repost table

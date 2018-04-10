@@ -7,15 +7,15 @@ from bs4 import BeautifulSoup
 from page_get import status
 from logger import parser_logger
 from db.models import WeiboData
-from config import crawl_args
 from decorators import parse_decorator
+from config import crawling_mode
 
 
-# weibo will use https in the whole website in the future,so the default protocol we use is https
+# weibo will use https in the whole website in the future,
+# so the default protocol we use is https
 ORIGIN = 'http'
 PROTOCOL = 'https'
 ROOT_URL = 'weibo.com'
-CRAWLING_MODE = crawl_args.get('crawling_mode')
 
 
 # todo 重构搜索解析代码和主页解析代码，使其可重用；捕获所有具体异常，而不是笼统的使用Exception
@@ -133,7 +133,7 @@ def get_weibo_list(html):
         r = get_weibo_info_detail(data, html)
         if r is not None:
             wb_data = r[0]
-            if r[1] == 0 and CRAWLING_MODE == 'accurate':
+            if r[1] == 0 and crawling_mode == 'accurate':
                 weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
                 wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             weibo_datas.append(wb_data)

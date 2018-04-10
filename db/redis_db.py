@@ -6,6 +6,7 @@ import redis
 from redis.sentinel import Sentinel
 
 from logger import crawler_logger
+from exceptions import NoCookieException
 from config import (
     running_mode, share_host_count,
     redis_pass, redis_host,
@@ -13,7 +14,8 @@ from config import (
     sentinel as sentinel_args, socket_timeout,
     cookies as cookies_db, broker as broker_db,
     urls as urls_db, id_name as id_name_db,
-    cookie_expire_time, data_expire_time
+    cookie_expire_time, data_expire_time,
+    nologin_cookie_expire_time
 )
 
 
@@ -44,22 +46,27 @@ else:
 
 
 class Cookies(object):
+    account_hash_set = 'account'
+    cookie_host_maps = 'cookies_host'
+    account_queue = 'account_queue'
+    without_login_cookies = 'nologin_queue'
+
     @classmethod
-    def store_cookies(cls, name, cookies, proxy):
+    def store_cookies(cls, name, cookies):
         pickled_cookies = json.dumps(
-            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp(), 'proxy': proxy})
-        cookies_con.hset('account', name, pickled_cookies)
+            {'cookies': cookies, 'loginTime': datetime.datetime.now().timestamp()})
+        cookies_con.hset(cls.account_hash_set, name, pickled_cookies)
         cls.push_in_queue(name)
 
     @classmethod
     def push_in_queue(cls, name):
         # if the concurrency is large, we can't guarantee there are no reduplicate values
-        for i in range(cookies_con.llen('account_queue')):
-            tn = cookies_con.lindex('account_queue', i).decode('utf-8')
+        for i in range(cookies_con.llen(cls.account_queue)):
+            tn = cookies_con.lindex(cls.account_queue, i).decode('utf-8')
             if tn:
                 if tn == name:
                     return
-        cookies_con.rpush('account_queue', name)
+        cookies_con.rpush(cls.account_queue, name)
 
     @classmethod
     def fetch_cookies(cls):
@@ -72,19 +79,19 @@ class Cookies(object):
     @classmethod
     def fetch_cookies_of_normal(cls):
         # look for available accounts
-        for i in range(cookies_con.llen('account_queue')):
-            name = cookies_con.lpop('account_queue').decode('utf-8')
+        for i in range(cookies_con.llen(cls.account_queue)):
+            name = cookies_con.lpop(cls.account_queue).decode('utf-8')
             # during the crawling, some cookies can be banned
             # some account fetched from account_queue can be unavailable
-            j_account = cookies_con.hget('account', name)
+            j_account = cookies_con.hget(cls.account_hash_set, name)
             if not j_account:
-                return None
+                return
             else:
                 j_account = j_account.decode('utf-8')
                 if cls.check_cookies_timeout(j_account):
                     cls.delete_cookies(name)
                     continue
-                cookies_con.rpush('account_queue', name)
+                cookies_con.rpush(cls.account_queue, name)
                 account = json.loads(j_account)
                 return name, account['cookies']
         return None
@@ -98,7 +105,7 @@ class Cookies(object):
         hostname = socket.gethostname()
         my_cookies_name = cookies_con.hget('host', hostname)
         if my_cookies_name:
-            my_cookies = cookies_con.hget('account', my_cookies_name)
+            my_cookies = cookies_con.hget(cls.account_hash_set, my_cookies_name)
             # if cookies is expired, fetch a new one
             if not cls.check_cookies_timeout(my_cookies):
                 my_cookies = json.loads(my_cookies.decode('utf-8'))
@@ -108,11 +115,11 @@ class Cookies(object):
 
         while True:
             try:
-                name = cookies_con.lpop('account_queue').decode('utf-8')
+                name = cookies_con.lpop(cls.account_queue).decode('utf-8')
             except AttributeError:
                 return None
             else:
-                j_account = cookies_con.hget('account', name)
+                j_account = cookies_con.hget(cls.account_hash_set, name)
 
                 if cls.check_cookies_timeout(j_account):
                     cls.delete_cookies(name)
@@ -120,14 +127,14 @@ class Cookies(object):
 
                 j_account = j_account.decode('utf-8')
                 # one account maps many hosts (one to many)
-                hosts = cookies_con.hget('cookies_host', name)
+                hosts = cookies_con.hget(cls.cookie_host_maps, name)
                 if not hosts:
                     hosts = dict()
                 else:
                     hosts = hosts.decode('utf-8')
                     hosts = json.loads(hosts)
                 hosts[hostname] = 1
-                cookies_con.hset('cookies_host', name, json.dumps(hosts))
+                cookies_con.hset(cls.cookie_host_maps, name, json.dumps(hosts))
 
                 # one host maps one account (one to one)
                 account = json.loads(j_account)
@@ -135,20 +142,20 @@ class Cookies(object):
 
                 # push the cookie to the head
                 if len(hosts) < share_host_count:
-                    cookies_con.lpush('account_queue', name)
+                    cookies_con.lpush(cls.account_queue, name)
                 return name, account['cookies']
 
     @classmethod
     def delete_cookies(cls, name):
-        cookies_con.hdel('account', name)
+        cookies_con.hdel(cls.account_hash_set, name)
         if running_mode == 'quick':
-            cookies_con.hdel('cookies_host', name)
+            cookies_con.hdel(cls.cookie_host_maps, name)
         return True
 
     @classmethod
     def check_login_task(cls):
-        if broker_con.llen('login_queue') > 0:
-            broker_con.delete('login_queue')
+        if broker_con.llen(cls.account_queue) > 0:
+            broker_con.delete(cls.account_queue)
 
     @classmethod
     def check_cookies_timeout(cls, cookies):
@@ -163,6 +170,30 @@ class Cookies(object):
             crawler_logger.warning('The account has been expired')
             return True
         return False
+
+    # 目前未验证不登录的时候，同一IP不同Cookie是否和只有一个Cookie效果一样
+    # 也没验证多个IP使用同一个Cookie的效果
+    @classmethod
+    def get_nologin_cookie(cls):
+        while True:
+            if cookies_con.llen(cls.without_login_cookies) == 0:
+                raise NoCookieException('目前没有未登录的Cookie')
+            pickled_cookies = cookies_con.lpop(cls.without_login_cookies).decode('utf-8')
+            cookies_info = json.loads(pickled_cookies)
+            gen_time = datetime.datetime.fromtimestamp(cookies_info['gen_time'])
+            if (datetime.datetime.now() - gen_time) > datetime.timedelta(
+                    days=nologin_cookie_expire_time):
+                crawler_logger.warning('This no login cookie is expired')
+            else:
+                cookies_con.rpush(cls.without_login_cookies, pickled_cookies)
+                return cookies_info['cookies']
+
+    @classmethod
+    def store_no_login_cookie(cls, cookies):
+        # todo 加上添加时间
+        pickled_cookies = json.dumps(
+            {'cookies': cookies, 'gen_time': datetime.datetime.now().timestamp()})
+        cookies_con.rpush(cls.without_login_cookies, pickled_cookies)
 
 
 class Urls(object):

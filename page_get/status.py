@@ -9,6 +9,7 @@ BASE_URL = 'http://s.weibo.com/ajax/direct/morethan140?mid={}'
 
 def get_cont_of_weibo(mid):
     """
+    No login for this part
     :param mid: weibo's mid
     :return: all cont of the weibo
     """

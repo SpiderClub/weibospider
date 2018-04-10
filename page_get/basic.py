@@ -4,6 +4,7 @@ import signal
 import random
 
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from config import headers
 from logger import crawler_logger
@@ -16,19 +17,18 @@ from page_parse import (
     is_403, is_404, is_complete)
 from decorators import (
     timeout_decorator, timeout)
-from config import crawl_args
+from config import (request_time_out, min_crawl_interval,
+                    max_crawl_interval, max_retries,
+                    excp_interval)
 
 
-TIME_OUT = crawl_args.get('time_out')
-MIN_CRAWL_interval = crawl_args.get('min_crawl_interval')
-MAX_CRAWL_interval = crawl_args.get('max_crawl_interval')
-MAX_RETRIES = crawl_args.get('max_retries')
-EXCP_interval = crawl_args.get('excp_interval')
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 COOKIES = get_cookies()
 
 
-def is_banned(url):
-    if 'unfreeze' in url or 'accessdeny' in url or 'userblock' in url or 'verifybmobile' in url:
+def _is_banned(url):
+    if 'unfreeze' in url or 'accessdeny' in url or 'userblock' in url \
+            or 'verifybmobile' in url:
         return True
     return False
 
@@ -43,29 +43,35 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
     :param need_proxy: whether the request need a http/https proxy
     :return: response text, when a exception is raised, return ''
     """
-    crawler_logger.info('the crawling url is {url}'.format(url=url))
+    crawler_logger.info('the crawling url is {}'.format(url))
     count = 0
+    kwargs = {
+        'headers': headers,
+        'timeout': request_time_out,
+        'verify': False
+    }
 
-    while count < MAX_RETRIES:
+    while count < max_retries:
         if auth_level == 2:
             name_cookies = Cookies.fetch_cookies()
-            proxy = {'http': name_cookies[2], 'https': name_cookies[2],}
 
             if name_cookies is None:
-                crawler_logger.warning('No cookie in cookies pool. Maybe all accounts are banned, or all cookies are expired')
+                crawler_logger.warning('No cookie in cookies pool. Maybe all accounts are banned, '
+                                       'or all cookies are expired')
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
+
         try:
             if auth_level == 2:
-                resp = requests.get(url, headers=headers, cookies=name_cookies[1], timeout=TIME_OUT, verify=False, proxies=proxy)
+                resp = requests.get(url, cookies=name_cookies[1], **kwargs)
             elif auth_level == 1:
-                resp = requests.get(url, headers=headers, cookies=COOKIES, timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, cookies=COOKIES, **kwargs)
             else:
-                resp = requests.get(url, headers=headers, timeout=TIME_OUT, verify=False)
+                resp = requests.get(url, **kwargs)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, AttributeError) as e:
             crawler_logger.warning('Excepitons are raised when crawling {}.Here are details:{}'.format(url, e))
             count += 1
-            time.sleep(EXCP_interval)
+            time.sleep(excp_interval)
             continue
 
         if resp.status_code == 414:
@@ -73,6 +79,7 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             if not need_proxy:
                 send_email()
                 os.kill(os.getppid(), signal.SIGTERM)
+
         if resp.text:
             page = resp.text.encode('utf-8', 'ignore').decode('utf-8')
         else:
@@ -80,9 +87,9 @@ def get_page(url, auth_level=2, is_ajax=False, need_proxy=False):
             continue
         if auth_level == 2:
             # slow down to aviod being banned
-            interval = random.randint(MIN_CRAWL_interval, MAX_CRAWL_interval)
+            interval = random.randint(min_crawl_interval, max_crawl_interval)
             time.sleep(interval)
-            if is_banned(resp.url) or is_403(page):
+            if _is_banned(resp.url) or is_403(page):
                 crawler_logger.warning('Account {} has been banned'.format(name_cookies[0]))
                 LoginInfoOper.freeze_account(name_cookies[0], 0)
                 Cookies.delete_cookies(name_cookies[0])

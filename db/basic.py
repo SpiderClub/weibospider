@@ -29,7 +29,7 @@ def get_engine():
 eng = get_engine()
 Base = declarative_base()
 metadata = MetaData(get_engine())
-SessionFactory = sessionmaker(bind=eng)
+SessionFactory = sessionmaker(bind=eng, expire_on_commit=False)
 global_session = SessionFactory()
 # scoped_session use registry design pattern，
 # during the life of a single process,
@@ -39,14 +39,17 @@ Session = scoped_session(SessionFactory)
 
 @contextmanager
 def get_db_session():
-    try:
-        my_session = Session()
-        try:
-            yield my_session
-        except Exception as e:
-            db_logger.error('db operate error: {}'.format(e))
-            my_session.rollback()
-        finally:
-            my_session.close()
-    except Exception as e:
-        db_logger.error('uncatched exceptions {}'.format(e))
+    my_session = Session()
+    yield my_session
+    my_session.close()
+    # try:
+    #     my_session = Session()
+    #     try:
+    #         yield my_session
+    #     except Exception as e:
+    #         db_logger.error('db operate error: {}'.format(e))
+    #         my_session.rollback()
+    #     finally:
+    #         my_session.close()
+    # except Exception as e:
+    #     db_logger.error('uncatched exceptions {}'.format(e))

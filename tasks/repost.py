@@ -14,15 +14,16 @@ from .workers import app
 BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
 
 
-@app.task
 def crawl_repost_by_page(mid, page_num):
     total_page = 1
     cur_url = BASE_URL.format(mid, page_num)
-    html = get_page(cur_url, auth_level=1, is_ajax=True)
+    # TODO consider crawling with haipproxy or not
+    # html = get_page(cur_url, auth_level=1, is_ajax=True)
+    html = get_page(cur_url, auth_level=2, is_ajax=True)
     repost_datas = repost.stroe_and_get_reposts(html, mid)
     if page_num == 1:
         total_page = repost.get_total_page(html)
-        WbDataOper.set_weibo_repost_crawled(mid)
+        WbDataOper.set_repost_crawled(mid)
     return total_page, repost_datas
 
 
@@ -35,7 +36,8 @@ def crawl_repost_page(mid, uid):
 
     root_user, _ = get_profile(uid)
 
-    to_crawl_page = total_page if total_page < max_repost_page else max_repost_page
+    to_crawl_page = total_page if total_page < max_repost_page \
+        else max_repost_page
 
     for page_num in range(2, to_crawl_page+1):
         _, cur_repost_datas = crawl_repost_by_page(mid, page_num)
@@ -57,8 +59,9 @@ def crawl_repost_page(mid, uid):
 
 @app.task
 def execute_repost_task():
-    # regard current weibo url as the original url, you can also analyse from the root url
-    weibo_datas = WbDataOper.get_weibo_repost_not_crawled()
-    crawler_logger.info('There are {} repost urls have to be crawled'.format(len(weibo_datas)))
-    caller = group(crawl_repost_page.s(data.weibo_id, data.uid) for data in weibo_datas)
+    # regard current weibo url as the original url,
+    # you can also analyse from the root url
+    datas = WbDataOper.get_repost_not_crawled()
+    caller = group(crawl_repost_page.s(data.weibo_id, data.uid)
+                   for data in datas)
     caller.delay()

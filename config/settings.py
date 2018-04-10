@@ -3,7 +3,7 @@
 ################################
 # spider settings              #
 ################################
-time_out = 200  # timeout for crawling and storing user info
+request_time_out = 200  # timeout for crawling and storing user info
 min_crawl_interval = 10  # min interval of http request
 max_crawl_interval = 20  # max interval of http request
 excp_interval = 5 * 60  # time for sleeping when crawling raises exceptions
@@ -44,6 +44,8 @@ crawling_mode = 'normal'
 share_host_count = 5
 # the expire time(hours) of each weibo cookies
 cookie_expire_time = 23
+# the expire time(days) of each no login cookies
+nologin_cookie_expire_time = 15
 
 # if you want to download images,set the value below to 1,else 0
 images_allow = 1
@@ -69,7 +71,7 @@ db_type = 'mysql'
 #######################################
 redis_host = '127.0.0.1'
 redis_port = 6379
-redis_pass = ''
+redis_pass = '123456'
 cookies = 1  # store and fetch cookies
 urls = 2  # the crawled urls and crawling result(failure or success)
 broker = 5  # broker for celery

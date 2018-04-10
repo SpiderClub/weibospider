@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from db.basic import db_session
+from db.basic import get_db_session
 from config import create_all
 from login import (
     get_session, get_cookies)
@@ -24,10 +24,13 @@ def cookies():
 
 @pytest.fixture(scope='session', autouse=True)
 def create_tables():
-    db_session.execute('drop database if exists weibo;')
-    db_session.execute('create database weibo;use weibo;')
-    rs = db_session.execute('show tables;')
-    assert rs.rowcount == 0
-    create_all.create_all_table()
-    rs = db_session.execute('show tables;')
-    assert rs.rowcount > 0
+    drop_db = 'drop database if exists weibo;'
+    create_db = 'create database weibo;use weibo;'
+    with get_db_session() as db:
+        db.execute(drop_db)
+        db.execute(create_db)
+        rs = db.execute('show tables;')
+        assert rs.rowcount == 0
+        create_all.create_all_table()
+        rs = db.execute('show tables;')
+        assert rs.rowcount > 0

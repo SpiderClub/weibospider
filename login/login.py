@@ -11,20 +11,20 @@ from urllib.parse import quote_plus
 import requests
 
 from config import headers
-from utils import (code_verificate, getip)
+from utils import code_verificate
 from page_parse import is_403
 from exceptions import LoginException
 from db.redis_db import Cookies
 from db.dao import LoginInfoOper
-from config import chapcha_args
+from config import (yundama_username, yundama_passwd)
 from logger import (
     crawler_logger, other_logger)
 
 
 VERIFY_CODE_PATH = './{}{}.png'
 
-YUMDAMA_USERNAME = os.getenv('YUMDAMA_ACCOUNT') or chapcha_args.get('name')
-YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or chapcha_args.get('password')
+YUMDAMA_USERNAME = os.getenv('YUMDAMA_ACCOUNT') or yundama_username
+YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or yundama_passwd
 
 
 def get_pincode_url(pcid):
@@ -34,7 +34,7 @@ def get_pincode_url(pcid):
     return pincode_url
 
 
-def get_img(url, name, retry_count, proxy):
+def get_img(url, name, retry_count):
     """
     :param url: url for verification code
     :param name: login account
@@ -42,7 +42,7 @@ def get_img(url, name, retry_count, proxy):
     :return: 
     """
     pincode_name = VERIFY_CODE_PATH.format(name, retry_count)
-    resp = requests.get(url, headers=headers, stream=True, proxies=proxy)
+    resp = requests.get(url, headers=headers, stream=True)
     with open(pincode_name, 'wb') as f:
         for chunk in resp.iter_content(1000):
             f.write(chunk)
@@ -57,11 +57,11 @@ def get_encodename(name):
 
 
 # prelogin for servertime, nonce, pubkey, rsakv
-def get_server_data(su, session, proxy):
+def get_server_data(su, session):
     pre_url = "http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
     pre_url = pre_url + su + "&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)&_="
     prelogin_url = pre_url + str(int(time.time() * 1000))
-    pre_data_res = session.get(prelogin_url, headers=headers, proxies=proxy)
+    pre_data_res = session.get(prelogin_url, headers=headers)
 
     sever_data = eval(pre_data_res.content.decode("utf-8").replace("sinaSSOController.preloginCallBack", ''))
 
@@ -79,8 +79,8 @@ def get_password(password, servertime, nonce, pubkey):
 
 
 # post data and get the next url
-def get_redirect(name, data, post_url, session, proxy):
-    logining_page = session.post(post_url, data=data, headers=headers, proxies=proxy)
+def get_redirect(name, data, post_url, session):
+    logining_page = session.post(post_url, data=data, headers=headers)
     login_loop = logining_page.content.decode("GBK")
 
     # if name or password is wrong, set the value to 2
@@ -104,7 +104,7 @@ def get_redirect(name, data, post_url, session, proxy):
         return ''
 
 
-def login_no_pincode(name, password, session, server_data, proxy):
+def login_no_pincode(name, password, session, server_data):
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
@@ -135,12 +135,12 @@ def login_no_pincode(name, password, session, server_data, proxy):
         'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
 
-    rs = get_redirect(name, data, post_url, session, proxy)
+    rs = get_redirect(name, data, post_url, session)
 
     return rs, None, '', session
 
 
-def login_by_pincode(name, password, session, server_data, retry_count, proxy):
+def login_by_pincode(name, password, session, server_data, retry_count):
     post_url = 'http://login.sina.com.cn/sso/login.php?client=ssologin.js(v1.4.18)'
 
     servertime = server_data["servertime"]
@@ -177,57 +177,55 @@ def login_by_pincode(name, password, session, server_data, retry_count, proxy):
     if not YUMDAMA_USERNAME:
         raise LoginException('Login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
-    pincode_name = get_img(img_url, name, retry_count, proxy)
+    pincode_name = get_img(img_url, name, retry_count)
     verify_code, yundama_obj, cid = code_verificate(YUMDAMA_USERNAME, YUMDAMA_PASSWORD, pincode_name)
     data['door'] = verify_code
-    rs = get_redirect(name, data, post_url, session, proxy)
+    rs = get_redirect(name, data, post_url, session)
 
     os.remove(pincode_name)
     return rs, yundama_obj, cid, session
 
 
-def login_retry(name, password, session, ydm_obj, cid, proxy, rs='pinerror', retry_count=0):
+def login_retry(name, password, session, ydm_obj, cid, rs='pinerror', retry_count=0):
     while rs == 'pinerror':
         ydm_obj.report_error(cid)
         retry_count += 1
         session = requests.Session()
         su = get_encodename(name)
-        server_data = get_server_data(su, session, proxy)
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count, proxy)
+        server_data = get_server_data(su, session)
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count)
     return rs, ydm_obj, cid, session
 
 
-def do_login(name, password, proxy):
+def do_login(name, password):
     session = requests.Session()
     su = get_encodename(name)
-    server_data = get_server_data(su, session, proxy)
+    server_data = get_server_data(su, session)
 
     if server_data['showpin']:
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0, proxy)
+        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0)
         if rs == 'pinerror':
-            rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid, proxy)
+            rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid)
 
     else:
-        rs, yundama_obj, cid, session = login_no_pincode(name, password, session, server_data, proxy)
+        rs, yundama_obj, cid, session = login_no_pincode(name, password, session, server_data)
         if rs == 'login_need_pincode':
             session = requests.Session()
             su = get_encodename(name)
-            server_data = get_server_data(su, session, proxy)
-            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0, proxy)
+            server_data = get_server_data(su, session)
+            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0)
 
             if rs == 'pinerror':
-                rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid, proxy)
+                rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid)
 
     return rs, yundama_obj, cid, session
 
 
 def get_session(name, password):
-    proxy = getip.getIP("")
-
-    url, yundama_obj, cid, session = do_login(name, password, proxy)
+    url, yundama_obj, cid, session = do_login(name, password)
 
     if url != '':
-        rs_cont = session.get(url, headers=headers, proxies=proxy)
+        rs_cont = session.get(url, headers=headers)
         login_info = rs_cont.text
 
         u_pattern = r'"uniqueid":"(.*)",'
@@ -235,14 +233,14 @@ def get_session(name, password):
         if m and m.group(1):
             # check if account is valid
             check_url = 'http://weibo.com/2671109275/about'
-            resp = session.get(check_url, headers=headers, proxies=proxy)
+            resp = session.get(check_url, headers=headers)
 
             if is_403(resp.text):
                 other_logger.error('account {} has been forbidden'.format(name))
                 LoginInfoOper.freeze_account(name, 0)
                 return None
             other_logger.info('Login successful! The login account is {}'.format(name))
-            Cookies.store_cookies(name, session.cookies.get_dict(), proxy['http'])
+            Cookies.store_cookies(name, session.cookies.get_dict())
             return session
         
     other_logger.error('login failed for {}'.format(name))

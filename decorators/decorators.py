@@ -86,7 +86,7 @@ def retry(times=-1, delay=0, exceptions=Exception, logger=other_logger):
     """
     inspired by https://github.com/invl/retry
     :param times: retry times
-    :param delay: internals between each retry
+    :param delay: intervals between each retry
     :param exceptions: exceptions may raise in retry
     :param logger: log for retry
     :return: func result or None

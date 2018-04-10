@@ -9,13 +9,9 @@ from page_get import status
 from utils import url_filter
 from db.models import WeiboData
 from decorators import parse_decorator
+from config import (
+    images_path, crawling_mode)
 from tasks.workers import app
-from config import crawl_args
-
-
-CRAWLING_MODE = crawl_args.get('crawling_mode')
-IMG_ALLOW = crawl_args.get('images_allow')
-IMG_PATH = crawl_args.get('images_path')
 
 
 @parse_decorator('')
@@ -77,10 +73,8 @@ def get_weibo_info(each, html):
     except Exception:
         wb_data.weibo_img = ''
 
-    if IMG_ALLOW and imgs and imgs_url:
-        app.send_task('tasks.downloader.download_img_task', args=(wb_data.weibo_id, imgs_url),
-                      queue='download_queue', routing_key='for_download')
-        wb_data.weibo_img_path = IMG_PATH
+    if imgs and imgs_url:
+        wb_data.weibo_img_path = images_path
     else:
         wb_data.weibo_img_path = ''
 
@@ -154,7 +148,7 @@ def get_search_info(html):
         r = get_weibo_info(each, html)
         if r is not None:
             wb_data = r[0]
-            if r[1] == 0 and CRAWLING_MODE == 'accurate':
+            if r[1] == 0 and crawling_mode == 'accurate':
                 weibo_cont = status.get_cont_of_weibo(wb_data.weibo_id)
                 wb_data.weibo_cont = weibo_cont if weibo_cont else wb_data.weibo_cont
             search_list.append(wb_data)

@@ -2,6 +2,11 @@ import os
 import logging
 import logging.config as log_conf
 
+
+__all__ = ['crawler_logger', 'parser_logger',
+           'db_logger', 'other_logger']
+
+
 log_dir = os.path.dirname(os.path.dirname(__file__))+'/logs'
 if not os.path.exists(log_dir):
     os.mkdir(log_dir)
