@@ -15,9 +15,9 @@ from .workers import app
 
 
 # only crawls origin weibo
-HOME_URL = 'http://weibo.com/u/{}?is_ori=1&is_tag=0&profile_ftype=1&page={}'
-AJAX_URL = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}' \
-           '&pagebar={}&is_ori=1&id={}{}&page={}&pre_page={}&__rnd={}'
+HOME_URL = 'https://weibo.com/u/{}?is_ori=1&is_tag=0&profile_ftype=1&page={}'
+AJAX_URL = 'https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain={}&pagebar={}&is_ori=1&id={}{}&page={}' \
+           '&pre_page={}&__rnd={}'
 
 
 @app.task

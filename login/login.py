@@ -29,7 +29,7 @@ YUMDAMA_PASSWORD = os.getenv('YUMDAMA_PASS') or yundama_passwd
 
 def get_pincode_url(pcid):
     size = 0
-    url = "http://login.sina.com.cn/cgi/pin.php"
+    url = "https://login.sina.com.cn/cgi/pin.php"
     pincode_url = '{}?r={}&s={}&p={}'.format(url, math.floor(random.random() * 100000000), size, pcid)
     return pincode_url
 
@@ -132,7 +132,7 @@ def login_no_pincode(name, password, session, server_data):
         'su': get_encodename(name),
         'useticket': '1',
         'vsnf': '1',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
+        'url': 'https://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack'
     }
 
     rs = get_redirect(name, data, post_url, session)
@@ -170,7 +170,7 @@ def login_by_pincode(name, password, session, server_data, retry_count):
         'su': get_encodename(name),
         'useticket': '1',
         'vsnf': '1',
-        'url': 'http://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
+        'url': 'https://weibo.com/ajaxlogin.php?framelogin=1&callback=parent.sinaSSOController.feedBackUrlCallBack',
         'pcid': pcid
     }
 
@@ -232,7 +232,7 @@ def get_session(name, password):
         m = re.search(u_pattern, login_info)
         if m and m.group(1):
             # check if account is valid
-            check_url = 'http://weibo.com/2671109275/about'
+            check_url = 'https://weibo.com/2671109275/about'
             resp = session.get(check_url, headers=headers)
 
             if is_403(resp.text):

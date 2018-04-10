@@ -70,6 +70,7 @@ class UserRelation(Base):
     def __repr__(self):
         return 'user_id:{},follow_or_fans_id:{},type:{}'.format(self.user_id, self.follow_or_fans_id, self.type)
 
+
 class WeiboDialogue(Base):
     __table__ = weibo_dialogue
 

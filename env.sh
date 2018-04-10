@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 PROJ_DIR=`pwd`
 VENV=${PROJ_DIR}/.env
 PROJ_NAME=WeiboSpider

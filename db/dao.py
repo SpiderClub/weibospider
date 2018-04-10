@@ -7,7 +7,7 @@ from logger import db_logger
 from .basic import get_db_session
 from .models import (
     LoginInfo, KeyWords, SeedIds,
-    User, WeiboData
+    User, WeiboData, KeywordsWbdata
 )
 
 
@@ -231,7 +231,11 @@ class WbDataOper(CommonOper):
 
 
 class KeywordsDataOper(CommonOper):
-    pass
+    @classmethod
+    def get_weibo_ids(cls, keyword_id, wb_id):
+        conditions = 'keyword_id={} and wb_id={}'.format(keyword_id, wb_id)
+        return cls.get_attrs_by_key([KeywordsWbdata.keyword_id, KeywordsWbdata.wb_id],
+                                    conditions)
 
 
 class RelationOper(CommonOper):

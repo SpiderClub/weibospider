@@ -3,9 +3,9 @@ from bs4 import BeautifulSoup
 
 def url_filter(url):
     if url.lower().startswith('//'):
-        return 'http:{}'.format(url)
+        return 'https:{}'.format(url)
     elif url.lower().startswith('/'):
-        return 'http://weibo.com{}'.format(url)
+        return 'https://weibo.com{}'.format(url)
     else:
         return url
 

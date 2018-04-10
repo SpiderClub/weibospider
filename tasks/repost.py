@@ -1,7 +1,6 @@
 from celery import group
 
 from page_parse import repost
-from logger import crawler_logger
 from db.redis_db import IdNames
 from config import max_repost_page
 from db.dao import (
@@ -11,7 +10,7 @@ from page_get import (
 from .workers import app
 
 
-BASE_URL = 'http://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
+BASE_URL = 'https://weibo.com/aj/v6/mblog/info/big?ajwvr=6&id={}&&page={}'
 
 
 def crawl_repost_by_page(mid, page_num):

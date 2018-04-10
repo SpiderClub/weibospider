@@ -8,10 +8,10 @@ from logger import parser_logger
 from page_get import status
 from utils import url_filter
 from db.models import WeiboData
+from db.dao import WbDataOper
 from decorators import parse_decorator
 from config import (
     images_path, crawling_mode)
-from tasks.workers import app
 
 
 @parse_decorator('')
@@ -55,6 +55,10 @@ def get_weibo_info(each, html):
 
     try:
         wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
+        rs = WbDataOper.get_weibo_by_mid(wb_data.weibo_id)
+        if rs:
+            wb_data.uid = '-1'
+            return wb_data, 1
     except (AttributeError, IndexError, TypeError):
         return None
 

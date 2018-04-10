@@ -8,7 +8,7 @@ from db.models import WeiboRepost
 from decorators import parse_decorator
 
 
-REPOST_URL = 'http://weibo.com{}'
+REPOST_URL = 'https://weibo.com{}'
 
 
 @parse_decorator('')

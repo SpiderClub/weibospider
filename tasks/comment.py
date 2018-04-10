@@ -10,7 +10,7 @@ from db.dao import (
 from .workers import app
 
 
-BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
+BASE_URL = 'https://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
 
 
 # TODO simplify similar codes in repost.py,comment.py,praise.py...

@@ -33,11 +33,13 @@ def do_login(name, password):
 @app.task
 def execute_login_task():
     infos = LoginInfoOper.get_login_info()
+    if not infos:
+        crawler_logger.warning("The spider can't get account from db, "
+                               "perhaps all your accounts are baned")
+        return
     # Clear all stacked login tasks before each time for login
     Cookies.check_login_task()
     crawler_logger.info('The login task is starting...')
     caller = group(do_login.s(info.name, info.password)
                    for info in infos)
     caller()
-
-
