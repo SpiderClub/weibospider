@@ -53,15 +53,6 @@ def crawl_user_info(uid):
     except SoftTimeLimitExceeded:
         crawler_logger.error("Timeout for celery to crawl uid={}".format(uid))
 
-    if not uid:
-        return
-
-    user, is_crawled = get_profile(uid)
-    # If it's enterprise user, just skip it
-    if user and user.verify_type == 2:
-        SeedidsOper.set_relation_crawled(uid)
-        return
-
 
 @app.task
 def execute_user_task():

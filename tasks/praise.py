@@ -1,12 +1,15 @@
 import time
 
 from celery import group
+from celery.exceptions import SoftTimeLimitExceeded
 
 from page_parse import praise
 from page_get import get_page
-from db.dao import (
-    WbDataOper, PraiseOper)
+from logger import crawler_logger
+
 from .workers import app
+
+from db.dao import (WbDataOper, PraiseOper)
 
 
 BASE_URL = 'http://weibo.com/aj/v6/like/big?ajwvr=6&mid={}&' \
@@ -17,12 +20,17 @@ BASE_URL = 'http://weibo.com/aj/v6/like/big?ajwvr=6&mid={}&' \
 def crawl_praise_by_page(mid, page_num):
     cur_time = int(time.time() * 1000)
     cur_url = BASE_URL.format(mid, page_num, cur_time)
-    html = get_page(cur_url, auth_level=2, is_ajax=True)
-    praise_datas = praise.get_praise_list(html, mid)
-    PraiseOper.add_all(praise_datas)
-    if page_num == 1:
-        WbDataOper.set_praise_crawled(mid)
-    return html, praise_datas
+    try:
+        html = get_page(cur_url, auth_level=2, is_ajax=True)
+        datas = praise.get_praise_list(html, mid)
+    except SoftTimeLimitExceeded:
+        crawler_logger.error(
+            "Timeout for celery to crawl praise {}".format(cur_url))
+    else:
+        PraiseOper.add_all(datas)
+        if page_num == 1:
+            WbDataOper.set_praise_crawled(mid)
+        return html, datas
 
 
 @app.task

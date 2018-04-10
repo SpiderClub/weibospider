@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Table, Column, INTEGER, String, Text, TIMESTAMP)
+    Table, Column, INTEGER, String, Text)
 
 from .basic import metadata
 
