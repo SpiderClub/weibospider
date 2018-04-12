@@ -19,7 +19,7 @@ yundama_passwd: xxxxxx             # password for yundama
 
 # only crawl weibo(bowen) after
 # only affect to home crawler
-time_after: '1970-01-01 00:00:00'
+time_after: '1970-01-01 08:00:00'
 
 # whether account follows the uid below
 # if yes rows in wbuser will have 1 at isFan column
