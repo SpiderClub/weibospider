@@ -3,3 +3,10 @@ def getIP(param):
         'http': '',
         'https': '',
     }
+
+
+def getIPWithoutLogin(param):
+    return {
+        'http': '',
+        'https': '',
+    }
