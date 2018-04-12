@@ -90,7 +90,7 @@ class Cookies(object):
                     continue
                 cookies_con.rpush('account_queue', name)
                 account = json.loads(j_account)
-                return name, account['cookies'], j_account['proxy']
+                return name, account['cookies'], account['proxy']
         return None
 
     @classmethod
