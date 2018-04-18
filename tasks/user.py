@@ -12,8 +12,8 @@ from celery.exceptions import SoftTimeLimitExceeded
 def crawl_follower_fans(uid):
     seed = SeedidsOper.get_seed_by_id(uid)
     if seed.other_crawled == 0:
-        rs = get_fans_or_followers_ids(uid, 1)
-        rs.extend(get_fans_or_followers_ids(uid, 2))
+        rs = get_fans_or_followers_ids(uid, 1, 1)
+        rs.extend(get_fans_or_followers_ids(uid, 2, 1))
         datas = set(rs)
         # If data already exits, just skip it
         if datas:

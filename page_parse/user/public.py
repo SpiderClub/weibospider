@@ -181,18 +181,22 @@ def get_fans_or_follows(html, uid, type):
             cont = json.loads(all_info).get('html', '')
             soup = BeautifulSoup(cont, 'html.parser')
             follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item'})
-            pattern = 'uid=(.*?)&'
+            patternUID = re.compile(r'uid=(.*?)&')
+            patternFROM = re.compile(r'通过.+?关注')
             for follow in follows:
-                m = re.search(pattern, str(follow))
+                m = re.search(patternUID, str(follow))
                 if m:
                     r = m.group(1)
                     # filter invalid ids
                     if r.isdigit():
                         isDuplicate = UserRelationOper.get_user_by_uid(uid, r, type)
                         if not isDuplicate:
+                            n = re.search(patternFROM, follow.text)
+                            n = n.group(0)
+                            n = n[2:len(n)-2]
                             user_ids.append(r)
-                            relations.append(UserRelation(uid, r, type))
-                            
+                            relations.append(UserRelation(uid, r, type, n))
+
     UserRelationOper.add_all(relations)
     return user_ids
 
