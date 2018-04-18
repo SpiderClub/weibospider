@@ -127,20 +127,24 @@ def get_user_profile(user_id):
     return user
 
 
-def get_fans_or_followers_ids(user_id, crawl_type):
+def get_fans_or_followers_ids(user_id, crawl_type, verify_type):
     """
     Get followers or fans
     :param user_id: user id
-    :param crawl_type: 1 stands for fans，2 stands for follows
+    :param crawl_type: 1 stands for fans, 2 stands for follows
+    :param verify_type: 1 stands for 100505(normal users), 2 stands for 100606(special users,such as writers)
     :return: lists of fans or followers
     """
 
-    # todo check fans and followers the special users,such as writers
     # todo deal with conditions that fans and followers more than 5 pages
-    if crawl_type == 1:
+    if crawl_type == 1 and verify_type == 1:
         fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?relate=fans&page={}#Pl_Official_HisRelation__60'
-    else:
+    elif crawl_type == 2 and verify_type == 1:
         fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?page={}#Pl_Official_HisRelation__60'
+    elif crawl_type == 1 and verify_type == 2:
+        fans_or_follows_url = 'http://weibo.com/p/100606{}/follow?relate=fans&page={}#Pl_Official_HisRelation__47'
+    elif crawl_type == 2 and verify_type == 2:
+        fans_or_follows_url = 'http://weibo.com/p/100606{}/follow?page={}#Pl_Official_HisRelation__47'
 
     cur_page = 1
     max_page = 6
