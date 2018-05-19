@@ -10,7 +10,8 @@ __all__ = ['crawler_logger', 'parser_logger',
            'db_logger', 'other_logger']
 
 
-abslote_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), log_dir)
+abslote_dir = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), log_dir)
 if not os.path.exists(abslote_dir):
     os.mkdir(abslote_dir)
 

@@ -14,10 +14,7 @@ from .basic import get_page
 
 
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
-# SAMEFOLLOW: only crawl user with 100505 domain
-SAMEFOLLOW_URL = 'https://weibo.com/p/100505{}/follow?relate=' \
-                 'same_follow&amp;from=page_100505_profile&amp;' \
-                 'wvr=6&amp;mod=bothfollow'
+DEFAULT_DOMAIN = '100505'
 
 
 def get_user_detail(user_id, html):
@@ -63,7 +60,8 @@ def get_user_from_web(user_id):
 
     url = BASE_URL.format('100505', user_id)
     # todo find a better way to get domain and user info
-    html = get_page(url, auth_level=1)
+    # auth level = 1 is better
+    html = get_page(url, auth_level=2)
 
     if not is_404(html):
         domain = public.get_userdomain(html)
@@ -80,8 +78,8 @@ def get_user_from_web(user_id):
         else:
             user = get_enterprise_detail(user_id, html)
 
-        if user is None:
-            return None
+        if not user:
+            return
 
         set_public_attrs(user, html)
 
@@ -91,10 +89,10 @@ def get_user_from_web(user_id):
                 id=user_id))
             return user
         else:
-            return None
+            return
 
     else:
-        return None
+        return
 
 
 def get_profile(user_id):
@@ -132,24 +130,31 @@ def get_fans_or_followers_ids(user_id, crawl_type):
     # todo check fans and followers the special users,such as writers
     # todo deal with conditions that fans and followers more than 5 pages
     if crawl_type == 1:
-        fans_or_follows_url = 'http://weibo.com/p/100505{}/follow?' \
+        fans_or_follows_url = 'http://weibo.com/p/{}{}/follow?' \
                               'relate=fans&page={}#Pl_Official_HisRelation__60'
     else:
-        fans_or_follows_url = 'http://weibo.com/p/100505{}/' \
+        fans_or_follows_url = 'http://weibo.com/p/{}{}/' \
                               'follow?page={}#Pl_Official_HisRelation__60'
 
     cur_page = 1
     max_page = 6
+    domain = DEFAULT_DOMAIN
     user_ids = list()
     while cur_page < max_page:
-        url = fans_or_follows_url.format(user_id, cur_page)
+        url = fans_or_follows_url.format(domain, user_id, cur_page)
         page = get_page(url)
+        real_domain = public.get_userdomain(page)
+        if domain != real_domain:
+            domain = real_domain
+            continue
+
         if cur_page == 1:
             urls_length = public.get_max_crawl_pages(page)
             if max_page > urls_length:
                 max_page = urls_length + 1
         # get ids and store relations
-        user_ids.extend(public.get_fans_or_follows(page, user_id, crawl_type))
+        rs = public.get_fans_or_follows(page, user_id, crawl_type)
+        user_ids.extend(rs)
 
         cur_page += 1
 
