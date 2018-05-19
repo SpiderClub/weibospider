@@ -1,21 +1,28 @@
 import os
-
 from contextlib import contextmanager
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import (
-    scoped_session, sessionmaker)
 from sqlalchemy import (
     create_engine, MetaData
 )
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import (
+    scoped_session, sessionmaker)
 
-from config import (db_host, db_port,
-                    db_name, db_pass,
-                    db_type, db_user)
-from logger import db_logger
+from weibospider.config import (db_host, db_port,
+                                db_name, db_pass,
+                                db_type, db_user)
+from ..logger import db_logger
 
 
 __all__ = ['get_db_session', 'metadata', 'Base']
+
+
+mysql_engine = create_engine('{}+pymysql://{}:{}@{}:{}'.format(db_type, db_user,
+                                                               db_pass, db_host,
+                                                               db_port))
+
+# create database if necessary
+mysql_engine.execute("CREATE DATABASE IF NOT EXISTS {};".format(db_name))
 
 
 def get_engine():
