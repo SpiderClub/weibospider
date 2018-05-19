@@ -1,8 +1,8 @@
 from celery import (
     Celery, platforms)
 
-from ..config.celeryconfig import CeleryConfig
-from ..config import (
+from weibospider.config.celeryconfig import CeleryConfig
+from weibospider.config import (
     redis_pass, redis_host,
     redis_port, master,
     sentinel as sentinel_args, broker as broker_db,
@@ -11,11 +11,11 @@ from ..config import (
 
 
 tasks = [
-    'tasks.login', 'tasks.search',
-    'tasks.user', 'tasks.repost',
-    'tasks.praise', 'tasks.home',
-    'tasks.downloader', 'tasks.comment',
-    'tasks.dialogue'
+    'weibospider.tasks.login', 'weibospider.tasks.search',
+    'weibospider.tasks.user', 'weibospider.tasks.repost',
+    'weibospider.tasks.praise', 'weibospider.tasks.home',
+    'weibospider.tasks.downloader', 'weibospider.tasks.comment',
+    'weibospider.tasks.dialogue'
 ]
 
 platforms.C_FORCE_ROOT = True
