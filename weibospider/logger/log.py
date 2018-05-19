@@ -1,17 +1,20 @@
 import os
 import logging
-import logging.config as log_conf
+from logging import config as log_conf
+
+from config import (
+    log_dir, log_name)
 
 
 __all__ = ['crawler_logger', 'parser_logger',
            'db_logger', 'other_logger']
 
 
-log_dir = os.path.dirname(os.path.dirname(__file__))+'/logs'
-if not os.path.exists(log_dir):
-    os.mkdir(log_dir)
+abslote_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), log_dir)
+if not os.path.exists(abslote_dir):
+    os.mkdir(abslote_dir)
 
-log_path = os.path.join(log_dir, 'weibo.log')
+log_path = os.path.join(abslote_dir, log_name)
 
 log_config = {
     'version': 1.0,

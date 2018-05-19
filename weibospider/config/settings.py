@@ -16,17 +16,18 @@ max_dialogue_page = 2000  # max dialogue page for crawling
 max_retries = 5  # retry times for crawling
 # You should set the args below if you login from unnormal place
 # register and buy recaptcha recognition
-yundama_username = 'xxxxxxx'  # account for yundama
-yundama_passwd = 'xxxxxxxxx'  # password for yundama
+yundama_username = 'resolvewang'  # account for yundama
+yundama_passwd = 'wang1204'  # password for yundama
+# logs settings
+log_dir = 'logs'
+log_name = 'weibo.log'
+
 
 ###################################
 # crawling strategy settings      #
 ###################################
 # only crawl weibo(bowen) after and affect to home crawler
 time_after = '1970-01-01 00:00:00'
-# whether account follows the uid below
-# if yes rows in wbuser will have 1 at isFan column
-samefollow_uid = ''
 
 # The value of running_mode can be normal or quick.
 # In normal mode, it will be more stable, while in quick mode, the crawling speed will
@@ -91,8 +92,8 @@ socket_timeout = 5  # sockt timeout for redis sentinel, if you don't need it, ju
 # notice:your email must open smtp & pop3 service
 email_server = 'smtp.sina.com'
 email_port = 587
-email_from = 'xx@sina.com'  # sendingemailaccount
-email_password = 'xxx'  # youremailpasswd
-email_to = 'xxxx@139.com'  # bind 139 email,so your phone will receive the warning message
+email_from = 'w1796246076@sina.com'  # sendingemailaccount
+email_password = 'wang1204'  # youremailpasswd
+email_to = '18708103033@139.com'  # bind 139 email,so your phone will receive the warning message
 subject = 'Warning Of Weibo Spider'
 warning_info = 'Please find out the reason why the spider stops working'

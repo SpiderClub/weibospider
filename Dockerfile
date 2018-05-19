@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-MAINTAINER ResolveWang <w1796246076@sina.com>
+MAINTAINER ResolveWang <resolvewang@foxmail.com>
 
 RUN echo 'deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted universe multiverse\n\
     deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted universe multiverse\n\

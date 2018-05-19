@@ -3,7 +3,6 @@ from sqlalchemy import (
 
 from .basic import metadata
 
-
 __all__ = ['login_info', 'wbuser', 'seed_ids',
            'keywords', 'weibo_data', 'keywords_wbdata',
            'weibo_comment', 'weibo_repost', 'user_relation',
@@ -38,7 +37,6 @@ wbuser = Table("wbuser", metadata,
                Column("contact_info", String(300), default='', server_default=''),
                Column("education_info", String(300), default='', server_default=''),
                Column("head_img", String(500), default='', server_default=''),
-               Column("is_fan", INTEGER, default=0, server_default='0'),
                )
 
 # seed ids for user crawling
@@ -60,6 +58,7 @@ keywords = Table(
 )
 
 # weibo info data
+# todo remove flag columns from weibo_data
 weibo_data = Table('weibo_data', metadata,
                    Column("id", INTEGER, primary_key=True, autoincrement=True),
                    Column("weibo_id", String(200), unique=True),
@@ -75,6 +74,18 @@ weibo_data = Table('weibo_data', metadata,
                    Column("device", String(200), default='', server_default=''),
                    Column("weibo_url", String(300), default='', server_default=''),
                    Column("create_time", String(200)),
+                   Column("location", String(200)),
+                   Column("comment_crawled", INTEGER, default=0, server_default='0'),
+                   Column("repost_crawled", INTEGER, default=0, server_default='0'),
+                   Column("dialogue_crawled", INTEGER, default=0, server_default='0'),
+                   Column("praise_crawled", INTEGER, default=0, server_default='0'),
+                   Column("image_download", INTEGER, default=0, server_default='0'),
+                   )
+
+# weibo task label
+task_label = Table('task_label', metadata,
+                   Column("id", INTEGER, primary_key=True, autoincrement=True),
+                   Column("weibo_id", String(200), unique=True),
                    Column("comment_crawled", INTEGER, default=0, server_default='0'),
                    Column("repost_crawled", INTEGER, default=0, server_default='0'),
                    Column("dialogue_crawled", INTEGER, default=0, server_default='0'),
@@ -138,5 +149,3 @@ weibo_dialogue = Table("weibo_dialogue", metadata,
                        Column("dialogue_cont", Text),
                        Column("dialogue_rounds", INTEGER),
                        )
-
-

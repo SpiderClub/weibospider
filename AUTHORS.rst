@@ -20,5 +20,7 @@ Patches and Suggestions
 - `thekingofcity <https://github.com/thekingofcity>`_
 - `yezuoxian <https://github.com/yezuoxian>`_
 - `conghuaicai <https://github.com/conghuaicai>`_
+- `goodbest <https://github.com/goodbest>`_
+
 
 
