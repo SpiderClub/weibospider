@@ -87,11 +87,19 @@ def get_weibo_info_detail(each, html):
     except Exception:
         wb_data.weibo_video = ''
 
+    all_conts = each.find(attrs={'node-type': 'feed_content'}).\
+        find(attrs={'node-type': 'feed_list_content'})
+
     try:
-        wb_data.weibo_cont = each.find(attrs={'node-type': 'feed_content'}).find(
-            attrs={'node-type': 'feed_list_content'}).text.strip()
+        wb_data.weibo_cont = all_conts.text.strip()
     except Exception:
         wb_data.weibo_cont = ''
+
+    try:
+        wb_data.location = all_conts.find(attrs={'action-type': 'feed_list_url'}).get('title')
+        print(wb_data.location)
+    except AttributeError:
+        wb_data.location = ''
 
     if '展开全文' in str(each):
         is_all_cont = 0
