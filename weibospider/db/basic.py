@@ -8,26 +8,25 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session, sessionmaker)
 
-from weibospider.config import (db_host, db_port,
-                                db_name, db_pass,
-                                db_type, db_user)
-from ..logger import db_logger
+from ..config import (db_host, db_port,
+                      db_name, db_pass,
+                      db_type, db_user)
+from ..logger import log
 
 
-__all__ = ['get_db_session', 'metadata', 'Base']
+__all__ = ['get_db_session', 'metadata', 'Base', 'create_db']
 
 
-mysql_engine = create_engine('{}+pymysql://{}:{}@{}:{}'.format(db_type, db_user,
-                                                               db_pass, db_host,
-                                                               db_port))
-
-# create database if necessary
-mysql_engine.execute("CREATE DATABASE IF NOT EXISTS {};".format(db_name))
+def create_db():
+    mysql_engine = create_engine('{}+pymysql://{}:{}@{}:{}'.format(db_type, db_user,
+                                                                   db_pass, db_host,
+                                                                   db_port))
+    mysql_engine.execute("CREATE DATABASE IF NOT EXISTS {};".format(db_name))
 
 
 def get_engine():
     password = os.getenv('DB_PASS', db_pass)
-    connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8".format(
+    connect_str = "{}+pymysql://{}:{}@{}:{}/{}?charset=utf8mb4".format(
         db_type, db_user, password, db_host, db_port, db_name)
     engine = create_engine(connect_str, encoding='utf-8')
     return engine
@@ -51,9 +50,10 @@ def get_db_session():
         try:
             yield my_session
         except Exception as e:
-            db_logger.error('db operate error: {}'.format(e))
+            log.db_logger.error('db operate error: {}'.format(e))
             my_session.rollback()
         finally:
             my_session.close()
     except Exception as e:
-        db_logger.error('uncatched exceptions {}'.format(e))
+        log.db_logger.error('uncatched exceptions {}'.format(e))
+        pass
