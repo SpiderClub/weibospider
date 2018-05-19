@@ -3,7 +3,8 @@ from .search import execute_search_task
 from .comment import execute_comment_task
 from .home import execute_home_task
 from .repost import execute_repost_task
-from .user import execute_user_task
+from .user import (
+    execute_user_task, execute_relation_task)
 from .praise import execute_praise_task
 from .dialogue import execute_dialogue_task
 
@@ -15,6 +16,7 @@ task_maps = {
     'home': execute_home_task,
     'repost': execute_repost_task,
     'user': execute_user_task,
+    'relation': execute_relation_task,
     'praise': execute_praise_task,
     'dialogue': execute_dialogue_task
 }
