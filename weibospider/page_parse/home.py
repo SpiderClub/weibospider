@@ -96,8 +96,9 @@ def get_weibo_info_detail(each, html):
         wb_data.weibo_cont = ''
 
     try:
-        wb_data.location = all_conts.find(attrs={'action-type': 'feed_list_url'}).get('title')
-        print(wb_data.location)
+        info = all_conts.find(attrs={'action-type': 'feed_list_url'})
+        if 'ficon_cd_place' in str(info):
+            wb_data.location = info.get('title')
     except AttributeError:
         wb_data.location = ''
 
