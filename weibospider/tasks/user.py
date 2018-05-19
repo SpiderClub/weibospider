@@ -1,9 +1,9 @@
 from celery import group
 from celery.exceptions import SoftTimeLimitExceeded
 
-from db.dao import SeedidsOper
-from logger import crawler_logger
-from page_get import (
+from ..db.dao import SeedidsOper
+from ..logger import crawler_logger
+from ..page_get import (
     get_fans_or_followers_ids,
     get_profile
 )

@@ -2,11 +2,11 @@ import time
 
 from celery import group
 
-from page_parse import (
+from ..page_parse import (
     comment, dialogue)
-from config import max_dialogue_page
-from page_get import get_page
-from db.dao import (
+from ..config import max_dialogue_page
+from ..page_get import get_page
+from ..db.dao import (
     WbDataOper, Dialogue,
     SeedidsOper)
 from .workers import app

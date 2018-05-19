@@ -5,9 +5,9 @@ import shutil
 import requests
 from celery import group
 
-from logger import crawler_logger
-from db.dao import WbDataOper
-from config import (
+from ..logger import crawler_logger
+from ..db.dao import WbDataOper
+from ..config import (
     image_type, images_path
 )
 from .workers import app

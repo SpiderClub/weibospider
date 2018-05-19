@@ -1,6 +1,6 @@
 import json
 
-from utils import text_filter
+from ..utils import text_filter
 from .basic import get_page
 
 

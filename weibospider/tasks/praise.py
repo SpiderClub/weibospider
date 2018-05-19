@@ -3,13 +3,13 @@ import time
 from celery import group
 from celery.exceptions import SoftTimeLimitExceeded
 
-from page_parse import praise
-from page_get import get_page
-from logger import crawler_logger
+from ..page_parse import praise
+from ..page_get import get_page
+from ..logger import crawler_logger
+from ..db.dao import (
+    WbDataOper, PraiseOper)
 
 from .workers import app
-
-from db.dao import (WbDataOper, PraiseOper)
 
 
 BASE_URL = 'http://weibo.com/aj/v6/like/big?ajwvr=6&mid={}&' \

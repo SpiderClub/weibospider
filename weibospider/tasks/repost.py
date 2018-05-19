@@ -1,11 +1,11 @@
 from celery import group
 
-from page_parse import repost
-from db.redis_db import IdNames
-from config import max_repost_page
-from db.dao import (
+from ..page_parse import repost
+from ..db.redis_db import IdNames
+from ..config import max_repost_page
+from ..db.dao import (
     WbDataOper, RepostOper)
-from page_get import (
+from ..page_get import (
     get_page, get_profile)
 from .workers import app
 

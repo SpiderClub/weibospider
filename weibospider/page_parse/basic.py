@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-from decorators import parse_decorator
+from ..decorators import parse_decorator
 
 
 @parse_decorator(False)

@@ -4,7 +4,7 @@ import shutil
 
 import pytest
 
-from logger import *
+from weibospider.logger import *
 
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')

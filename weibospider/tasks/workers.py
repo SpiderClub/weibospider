@@ -1,8 +1,8 @@
 from celery import (
     Celery, platforms)
 
-from config.celeryconfig import CeleryConfig
-from config import (
+from ..config.celeryconfig import CeleryConfig
+from ..config import (
     redis_pass, redis_host,
     redis_port, master,
     sentinel as sentinel_args, broker as broker_db,

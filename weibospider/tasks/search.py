@@ -2,13 +2,13 @@ from urllib import parse as url_parse
 
 from celery import group
 
-from logger import crawler_logger
-from page_get import get_page
-from config import max_search_page
-from page_parse import search as search_parse
-from db.models import (
+from ..logger import crawler_logger
+from ..page_get import get_page
+from ..config import max_search_page
+from ..page_parse import search as search_parse
+from ..db.models import (
     KeywordsWbdata, SeedIds)
-from db.dao import (
+from ..db.dao import (
     KeywordsOper, KeywordsDataOper,
     WbDataOper, UserOper)
 from .workers import app

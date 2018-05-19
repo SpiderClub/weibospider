@@ -1,14 +1,14 @@
 import pytest
 
-from db.basic import get_db_session
-from db.models import User
-from db.tables import (
+from weibospider.db.basic import get_db_session
+from weibospider.db.models import User
+from weibospider.db.tables import (
     wbuser, login_info,
     keywords, weibo_data)
-from db.dao import (
+from weibospider.db.dao import (
     UserOper, LoginInfoOper, KeywordsOper,
     SeedidsOper, WbDataOper, )
-from db.redis_db import (
+from weibospider.db.redis_db import (
     Cookies, Urls, IdNames, urls_con)
 
 

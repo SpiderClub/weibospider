@@ -3,10 +3,10 @@ from urllib import parse as url_parse
 
 import pytest
 
-from page_get import (
+from weibospider.page_get import (
     get_cont_of_weibo, get_page, get_profile)
-from tasks.comment import crawl_comment_by_page
-from tasks.repost import crawl_repost_by_page
+from weibospider.tasks.comment import crawl_comment_by_page
+from weibospider.tasks.repost import crawl_repost_by_page
 from tests import REQUEST_INTERVAL
 
 

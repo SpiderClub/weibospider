@@ -6,9 +6,9 @@ from urllib import parse
 
 import requests
 
-from config import FakeChromeUA
-from decorators import retry
-from exceptions import CookieGenException
+from ..config import FakeChromeUA
+from ..decorators import retry
+from ..exceptions import CookieGenException
 
 PASSPORT_URL = 'https://passport.weibo.com/visitor/visitor?entry=miniblog&a=enter&url={}&domain=.wei' \
                'bo.com&ua=php-sso_sdk_client-0.6.23&_rand={}'.format(parse.quote_plus('http://weibo.com/'),

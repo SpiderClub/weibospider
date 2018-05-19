@@ -2,14 +2,14 @@ import time
 
 from celery import group
 
-from logger import crawler_logger
-from page_parse.user import public
-from page_get import get_page
-from db.dao import (
+from ..logger import crawler_logger
+from ..page_parse.user import public
+from ..page_get import get_page
+from ..db.dao import (
     WbDataOper, SeedidsOper)
-from page_parse.home import (
+from ..page_parse.home import (
     get_data, get_ajax_data, get_total_page)
-from config import (
+from ..config import (
     time_after, max_home_page)
 from .workers import app
 

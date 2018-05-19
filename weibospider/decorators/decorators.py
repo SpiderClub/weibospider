@@ -2,10 +2,10 @@ import time
 from functools import wraps, partial
 from traceback import format_tb
 
-from logger import (
+from ..logger import (
     parser_logger, crawler_logger, other_logger)
-from utils import KThread
-from exceptions import Timeout
+from ..utils import KThread
+from ..exceptions import Timeout
 
 
 def timeout_decorator(func):

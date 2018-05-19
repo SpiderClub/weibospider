@@ -2,7 +2,7 @@ import os
 import logging
 from logging import config as log_conf
 
-from config import (
+from ..config import (
     log_dir, log_name)
 
 

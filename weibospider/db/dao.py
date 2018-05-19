@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError as SqlalchemyIntegrityError
 from pymysql.err import IntegrityError as PymysqlIntegrityError
 from sqlalchemy.exc import InvalidRequestError
 
-from logger import db_logger
+from ..logger import db_logger
 from .basic import get_db_session
 from .models import (
     LoginInfo, KeyWords, SeedIds,

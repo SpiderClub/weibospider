@@ -3,11 +3,11 @@ import json
 
 from bs4 import BeautifulSoup
 
-from page_parse import status
-from decorators import parse_decorator
-from db.models import UserRelation
-from utils import url_filter
-from db.dao import RelationOper
+from weibospider.decorators import parse_decorator
+from weibospider.db.models import UserRelation
+from weibospider.db.dao import RelationOper
+from weibospider.utils import url_filter
+from .. import status
 
 
 def get_userid(html):

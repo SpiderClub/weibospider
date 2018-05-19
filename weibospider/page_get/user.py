@@ -3,15 +3,14 @@ import re
 import requests
 from urllib.parse import quote
 
-from db.models import User
-from logger import db_logger
-from .basic import get_page
-from page_parse import is_404
-from config import samefollow_uid
-from db.dao import (
+from ..db.models import User
+from ..logger import db_logger
+from ..page_parse import is_404
+from ..db.dao import (
     UserOper, SeedidsOper)
-from page_parse.user import (
+from ..page_parse.user import (
     enterprise, person, public)
+from .basic import get_page
 
 
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
@@ -77,10 +76,6 @@ def get_user_from_web(user_id):
         # normal users
         elif domain == '100505':
             user = get_user_detail(user_id, html)
-            if samefollow_uid:
-                url = SAMEFOLLOW_URL.format(user_id)
-                isFanHtml = get_page(url, auth_level=2)
-                user.isFan = person.get_isFan(isFanHtml, samefollow_uid)
         # enterprise or service
         else:
             user = get_enterprise_detail(user_id, html)

@@ -5,9 +5,9 @@ import datetime
 import redis
 from redis.sentinel import Sentinel
 
-from logger import crawler_logger
-from exceptions import NoCookieException
-from config import (
+from ..logger import crawler_logger
+from ..exceptions import NoCookieException
+from ..config import (
     running_mode, share_host_count,
     redis_pass, redis_host,
     redis_port, master,

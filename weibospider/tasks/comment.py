@@ -1,11 +1,11 @@
 from celery import group
 from celery.exceptions import SoftTimeLimitExceeded
 
-from logger import crawler_logger
-from page_parse import comment
-from config import max_comment_page
-from page_get import get_page
-from db.dao import (
+from ..logger import crawler_logger
+from ..page_parse import comment
+from ..config import max_comment_page
+from ..page_get import get_page
+from ..db.dao import (
     WbDataOper, CommentOper)
 from .workers import app
 

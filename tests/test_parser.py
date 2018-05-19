@@ -3,10 +3,10 @@ import time
 import pytest
 import requests
 
-from page_get import get_profile
-from tests import REQUEST_INTERVAL
-from page_parse import (
+from weibospider.page_get import get_profile
+from weibospider.page_parse import (
     search, home, comment, repost)
+from tests import REQUEST_INTERVAL
 
 
 @pytest.mark.parametrize(

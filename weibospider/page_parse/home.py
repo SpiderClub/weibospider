@@ -4,11 +4,11 @@ import urllib.parse
 
 from bs4 import BeautifulSoup
 
-from page_get import status
-from logger import parser_logger
-from db.models import WeiboData
-from decorators import parse_decorator
-from config import crawling_mode
+from ..page_get import status
+from ..logger import parser_logger
+from ..db.models import WeiboData
+from ..decorators import parse_decorator
+from ..config import crawling_mode
 
 
 # weibo will use https in the whole website in the future,

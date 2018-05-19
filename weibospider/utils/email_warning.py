@@ -6,8 +6,8 @@ from email.mime.text import MIMEText
 from email.utils import (
     parseaddr, formataddr)
 
-from logger import other_logger
-from config import (
+from ..logger import other_logger
+from ..config import (
     email_from, email_password,
     email_port, email_server,
     warning_info, subject

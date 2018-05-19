@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from logger import other_logger
+from ..logger import other_logger
 
 
 class YDMHttp:

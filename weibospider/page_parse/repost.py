@@ -2,10 +2,10 @@ import json
 
 from bs4 import BeautifulSoup
 
-from logger import parser_logger
-from db.redis_db import IdNames
-from db.models import WeiboRepost
-from decorators import parse_decorator
+from ..logger import parser_logger
+from ..db.redis_db import IdNames
+from ..db.models import WeiboRepost
+from ..decorators import parse_decorator
 
 
 REPOST_URL = 'https://weibo.com{}'

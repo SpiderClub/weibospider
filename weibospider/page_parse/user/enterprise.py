@@ -3,8 +3,8 @@ import json
 
 from bs4 import BeautifulSoup
 
-from page_parse.user import public
-from decorators import parse_decorator
+from . import public
+from weibospider.decorators import parse_decorator
 
 
 # 以下是通过认证企业主页进行解析

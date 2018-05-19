@@ -1,25 +1,25 @@
 import os
-import time
-import signal
 import random
+import signal
+import time
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-from config import headers
-from logger import crawler_logger
-from login import get_cookies
-from db.dao import LoginInfoOper
-from utils import send_email
-from db.redis_db import (
+from ..config import headers
+from ..config import (request_time_out, min_crawl_interval,
+                      max_crawl_interval, max_retries,
+                      excp_interval)
+from ..db.dao import LoginInfoOper
+from ..db.redis_db import (
     Urls, Cookies)
-from page_parse import (
-    is_403, is_404, is_complete)
-from decorators import (
+from ..decorators import (
     timeout_decorator, timeout)
-from config import (request_time_out, min_crawl_interval,
-                    max_crawl_interval, max_retries,
-                    excp_interval)
+from ..logger import crawler_logger
+from ..login import get_cookies
+from ..page_parse import (
+    is_403, is_404, is_complete)
+from ..utils import send_email
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

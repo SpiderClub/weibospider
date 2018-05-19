@@ -2,9 +2,9 @@ import os
 
 import pytest
 
-from db.basic import get_db_session
-from config import create_all
-from login import (
+from weibospider.db.basic import get_db_session
+from weibospider.config import create_all
+from weibospider.login import (
     get_session, get_cookies)
 
 

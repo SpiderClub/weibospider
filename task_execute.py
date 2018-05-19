@@ -1,7 +1,7 @@
 import click
 
-from tasks import task_maps
-from exceptions import NoAssignedTaskError
+from weibospider.tasks import task_maps
+from weibospider.exceptions import NoAssignedTaskError
 
 
 @click.command()

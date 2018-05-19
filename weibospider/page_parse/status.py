@@ -3,8 +3,8 @@ import json
 
 from bs4 import BeautifulSoup
 
-from decorators import parse_decorator
-from logger import parser_logger
+from ..decorators import parse_decorator
+from ..logger import parser_logger
 
 
 @parse_decorator('')

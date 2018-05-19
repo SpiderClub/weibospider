@@ -10,14 +10,14 @@ from urllib.parse import quote_plus
 
 import requests
 
-from config import headers
-from utils import code_verificate
-from page_parse import is_403
-from exceptions import LoginException
-from db.redis_db import Cookies
-from db.dao import LoginInfoOper
-from config import (yundama_username, yundama_passwd)
-from logger import (
+from ..config import headers
+from ..utils import code_verificate
+from ..page_parse import is_403
+from ..exceptions import LoginException
+from ..db.redis_db import Cookies
+from ..db.dao import LoginInfoOper
+from ..config import (yundama_username, yundama_passwd)
+from ..logger import (
     crawler_logger, other_logger)
 
 

@@ -4,13 +4,13 @@ from datetime import datetime
 
 from bs4 import BeautifulSoup
 
-from logger import parser_logger
-from page_get import status
-from utils import url_filter
-from db.models import WeiboData
-from db.dao import WbDataOper
-from decorators import parse_decorator
-from config import (
+from ..logger import parser_logger
+from ..page_get import status
+from ..utils import url_filter
+from ..db.models import WeiboData
+from ..db.dao import WbDataOper
+from ..decorators import parse_decorator
+from ..config import (
     images_path, crawling_mode)
 
 

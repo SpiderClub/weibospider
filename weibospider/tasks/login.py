@@ -2,11 +2,11 @@ import time
 
 from celery import group
 
-from db.redis_db import Cookies
-from logger import crawler_logger
-from login import (
+from ..db.redis_db import Cookies
+from ..logger import crawler_logger
+from ..login import (
     get_session, get_cookies)
-from db.dao import LoginInfoOper
+from ..db.dao import LoginInfoOper
 from .workers import app
 
 

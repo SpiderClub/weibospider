@@ -2,9 +2,9 @@ import json
 
 from bs4 import BeautifulSoup
 
-from logger import parser_logger
-from db.models import WeiboDialogue
-from decorators import parse_decorator
+from ..logger import parser_logger
+from ..db.models import WeiboDialogue
+from ..decorators import parse_decorator
 from .comment import get_html_cont
 
 

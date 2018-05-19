@@ -7,10 +7,10 @@ except ImportError:
     import mock
 import pytest
 
-from exceptions import CookieGenException
-from decorators import (
+from weibospider.exceptions import CookieGenException
+from weibospider.decorators import (
     timeout, retry)
-from utils import (
+from weibospider.utils import (
     send_email, url_filter, text_filter)
 
 
