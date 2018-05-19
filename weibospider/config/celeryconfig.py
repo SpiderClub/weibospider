@@ -79,113 +79,113 @@ class CeleryConfig:
     }
 
     task_routes = {
-        'tasks.login.execute_login_task': {
+        'weibospider.tasks.login.execute_login_task': {
             'queue': 'login',
             'routing_key': 'login.all'
         },
-        'tasks.login.do_login': {
+        'weibospider.tasks.login.do_login': {
             'queue': 'login',
             'routing_key': 'login.each'
         },
-        'tasks.login.gen_cookies': {
+        'weibospider.tasks.login.gen_cookies': {
             'queue': 'gen_cookies',
             'routing_key': 'gen_cookies'
         },
 
-        'tasks.search.execute_search_task': {
+        'weibospider.tasks.search.execute_search_task': {
             'queue': 'search',
             'routing_key': 'search.all',
         },
-        'tasks.search.search_keyword': {
+        'weibospider.tasks.search.search_keyword': {
             'queue': 'search',
             'routing_key': 'search.each',
         },
 
-        'tasks.user.execute_user_task': {
+        'weibospider.tasks.user.execute_user_task': {
             'queue': 'user',
             'routing_key': 'user.profiles',
         },
-        'tasks.user.crawl_user_info': {
+        'weibospider.tasks.user.crawl_user_info': {
             'queue': 'user',
             'routing_key': 'user.profile',
         },
-        'tasks.user.execute_relation_task': {
+        'weibospider.tasks.user.execute_relation_task': {
             'queue': 'user',
             'routing_key': 'user.relations',
         },
-        'tasks.user.crawl_followers_fans': {
+        'weibospider.tasks.user.crawl_followers_fans': {
             'queue': 'user',
             'routing_key': 'user.relation',
         },
 
-        'tasks.repost.execute_repost_task': {
+        'weibospider.tasks.repost.execute_repost_task': {
             'queue': 'repost',
             'routing_key': 'repost.all',
         },
-        'tasks.repost.crawl_repost_page': {
+        'weibospider.tasks.repost.crawl_repost_page': {
             'queue': 'repost',
             'routing_key': 'repost.each',
         },
 
-        'tasks.comment.execute_comment_task': {
+        'weibospider.tasks.comment.execute_comment_task': {
             'queue': 'comment',
             'routing_key': 'comment.all'
         },
 
-        'tasks.comment.crawl_comment_page': {
+        'weibospider.tasks.comment.crawl_comment_page': {
             'queue': 'comment',
             'routing_key': 'comment.page_num'
         },
 
-        'tasks.comment.crawl_comment_by_page': {
+        'weibospider.tasks.comment.crawl_comment_by_page': {
             'queue': 'comment',
             'routing_key': 'comment.each'
         },
 
-        'tasks.downloader.execute_download_task': {
+        'weibospider.tasks.downloader.execute_download_task': {
             'queue': 'download',
             'routing_key': 'download.all'
         },
-        'tasks.downloader.download_img': {
+        'weibospider.tasks.downloader.download_img': {
             'queue': 'download',
             'routing_key': 'download.each'
         },
 
-        'tasks.home.execute_home_task': {
-            'queue': 'download',
+        'weibospider.tasks.home.execute_home_task': {
+            'queue': 'home',
             'routing_key': 'home.all'
         },
-        'tasks.home.crawl_weibo_datas': {
-            'queue': 'download',
+        'weibospider.tasks.home.crawl_weibo_datas': {
+            'queue': 'home',
             'routing_key': 'home.page_num'
         },
-        'tasks.home.crawl_ajax_page': {
-            'queue': 'download',
+        'weibospider.tasks.home.crawl_ajax_page': {
+            'queue': 'home',
             'routing_key': 'home.each'
         },
 
-        'tasks.praise.execute_praise_task': {
+        'weibospider.tasks.praise.execute_praise_task': {
             'queue': 'praise',
             'routing_key': 'praise.all'
         },
-        'tasks.praise.crawl_praise_page': {
+        'weibospider.tasks.praise.crawl_praise_page': {
             'queue': 'praise',
             'routing_key': 'praise.page_num'
         },
-        'tasks.praise.crawl_praise_by_page': {
+        'weibospider.tasks.praise.crawl_praise_by_page': {
             'queue': 'praise',
             'routing_key': 'praise.each'
         },
 
-        'tasks.dialogue.execute_dialogue_task': {
+        'weibospider.tasks.dialogue.execute_dialogue_task': {
             'queue': 'dialogue',
             'routing_key': 'dialogue.all'
         },
-        'tasks.dialogue.crawl_dialogue': {
+        'weibospider.tasks.dialogue.crawl_dialogue': {
             'queue': 'dialogue',
             'routing_key': 'dialogue.page_num'
         },
-        'tasks.dialogue.crawl_dialogue_by_comment_page': {
+        'weibospider.tasks.dialogue.crawl_dialogue_by_comment_page': {
             'queue': 'dialogue',
             'routing_key': 'dialogue.each'
         },
@@ -194,19 +194,19 @@ class CeleryConfig:
     # 根据用户自己的场景设置定时周期
     beat_schedule = {
         'login': {
-            'task': 'tasks.login.execute_login_task',
+            'task': 'weibospider.tasks.login.execute_login_task',
             'schedule': 60 * 60 * 10.0,
         },
         'gen_cookies': {
-            'task': 'tasks.login.do_gen_cookie',
+            'task': 'weibospider.tasks.login.do_gen_cookie',
             'schedule': 60 * 60 * 20.0,
         },
         'search': {
-            'task': 'tasks.search.execute_search_task',
+            'task': 'weibospider.tasks.search.execute_search_task',
             'schedule': 60 * 60 * 2.0,
         },
         'user': {
-            'task': 'tasks.user.execute_user_task',
+            'task': 'weibospider.tasks.user.execute_user_task',
             'schedule': 60 * 1.0,
             # TODO 查阅超时的正确用法
             # 上次任务没执行完，则直接设置为超时(超时时间和调度间隔一致)
@@ -215,31 +215,31 @@ class CeleryConfig:
             }
         },
         'relation': {
-            'task': 'tasks.user.execute_relation_task',
+            'task': 'weibospider.tasks.user.execute_relation_task',
             'schedule': 60 * 60 * 5.0,
         },
         'repost': {
-            'task': 'tasks.repost.execute_repost_task',
+            'task': 'weibospider.tasks.repost.execute_repost_task',
             'schedule': 60 * 60 * 2.0,
         },
         'download': {
-            'task': 'tasks.downloader.execute_download_task',
+            'task': 'weibospider.tasks.downloader.execute_download_task',
             'schedule': 60 * 60 * 2.0,
         },
         'comment': {
-            'task': 'tasks.comment.execute_comment_task',
+            'task': 'weibospider.tasks.comment.execute_comment_task',
             'schedule': 60 * 60 * 2.0,
         },
         'home': {
-            'task': 'tasks.home.execute_home_task',
+            'task': 'weibospider.tasks.home.execute_home_task',
             'schedule': 60 * 60 * 2.0,
         },
         'praise': {
-            'task': 'tasks.praise.execute_praise_task',
+            'task': 'weibospider.tasks.praise.execute_praise_task',
             'schedule': 60 * 60 * 2.0,
         },
         'dialogue': {
-            'task': 'tasks.praise.execute_praise_task',
+            'task': 'weibospider.tasks.praise.execute_praise_task',
             'schedule': 60 * 60 * 2.0,
         },
     }
