@@ -16,8 +16,8 @@ max_dialogue_page = 2000  # max dialogue page for crawling
 max_retries = 5  # retry times for crawling
 # You should set the args below if you login from unnormal place
 # register and buy recaptcha recognition
-yundama_username = 'resolvewang'  # account for yundama
-yundama_passwd = 'wang1204'  # password for yundama
+yundama_username = 'xxxxx'  # account for yundama
+yundama_passwd = 'xxxx'  # password for yundama
 # logs settings
 log_dir = 'logs'
 log_name = 'weibo.log'
@@ -92,8 +92,8 @@ socket_timeout = 5  # sockt timeout for redis sentinel, if you don't need it, ju
 # notice:your email must open smtp & pop3 service
 email_server = 'smtp.sina.com'
 email_port = 587
-email_from = 'w1796246076@sina.com'  # sendingemailaccount
-email_password = 'wang1204'  # youremailpasswd
-email_to = '18708103033@139.com'  # bind 139 email,so your phone will receive the warning message
+email_from = 'xxx@sina.com'  # sendingemailaccount
+email_password = 'xxxx'  # youremailpasswd
+email_to = 'xxx@139.com'  # bind 139 email,so your phone will receive the warning message
 subject = 'Warning Of Weibo Spider'
 warning_info = 'Please find out the reason why the spider stops working'
