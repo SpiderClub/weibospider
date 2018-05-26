@@ -1,10 +1,12 @@
 import re
+import json
 
 from bs4 import BeautifulSoup
 
 from ..user import public
 from decorators import parse_decorator
-from db.models import User
+from db.models import (User, UserRelation)
+from db.dao import UserRelationOper
 
 
 @parse_decorator(0)
@@ -135,18 +137,48 @@ def get_detail(html, uid):
 
 
 @parse_decorator(None)
-def get_isFan(html, uid):
+def get_isFan(html, uids, current_uid):
     """
     :param html: samefollow page
-    :param uid : whether this account follows uid
+    :param uids: list contains uids to determine this account follows or not
+    :param current_uid: current crawling user
     :return: 1 for yes 0 for no
     """
     soup = BeautifulSoup(html, "html.parser")
     scripts = soup.find_all('script')
     pattern = re.compile(r'FM.view\((.*)\)')
 
+    user_ids = list()  # Contains uids that the user and crawler both follow
+    intersection_ids = list()  # Contains the intersection of param uids and user_ids
+    relations = list()  # Contains list to be stored in UserRelation table
     for script in scripts:
         m = pattern.search(script.string)
-        if m and uid in script.string:
-            return 1
-    return 0
+        # Find the <script>FM.view({"ns":"pl.content.followTab.index","domid":"Pl_Official_HisRelation__59",...
+        if m and 'pl.content.followTab.index' in script.string:
+            all_info = m.group(1)
+            cont = json.loads(all_info).get('html', '')
+            soup = BeautifulSoup(cont, 'html.parser')
+            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item'})
+            patternUID = re.compile(r'uid=(.*?)&')
+            for follow in follows:
+                m = re.search(patternUID, str(follow))
+                if m:
+                    r = m.group(1)
+                    # filter invalid ids
+                    if r.isdigit():
+                        user_ids.append(r)
+            # Most the same with def get_fans_or_follows(html, uid, type):
+            # Except the following lines calculate which uids do the user follow
+            intersection_ids = list(set(user_ids).intersection(set(uids)))
+            # Now store in the database
+            type = 1
+            n = None
+            for uid in intersection_ids:
+                relations.append(UserRelation(uid, current_uid, type, n, False))
+            UserRelationOper.add_all(relations)
+            break
+    # legacy support
+    if intersection_ids:
+        return 1
+    else:
+        return 0
