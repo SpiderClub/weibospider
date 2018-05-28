@@ -7,7 +7,7 @@ from ..page_get import get_page
 from ..config import max_search_page
 from ..page_parse import search as search_parse
 from ..db.models import (
-    KeywordsWbdata, SeedIds)
+    KeywordsWbdata, SeedId)
 from ..db.dao import (
     KeywordsOper, KeywordsDataOper,
     WbDataOper, UserOper)
@@ -63,7 +63,7 @@ def search_keyword(keyword, keyword_id):
                 crawler_logger.info('Weibo {} has been crawled, skip it.'.
                                     format(wb_data.weibo_id))
             else:
-                seed = SeedIds(uid=wb_data.uid)
+                seed = SeedId(uid=wb_data.uid)
                 UserOper.add_one(seed)
                 WbDataOper.add_one(wb_data)
 

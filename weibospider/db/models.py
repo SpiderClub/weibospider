@@ -13,28 +13,32 @@ class User(Base):
         self.uid = uid
 
 
-class SeedIds(Base):
-    __table__ = seed_ids
+class SeedId(Base):
+    __table__ = seed_id
 
 
-class KeyWords(Base):
-    __table__ = keywords
+class KeyWord(Base):
+    __table__ = keyword
 
 
 class WeiboData(Base):
-    __table__ = weibo_data
+    __table__ = wbdata
 
     def __repr__(self):
         return 'weibo url:{};weibo content:{}'.format(self.weibo_url,
                                                       self.weibo_cont)
 
 
-class KeywordsWbdata(Base):
-    __table__ = keywords_wbdata
+class TaskLabel(Base):
+    __table__ = task_label
+
+
+class KeywordWbdata(Base):
+    __table__ = keyword_wbdata
 
 
 class WeiboComment(Base):
-    __table__ = weibo_comment
+    __table__ = comment
 
     def __repr__(self):
         return 'weibo_id:{},comment_id:{},comment_cont:{}'.format(
@@ -42,14 +46,14 @@ class WeiboComment(Base):
 
 
 class WeiboPraise(Base):
-    __table__ = weibo_praise
+    __table__ = praise
 
     def __repr__(self):
         return 'user_id:{},weibo_id:{}'.format(self.user_id, self.weibo_id)
 
 
 class WeiboRepost(Base):
-    __table__ = weibo_repost
+    __table__ = repost
 
     def __repr__(self):
         return 'id:{},user_id:{},user_name:{},parent_user_id:{},parent_user_name:{},' \
@@ -60,19 +64,19 @@ class WeiboRepost(Base):
 
 
 class UserRelation(Base):
-    __table__ = user_relation
+    __table__ = relation
 
     def __init__(self, uid, other_id, type):
         self.user_id = uid
         self.follow_or_fans_id = other_id
         self.type = type
-        
+
     def __repr__(self):
         return 'user_id:{},follow_or_fans_id:{},type:{}'.format(self.user_id, self.follow_or_fans_id, self.type)
 
 
 class WeiboDialogue(Base):
-    __table__ = weibo_dialogue
+    __table__ = dialogue
 
     def __repr__(self):
         return 'weibo_id:{},dialogue_id:{},dialogue_cont:{}'.format(

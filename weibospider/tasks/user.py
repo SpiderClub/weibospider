@@ -13,7 +13,7 @@ from .workers import app
 @app.task
 def crawl_followers_fans(uid):
     seed = SeedidsOper.get_seed_by_id(uid)
-    if seed.other_crawled == 0:
+    if seed.relation_crawled == 0:
         rs = get_fans_or_followers_ids(uid, 1)
         rs.extend(get_fans_or_followers_ids(uid, 2))
         datas = set(rs)
