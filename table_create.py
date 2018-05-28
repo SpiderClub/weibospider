@@ -1,4 +1,4 @@
-from weibospider import config
+from weibospider.config import create_all
 
 if __name__ == "__main__":
-    config.create_all()
+    create_all.create_all()
