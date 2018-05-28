@@ -4,6 +4,7 @@ import sys
 sys.path.append('..')
 sys.path.append('.')
 
+from ..logger import db_logger
 from ..db.tables import *
 from ..db.basic import (
     metadata, create_db)
@@ -12,4 +13,5 @@ from ..db.basic import (
 def create_all():
     create_db()
     metadata.create_all()
+    db_logger.info('init db successfully!')
 

@@ -5,7 +5,7 @@ from weibospider.exceptions import NoAssignedTaskError
 
 
 @click.command()
-@click.option('--task', type=click.Choice(task_maps.keys()), help='task name in task maps')
+@click.option('--task', type=click.Choice(task_maps.keys()))
 def task_execute(task):
     if not task:
         raise NoAssignedTaskError('You must type in a task assigned in task map')
