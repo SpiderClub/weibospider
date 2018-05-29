@@ -31,7 +31,7 @@
 
 5.使用编辑器编辑[配置文件spider.yml](config/spider.yaml)，设置MySQL、Redis连接信息、云打码（需要进行注册并充值）登录信息和邮箱报警信息。另外也可以对抓取间隔等进行配置，具体请阅读相关注释。
 
-6.先通过手动创建一个名为`weibo`的数据库，然后使用`python config/create_all.py`来创建爬虫所需要的表，如果是v1.7.2及之前的版本，输入`python create_all.py`即可。
+6.先通过手动创建一个名为`weibo`的数据库，然后使用`python config/table_create.py`来创建爬虫所需要的表，如果是v1.7.2及之前的版本，输入`python table_create.py`即可。
 
 7.(*可选*，v1.7.3新增)如果你想通过*Web UI*来进行爬虫关键词等信息的配置，那么还需要修改[admin/weibo_admin/settings.py](./admin/weibo_admin/settings.py)中`DATABSES`一栏的数据库连接信息。
 然后在项目根目录下运行

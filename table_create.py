@@ -1,4 +1,4 @@
-from weibospider.config import create_all
+from weibospider.config import table_create
 
 if __name__ == "__main__":
-    create_all.create_all()
+    table_create.create_all()

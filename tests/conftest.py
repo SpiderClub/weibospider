@@ -3,7 +3,7 @@ import os
 import pytest
 
 from weibospider.db.basic import get_db_session
-from weibospider.config import create_all
+from weibospider.config import table_create
 from weibospider.login import (
     get_session, get_cookies)
 
@@ -31,6 +31,6 @@ def create_tables():
         db.execute(create_db)
         rs = db.execute('show tables;')
         assert rs.rowcount == 0
-        create_all.create_all_table()
+        table_create.create_all_table()
         rs = db.execute('show tables;')
         assert rs.rowcount > 0

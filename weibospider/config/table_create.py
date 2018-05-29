@@ -1,4 +1,5 @@
 import sys
+import warnings
 
 # to work well inside config module or outsize config module
 sys.path.append('..')
@@ -11,7 +12,9 @@ from ..db.basic import (
 
 
 def create_all():
-    create_db()
-    metadata.create_all()
-    db_logger.info('init db successfully!')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        create_db()
+        metadata.create_all()
+        db_logger.info('init db successfully!')
 
