@@ -9,6 +9,7 @@ PyMySQL==0.7.11
 flower==0.9.1
 urllib3==1.22
 click==6.7
+raven==6.8.0
 
 
 
