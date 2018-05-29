@@ -18,9 +18,18 @@ max_retries = 5  # retry times for crawling
 # register and buy recaptcha recognition
 yundama_username = 'xxxxx'  # account for yundama
 yundama_passwd = 'xxxx'  # password for yundama
+
 # logs settings
 log_dir = 'logs'
 log_name = 'weibo.log'
+
+# bug trace
+# sentry url http://token@sentry_host:sentry_port/sentry_uri
+use_sentry = False
+sentry_host = '127.0.0.1'
+sentry_port = '9000'
+sentry_uri = '3'
+token = ''
 
 
 ###################################
@@ -72,7 +81,7 @@ db_type = 'mysql'
 #######################################
 redis_host = '127.0.0.1'
 redis_port = 6379
-redis_pass = '123456'
+redis_pass = ''
 cookies = 1  # store and fetch cookies
 urls = 2  # the crawled urls and crawling result(failure or success)
 broker = 5  # broker for celery
