@@ -3,8 +3,6 @@
 [![](https://img.shields.io/badge/python-3-brightgreen.svg)](https://www.python.org/downloads/)
 [![](https://travis-ci.org/SpiderClub/weibospider.svg?branch=master)](https://travis-ci.org/SpiderClub/weibospider)
 [![codecov](https://codecov.io/gh/SpiderClub/weibospider/branch/master/graph/badge.svg)](https://codecov.io/gh/SpiderClub/weibospider)
-[![GitHub issues](https://img.shields.io/github/issues/SpiderClub/weibospider.svg?style=plastic)](https://github.com/SpiderClub/weibospider/issues)
-[![](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/ResolveWang)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Features :star:
@@ -31,25 +29,16 @@
 
 5.使用编辑器编辑[配置文件spider.yml](config/spider.yaml)，设置MySQL、Redis连接信息、云打码（需要进行注册并充值）登录信息和邮箱报警信息。另外也可以对抓取间隔等进行配置，具体请阅读相关注释。
 
-6.先通过手动创建一个名为`weibo`的数据库，然后使用`python config/table_create.py`来创建爬虫所需要的表，如果是v1.7.2及之前的版本，输入`python table_create.py`即可。
+6.使用`python config/table_create.py`来创建爬虫所需要的表
 
-7.(*可选*，v1.7.3新增)如果你想通过*Web UI*来进行爬虫关键词等信息的配置，那么还需要修改[admin/weibo_admin/settings.py](./admin/weibo_admin/settings.py)中`DATABSES`一栏的数据库连接信息。
-然后在项目根目录下运行
-```shell
-python admin/manage.py makemigrations
-python admin/manage.py migrate
-python admin/manage.py createsuperuser
-```
-以生成`django admin`所需要的一些数据表，在执行`python admin/manage.py createsuperuser`的时候，会让你输入django后台的超级管理员用户名、邮箱和密码，比如我依次输入为`test`、`resolvewang@foxmail.com`、`weibospider2017`，然后便成功创建了超级管理员。
-
-8.我们在爬虫程序启动之前，需要预插入微博账号和密码以及一些种子数据。比如你想抓取一个用户，那么就需要在`seed_ids`表中插入他的`uid`，`uid`可以通过打开该用户主页，点击**查看页面源代码**搜索`oid`获取到。如果你想通过通过微博的搜索接口搜索一个关键词，那么需要在`keywords`表中插入你想搜索的关键词。如果你完成了步骤7，那么可以通过*Web UI*来进行配置。通过运行
+7.我们在爬虫程序启动之前，需要预插入微博账号和密码以及一些种子数据。比如你想抓取一个用户，那么就需要在`seed_ids`表中插入他的`uid`，`uid`可以通过打开该用户主页，点击**查看页面源代码**搜索`oid`获取到。如果你想通过通过微博的搜索接口搜索一个关键词，那么需要在`keywords`表中插入你想搜索的关键词。如果你完成了步骤7，那么可以通过*Web UI*来进行配置。通过运行
 > python admin/manage.py runserver 0.0.0.0:8000
 
 来启动爬虫配置后台。然后再在你的浏览器输入`http://127.0.0.1:8000/admin`来访问爬虫配置程序。在登录界面输入刚才创建的用户名`test`和密码`weibospider2017`即可，然后在*微博配置*一栏中进行配置。注意，django自带的web server**无法达到生产级别的稳定性**，如果需要
 在生产环境中使用，建议使用[gunicorn](http://gunicorn.org/)或者[uwsgi](https://github.com/unbit/uwsgi)作为web server,并且使用supervisor作为进程管理器。
 
 9.配置完成后，通过
-> celery -A tasks.workers -Q login_queue,user_crawler,fans_followers,search_crawler,home_crawler worker -l info -c 1
+> celery -A weibospider.tasks.workers worker -l info -c 1
 
 启动worker。注意这里`-Q`表示在本机上可以接收哪些任务执行，详细请阅读[weibospider中所有任务及其说明](https://github.com/ResolveWang/WeiboSpider/wiki/WeibSpider%E4%B8%AD%E6%89%80%E6%9C%89%E4%BB%BB%E5%8A%A1%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8%E8%AF%B4%E6%98%8E)。`-c`表示并发数，`-l`表示日志等级。
 

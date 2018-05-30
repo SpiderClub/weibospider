@@ -202,7 +202,7 @@ def do_login(name, password):
     su = get_encodename(name)
     server_data = get_server_data(su, session)
 
-    if server_data['showpin']:
+    if server_data.get('showpin'):
         rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0)
         if rs == 'pinerror':
             rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid)

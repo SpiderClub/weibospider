@@ -97,7 +97,7 @@ class LoginInfoOper(CommonOper):
     @classmethod
     def get_login_info(cls):
         attrs = ['name', 'password', 'enable']
-        return cls.get_attrs_by_key(attrs, 'enable=1')
+        return cls.get_attrs_by_key(LoginInfo, attrs, 'enable=1')
 
     @classmethod
     def freeze_account(cls, name, rs):
