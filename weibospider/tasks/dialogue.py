@@ -44,12 +44,13 @@ def crawl_dialogue_by_comment_page(mid, page_num):
 
 @app.task
 def crawl_dialogue(mid):
-    limit = max_dialogue_page + 1
     first_page = crawl_dialogue_by_comment_page(mid, 1)
     total_page = comment.get_total_page(first_page)
 
-    if total_page < limit:
+    if max_dialogue_page == float('+inf') or total_page < max_dialogue_page:
         limit = total_page + 1
+    else:
+        limit = max_dialogue_page + 1
 
     caller = group(crawl_dialogue_by_comment_page.s(mid, page) for page
                    in range(2, limit))

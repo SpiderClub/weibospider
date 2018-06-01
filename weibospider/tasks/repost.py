@@ -35,10 +35,12 @@ def crawl_repost_page(mid, uid):
 
     root_user, _ = get_profile(uid)
 
-    to_crawl_page = total_page if total_page < max_repost_page \
-        else max_repost_page
+    if max_repost_page == float('+inf') or total_page < max_repost_page:
+        limit = total_page + 1
+    else:
+        limit = max_repost_page + 1
 
-    for page_num in range(2, to_crawl_page+1):
+    for page_num in range(2, limit):
         _, cur_repost_datas = crawl_repost_by_page(mid, page_num)
         if cur_repost_datas:
             repost_datas.extend(cur_repost_datas)

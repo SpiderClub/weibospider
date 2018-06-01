@@ -3,17 +3,21 @@
 ################################
 # spider settings              #
 ################################
-request_time_out = 200  # timeout for crawling and storing user info
+
+# request intervals
 min_crawl_interval = 10  # min interval of http request
 max_crawl_interval = 20  # max interval of http request
-excp_interval = 5 * 60  # time for sleeping when crawling raises exceptions
-# TODO set a default value for max_value of crawling
-max_search_page = 50  # max search page for crawling
-max_home_page = 50  # max user home page for crawling
-max_comment_page = 2000  # max comment page for crawling
-max_repost_page = 2000  # max repost page for crawling
-max_dialogue_page = 2000  # max dialogue page for crawling
-max_retries = 5  # retry times for crawling
+request_time_out = 200   # timeout for crawling and storing user info
+excp_interval = 5 * 60   # time for sleeping when crawling raises exceptions
+max_retries = 3          # retries for crawling
+
+# request pages
+max_search_page = 50    # max search page for crawling
+max_home_page = 50      # max user home page for crawling
+max_comment_page = float('+inf')   # max comment page for crawling, default is total pages
+max_repost_page = float('+inf')    # max repost page for crawling, default is total pages
+max_dialogue_page = float('+inf')  # max dialogue page for crawling, default is total pages
+
 # You should set the args below if you login from unnormal place
 # register and buy recaptcha recognition
 yundama_username = 'xxxxx'  # account for yundama
@@ -23,19 +27,11 @@ yundama_passwd = 'xxxx'  # password for yundama
 log_dir = 'logs'
 log_name = 'weibo.log'
 
-# bug trace
-# sentry url http://token@sentry_host:sentry_port/sentry_uri
-use_sentry = False
-sentry_host = '127.0.0.1'
-sentry_port = '9000'
-sentry_uri = '3'
-token = ''
-
 
 ###################################
 # crawling strategy settings      #
 ###################################
-# only crawl weibo(bowen) after and affect to home crawler
+# only crawl weibo after and affect to home crawler, default is all
 time_after = '1970-01-01 00:00:00'
 
 # The value of running_mode can be normal or quick.
@@ -106,3 +102,25 @@ email_password = 'xxxx'  # youremailpasswd
 email_to = 'xxx@139.com'  # bind 139 email,so your phone will receive the warning message
 subject = 'Warning Of Weibo Spider'
 warning_info = 'Please find out the reason why the spider stops working'
+
+
+##############################
+# mornitor and bug trace     #
+##############################
+
+# error tracking
+# for more information about this section see:
+# https://sentry.io
+# sentry url conbined by: http://sentry_token@sentry_host:sentry_port/sentry_uri
+use_sentry = False
+sentry_host = '127.0.0.1'
+sentry_port = 9000
+sentry_uri = '3'
+sentry_token = ''
+
+# prometheus monitor
+# for more information about this section see:
+# https://prometheus.io/
+use_prometheus = False
+exporter_host = '0.0.0.0'
+exporter_port = 8000

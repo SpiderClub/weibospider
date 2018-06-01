@@ -35,13 +35,14 @@ def crawl_comment_by_page(mid, page_num):
 
 @app.task
 def crawl_comment_page(mid):
-    limit = max_comment_page + 1
     # call crawl_comment_by_page locally to get total page right now
     first_page = crawl_comment_by_page(mid, 1)[0]
     total_page = comment.get_total_page(first_page)
 
-    if total_page < limit:
+    if max_comment_page == float('+inf') or max_comment_page > total_page:
         limit = total_page + 1
+    else:
+        limit = max_comment_page + 1
 
     caller = group(crawl_comment_by_page.s(mid, page) for page
                    in range(2, limit))
