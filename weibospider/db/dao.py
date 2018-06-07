@@ -238,12 +238,22 @@ class WbDataOper(CommonOper):
         maps = {'image_download': 1}
         cls.set_entity_attrs(TaskLabel, 'weibo_id={}'.format(mid), maps)
 
+    @classmethod
+    def add_all(cls, datas):
+        WbDataOper.add_all(datas)
+        task_labels = [TaskLabel(data.weibo_id) for data in datas]
+        TaskLabelOper.add_all(task_labels)
+
 
 class KeywordsDataOper(CommonOper):
     @classmethod
     def get_weibo_ids(cls, keyword_id, wb_id):
         conditions = 'keyword_id={} and wb_id={}'.format(keyword_id, wb_id)
         return cls.get_attrs_by_key(KeywordWbdata, ['keyword_id', 'wb_id'], conditions)
+
+
+class TaskLabelOper(CommonOper):
+    pass
 
 
 class RelationOper(CommonOper):

@@ -32,6 +32,9 @@ class WeiboData(Base):
 class TaskLabel(Base):
     __table__ = task_label
 
+    def __init__(self, mid):
+        self.weibo_id = mid
+
 
 class KeywordWbdata(Base):
     __table__ = keyword_wbdata

@@ -113,10 +113,7 @@ warning_info = 'Please find out the reason why the spider stops working'
 # https://sentry.io
 # sentry url conbined by: http://sentry_token@sentry_host:sentry_port/sentry_uri
 use_sentry = False
-sentry_host = '127.0.0.1'
-sentry_port = 9000
-sentry_uri = '3'
-sentry_token = ''
+sentry_dsn = ''
 
 # prometheus monitor
 # for more information about this section see:

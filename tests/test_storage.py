@@ -4,7 +4,7 @@ from weibospider.db.basic import get_db_session
 from weibospider.db.models import User
 from weibospider.db.tables import (
     wbuser, login_info,
-    keywords, weibo_data)
+    keyword, wbdata)
 from weibospider.db.dao import (
     UserOper, LoginInfoOper, KeywordsOper,
     SeedidsOper, WbDataOper, )
@@ -45,7 +45,7 @@ class TestMysql:
     def test_keywords_oper(self):
         with get_db_session() as db:
             db.execute("insert into {} ({}.keyword) values ('".format(
-                keywords.name, keywords.name) + FAKE_STR + "')")
+                keyword.name, keyword.name) + FAKE_STR + "')")
         assert len(KeywordsOper.get_search_keywords()) == 1
 
     def test_seedids_oper(self):
@@ -59,7 +59,7 @@ class TestMysql:
     def test_weibodata_oper(self):
         with get_db_session() as db:
             db.execute("insert into {} ({}.weibo_id) values ('".format(
-                weibo_data.name, weibo_data.name) + FAKE_ID + "')")
+                wbdata.name, wbdata.name) + FAKE_ID + "')")
         assert WbDataOper.get_weibo_by_mid(FAKE_ID) is not None
         assert len(WbDataOper.get_comment_not_crawled()) == 1
         assert len(WbDataOper.get_repost_not_crawled()) == 1
