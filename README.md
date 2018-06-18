@@ -54,15 +54,10 @@
 
 ## Donation :thumbsup:
 
-如果项目对你有用或者对你有启发，不妨通过微信或者支付宝进行*小额捐赠*，以支持该项目的持续维护和发展。
+开源不易，如果本项目对您有用，不妨进行小额捐赠，以支持项目的持续维护
 
-- 通过微信捐赠作者
+![](static/donate.jpg)
 
- ![](http://opqm8qbph.bkt.clouddn.com/8371514638056_.pic.jpg?imageMogr2/thumbnail/!19p)
-
-- 通过支付宝捐赠作者
-
- ![](http://opqm8qbph.bkt.clouddn.com/alipay.png?imageMogr2/thumbnail/!32p)
 
 
 ## Developer docs :heavy_exclamation_mark:
