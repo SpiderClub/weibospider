@@ -58,11 +58,15 @@ class WeiboRepost(Base):
 class UserRelation(Base):
     __table__ = user_relation
 
-    def __init__(self, uid, other_id, type, from_where):
+    def __init__(self, uid, other_id, type, from_where, crawl_time=True):
         self.user_id = uid
         self.follow_or_fans_id = other_id
         self.type = type
         self.from_where = from_where
+        if crawl_time:
+            self.crawl_time = func.now()
+        else:
+            self.crawl_time = None
         
     def __repr__(self):
         return 'user_id:{},follow_or_fans_id:{},type:{},from_where:{}'.format(self.user_id, self.follow_or_fans_id, self.type, self.from_where)

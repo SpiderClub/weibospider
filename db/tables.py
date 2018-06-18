@@ -32,7 +32,6 @@ wbuser = Table("wbuser", metadata,
                Column("contact_info", String(300), default='', server_default=''),
                Column("education_info", String(300), default='', server_default=''),
                Column("head_img", String(500), default='', server_default=''),
-               Column("isFan", INTEGER, default=0, server_default='0'),
                )
 
 # seed ids for user crawling
@@ -120,8 +119,8 @@ user_relation = Table("user_relation", metadata,
                       Column('follow_or_fans_id', String(20)),
                       Column('type', INTEGER),  # 1 stands for fans, 2 stands for follows
                       Column('from_where', String(60)),
-                      Column('crawl_time', DateTime(3), default=func.now())  # DATETIME(6) means save 6 digits milliseconds
-                                                                           # time is stored in UTC
+                      Column('crawl_time', DateTime(3))  # DATETIME(6) means save 6 digits milliseconds
+                                                         # time is stored in UTC
                       )
 
 # dialogue table

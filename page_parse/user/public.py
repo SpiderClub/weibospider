@@ -196,6 +196,7 @@ def get_fans_or_follows(html, uid, type):
                             n = n[2:len(n)-2]
                             user_ids.append(r)
                             relations.append(UserRelation(uid, r, type, n))
+            break
 
     UserRelationOper.add_all(relations)
     return user_ids
