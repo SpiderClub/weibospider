@@ -9,3 +9,5 @@ config/spider.yaml
 *.pyc
 .cache/
 */.cache/
+datas/
+recognition/
