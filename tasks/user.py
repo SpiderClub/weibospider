@@ -37,7 +37,7 @@ def crawl_person_infos(uid):
         user, is_crawled = get_profile(uid)
         # If it's enterprise user, just skip it
         if user and user.verify_type == 2:
-            # SeedidsOper.set_seed_other_crawled(uid)
+            SeedidsOper.set_seed_other_crawled(uid)
             return
 
         # Crawl fans and followers
