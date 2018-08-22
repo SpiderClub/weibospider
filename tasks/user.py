@@ -1,9 +1,7 @@
 from .workers import app
 from db.dao import SeedidsOper
-from page_get import (
-    get_fans_or_followers_ids,
-    get_profile, get_user_profile
-)
+from page_get import (get_fans_or_followers_ids, get_profile, get_user_profile,
+                      get_newcard_by_name)
 from logger import crawler
 from celery.exceptions import SoftTimeLimitExceeded
 
@@ -44,7 +42,7 @@ def crawl_person_infos(uid):
         if not is_crawled:
             app.send_task('tasks.user.crawl_follower_fans', args=(uid,), queue='fans_followers',
                           routing_key='for_fans_followers')
-    
+
     # By adding '--soft-time-limit secs' when you start celery, this will resend task to broker
     # e.g. celery -A tasks.workers -Q user_crawler worker -l info -c 1 --soft-time-limit 10
     except SoftTimeLimitExceeded:
@@ -62,6 +60,16 @@ def crawl_person_infos_not_in_seed_ids(uid):
         return
 
     get_user_profile(uid)
+
+
+def crawl_person_infos_by_name(name):
+    """
+    Crawl user info by name
+    """
+    if not name:
+        return False
+
+    user, is_crawled = get_newcard_by_name(name)
 
 
 @app.task(ignore_result=True)

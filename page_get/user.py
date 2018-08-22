@@ -13,6 +13,7 @@ from db.dao import (
 from page_parse.user import (
     enterprise, person, public)
 BASE_URL = 'http://weibo.com/p/{}{}/info?mod=pedit_more'
+NEWCARD_URL = 'https://www.weibo.com/aj/v6/user/newcard?ajwvr=6&name={}&type=1&callback=STK_{}39'
 SAMEFOLLOW_URL = 'https://weibo.com/p/100505{}/follow?relate=same_follow&amp;from=page_100505_profile&amp;wvr=6&amp;mod=bothfollow'
 # SAMEFOLLOW: only crawl user with 100505 domain
 
@@ -165,21 +166,28 @@ def get_fans_or_followers_ids(user_id, crawl_type, verify_type):
     return user_ids
 
 
-def get_uid_by_name(user_name):
-    """通过用户名获取用户uid"""
+def get_newcard_by_name(user_name):
+    """
+    Get user by user_name through newcard method.\n
+    Although it requires login, it is less likely to get banned
+    since it requests without s.weibo.com.
+
+    Arguments:
+        user_name {str} -- [user's name]
+    Returns:
+        str, int -- [databse user object, is_crawled]
+    """
+
     user = UserOper.get_user_by_name(user_name)
     if user:
-        return user.uid
-    url = "http://s.weibo.com/ajax/topsuggest.php?key={}&_k=14995588919022710&uid=&_t=1&_v=STK_14995588919022711"
-    url = url.format(quote(user_name))
-    info = requests.get(url).content.decode()
-
-    pattern = r'try\{.*\((.*)\).*\}catch.*'
-    pattern = re.compile(pattern)
-    info = pattern.match(info).groups()[0]
-    info = json.loads(info)
-    try:
-        return info["data"]["user"][0]['u_id']
-    except Exception as e:
-        print(e)
-        return None
+        is_crawled = 1
+    else:
+        url = NEWCARD_URL.format(quote(user_name), int(round(time.time() * 1000)))
+        page = get_page(url)
+        if page.strip() == '':
+            return None, 0
+        uid = person.get_uid_and_samefollow_by_new_card(page)
+        if uid == -1:
+            return None, 0
+        user, is_crawled = get_profile(uid)
+    return user, is_crawled
