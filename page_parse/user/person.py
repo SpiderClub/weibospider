@@ -182,3 +182,19 @@ def get_isFan(html, uids, current_uid):
         return 1
     else:
         return 0
+
+
+def get_uid_and_samefollow_by_new_card(html):
+    pattern = r'try\{(.*)\(\{(.*)\}\)\}catch.*'
+    pattern = re.compile(pattern)
+    info = "{" + pattern.match(html).groups()[1] + "}"
+    if json.loads(info, encoding='utf-8').get('code', '') == 100001:
+        # Indicate that the user_name is not found
+        return -1
+    info = json.loads(info, encoding='utf-8').get('data', '')
+
+    pattern = 'uid="(.*?)"'
+    pattern = re.compile(pattern)
+    uid = pattern.search(info).groups()[0]
+
+    return uid
