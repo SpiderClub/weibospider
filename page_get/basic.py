@@ -3,6 +3,7 @@ import time
 import signal
 
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from config import headers
 from logger import crawler
@@ -24,6 +25,10 @@ INTERAL = get_crawl_interal()
 MAX_RETRIES = get_max_retries()
 EXCP_INTERAL = get_excp_interal()
 COOKIES = get_cookies()
+
+
+# Disable annoying InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def is_banned(url):
