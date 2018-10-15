@@ -3,7 +3,7 @@ PyYAML==3.12
 requests==2.13.0
 rsa==3.4.2
 redis==2.10.5
-celery==4.1.0
+celery==4.2.1
 SQLAlchemy==1.1.15
 PyMySQL==0.7.11
 flower==0.9.1
@@ -11,7 +11,3 @@ urllib3==1.22
 Django==1.11.6
 django-suit==0.2.25
 gunicorn==19.7.1
-kombu==4.1.0
-
-
-
