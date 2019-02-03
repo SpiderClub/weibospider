@@ -51,22 +51,10 @@ def get_feed_info(feed_infos, goal):
 def get_weibo_info(each, html):
     wb_data = WeiboData()
 
-    user_cont = each.find(attrs={'class': 'face'})
-    usercard = user_cont.find('img').get('usercard', '')
-    # this only for login user
-    if not usercard:
-        return None
-    wb_data.uid = usercard.split('&')[0][3:]
-
     try:
-        wb_data.weibo_id = each.find(attrs={'class': 'WB_screen'}).find('a').get('action-data')[4:]
+        wb_data.weibo_id = each['mid']
     except (AttributeError, IndexError, TypeError):
-        return None
-
-    try:
-        wb_data.weibo_url = each.find(attrs={'node-type': 'feed_list_item_date'})['href']
-    except Exception as e:
-        parser.error('Failed to get weibo url, the error is {}, the source page is {}'.format(e, html))
+        parser.error('Failed to get weibo id, the page source is {}'.format(html))
         return None
 
     imgs = list()
@@ -85,55 +73,56 @@ def get_weibo_info(each, html):
     else:
         wb_data.weibo_img_path = ''
 
+    # todo 没找到vedio的测试数据
     try:
         a_tag = str(each.find(attrs={'node-type': 'feed_list_media_prev'}).find_all('a'))
         extracted_url = urllib.parse.unquote(re.findall(r"full_url=(.+?)&amp;", a_tag)[0])
         wb_data.weibo_video = url_filter(extracted_url)
     except Exception:
         wb_data.weibo_video = ''
+
     try:
-        wb_data.device = each.find(attrs={'class': 'feed_from'}).find(attrs={'rel': 'nofollow'}).text
+        wb_data.device = each.find(attrs={'class': 'from'}).find(attrs={'rel': 'nofollow'}).text
     except AttributeError:
         wb_data.device = ''
 
     try:
-        create_time = each.find(attrs={'node-type': 'feed_list_item_date'})['date']
+        # todo 日期格式化,会有今日XXX，X分钟前等噪音
+        wb_data.create_time = each.find(attrs={'class': 'from'}).find(attrs={'target': '_blank'}).text.strip()
+        wb_data.weibo_url = 'https:'+each.find(attrs={'class': 'from'}).find(attrs={'target': '_blank'})['href']
+        wb_data.uid = each.find(attrs={'class': 'from'}).find(attrs={'target': '_blank'})['href'].split('/')[3]
     except (AttributeError, KeyError):
         wb_data.create_time = ''
-    else:
-        create_time = int(create_time) / 1000  # 时间戳单位不同
-        create_time = datetime.fromtimestamp(create_time)
-        wb_data.create_time = create_time.strftime("%Y-%m-%d %H:%M")
+        wb_data.weibo_url = ''
+        wb_data.weibo_uid = ''
 
     try:
-        feed_action = each.find(attrs={'class': 'feed_action'})
-    except Exception as why:
-        parser.error('Failed to get feed_action, the error is {},the page source is {}'.format(why, each))
-    else:
-        feed_infos = feed_action.find_all('li')
-        try:
-            wb_data.repost_num = get_feed_info(feed_infos, '转发')
-        except (AttributeError, ValueError):
-            wb_data.repost_num = 0
-        try:
-            wb_data.comment_num = get_feed_info(feed_infos, '评论')
-        except (AttributeError, ValueError):
-            wb_data.comment_num = 0
-        try:
-            wb_data.praise_num = int(feed_action.find(attrs={'action-type': 'feed_list_like'}).find('em').text)
-        except (AttributeError, ValueError):
-            wb_data.praise_num = 0
-
+        wb_data.repost_num = int(each.find(attrs={'class': 'card-act'}).find_all('li')[0].find('a').text.split('/')[-1])
+    except (AttributeError, ValueError):
+        wb_data.repost_num = 0
     try:
-        wb_data.weibo_cont = each.find(attrs={'class': 'comment_txt'}).text.strip()
-    except Exception as why:
-        parser.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
-        return None
+        wb_data.comment_num = int(each.find(attrs={'class': 'card-act'}).find_all('li')[1].find('a').text.split('/')[-1])
+    except (AttributeError, ValueError):
+        wb_data.comment_num = 0
+    try:
+        wb_data.praise_num = int(each.find(attrs={'class': 'card-act'}).find_all('li')[2].find('a').find('em').text)
+    except (AttributeError, ValueError):
+        wb_data.praise_num = 0
 
     if '展开全文' in str(each):
-        is_all_cont = 0
+        is_all_cont = 1
+        try:
+            wb_data.weibo_cont = each.find(attrs={'node-type': 'feed_list_content_full'}).text.strip()
+        except Exception as why:
+            parser.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
+            return None
     else:
         is_all_cont = 1
+        try:
+            wb_data.weibo_cont = each.find(attrs={'node-type': 'feed_list_content'}).text.strip()
+        except Exception as why:
+            parser.error('Failed to get weibo cont, the error is {}, the page source is {}'.format(why, html))
+            return None
     return wb_data, is_all_cont
 
 
@@ -144,7 +133,7 @@ def get_search_info(html):
     :return: search results
     """
     # 搜索结果可能有两种方式，一种是直接返回的，一种是编码过后的
-    content = _search_page_parse(html) if '举报' not in html else html
+    content = _search_page_parse(html) if '举报' in html else html
     if content == '':
         return list()
     # todo 这里用bs会导致某些信息不能被解析（参考../tests/fail.html），可参考使用xpath，考虑到成本，暂时不实现
