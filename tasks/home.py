@@ -67,11 +67,12 @@ def crawl_weibo_datas(uid):
         else:
             auth_level = 2
 
-        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0, auth_level), queue='ajax_home_crawler',
-                      routing_key='ajax_home_info')
-
-        app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_1, auth_level), queue='ajax_home_crawler',
-                      routing_key='ajax_home_info')
+        # crawl all the pages if you want
+        #if total_page != limit:
+            #limit = total_page
+            #crawler.warning("total pagenum is {}".format(total_page))
+        crawl_ajax_page(ajax_url_0, auth_level)
+	crawl_ajax_page(ajax_url_1, auth_level)
         cur_page += 1
 
     SeedidsOper.set_seed_home_crawled(uid)
