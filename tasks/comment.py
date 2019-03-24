@@ -4,7 +4,7 @@ from config import conf
 from page_get import get_page
 from db.dao import (
     WbDataOper, CommentOper)
-
+import time
 
 BASE_URL = 'https://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&&page={}'
 
