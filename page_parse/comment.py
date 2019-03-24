@@ -6,7 +6,8 @@ from logger import parser
 from db.models import WeiboComment
 from decorators import parse_decorator
 from utils import parse_emoji
-
+import datetime
+import re
 @parse_decorator('')
 def get_html_cont(html):
     cont = ''
@@ -129,7 +130,7 @@ def get_comment_list(html, wb_id):
             else:
                 wb_comment.create_time = create_time
             if not wb_comment.create_time.startswith('201'):
-                wb_comment.create_time = '2018年' + wb_comment.create_time
+                wb_comment.create_time = str(datetime.datetime.now().year) + wb_comment.create_time
 
             wb_comment.weibo_id = wb_id
         except Exception as e:

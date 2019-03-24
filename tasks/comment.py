@@ -6,7 +6,7 @@ from db.dao import (
     WbDataOper, CommentOper)
 from logger import crawler
 from celery.exceptions import SoftTimeLimitExceeded
-
+import time
 
 BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
