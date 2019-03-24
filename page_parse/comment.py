@@ -6,7 +6,8 @@ from logger import parser
 from db.models import WeiboComment
 from decorators import parse_decorator
 from utils import parse_emoji
-
+import datetime
+import re
 @parse_decorator('')
 def get_html_cont(html):
     cont = ''
@@ -112,8 +113,25 @@ def get_comment_list(html, wb_id):
             wb_comment.comment_id = comment['comment_id']
             # TODO 将wb_comment.user_id加入待爬队列（seed_ids）
             wb_comment.user_id = comment.find(attrs={'class': 'WB_text'}).find('a').get('usercard')[3:]
-            # todo 日期格式化
-            wb_comment.create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
+            # 日期格式化
+            create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
+            if '分钟前' in create_time:
+                now = datetime.datetime.now()
+                reduce_minute = create_time.strip().split('分钟')[0]
+                delta = datetime.timedelta(minutes=int(reduce_minute))
+                real_time = now - delta
+                wb_comment.create_time = str(real_time.strftime('%Y-%m-%d %H:%M'))
+            elif '今天' in create_time:
+                now = datetime.datetime.now().strftime('%Y-%m-%d')
+                real_time = now + create_time.strip().split('今天')[-1]
+                wb_comment.create_time = str(real_time)
+            elif '楼' in create_time:
+                wb_comment.create_time = str(re.sub('第\d*楼', '', create_time))
+            else:
+                wb_comment.create_time = create_time
+            if not wb_comment.create_time.startswith('201'):
+                wb_comment.create_time = str(datetime.datetime.now().year) + wb_comment.create_time
+
             wb_comment.weibo_id = wb_id
         except Exception as e:
             parser.error('解析评论失败，具体信息是{}'.format(e))

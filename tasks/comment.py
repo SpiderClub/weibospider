@@ -6,7 +6,7 @@ from db.dao import (
     WbDataOper, CommentOper)
 from logger import crawler
 from celery.exceptions import SoftTimeLimitExceeded
-
+import time
 
 BASE_URL = 'http://weibo.com/aj/v6/comment/big?ajwvr=6&id={}&page={}'
 
@@ -43,8 +43,8 @@ def crawl_comment_page(mid):
         limit = total_page + 1
 
     for page_num in range(2, limit):
-        app.send_task('tasks.comment.crawl_comment_by_page', args=(mid, page_num), queue='comment_page_crawler',
-                      routing_key='comment_page_info')
+        crawl_comment_by_page(mid, page_num)
+        time.sleep(3)
 
 
 @app.task(ignore_result=True)

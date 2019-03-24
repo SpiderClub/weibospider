@@ -97,16 +97,17 @@ def crawl_weibo_datas(uid):
             # Since the second ajax of page 1 has already been crawled
             # in the code above and has been stored in databse,
             # we only have to crawl the first ajax of page 1
-            app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0, auth_level), queue='ajax_home_crawler',
-                          routing_key='ajax_home_info')
+            crawl_ajax_page(ajax_url_0, auth_level)
+
         else:
             auth_level = 2
 
             # Still the same as before
-            app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_0, auth_level), queue='ajax_home_crawler',
-                          routing_key='ajax_home_info')
-            app.send_task('tasks.home.crawl_ajax_page', args=(ajax_url_1, auth_level), queue='ajax_home_crawler',
-                          routing_key='ajax_home_info')
+        # if total_page != limit:
+        #     limit = total_page
+        #     crawler.warning("total pagenum is {}".format(total_page))
+        crawl_ajax_page(ajax_url_0, auth_level)
+        crawl_ajax_page(ajax_url_1, auth_level)
 
         cur_page += 1
 
