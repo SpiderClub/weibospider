@@ -33,7 +33,7 @@ def get_weibo_infos_right(html):
     # 如果字符串'fl_menu'(举报或者帮上头条)这样的关键字出现在script中，则是微博数据区域
     cont = ''
     for script in scripts:
-        m = pattern.search(script.string)
+        m = pattern.search(script.string if script.string is not None else "")
         if m and 'fl_menu' in script.string:
             all_info = m.group(1)
             cont += json.loads(all_info).get('html', '')
