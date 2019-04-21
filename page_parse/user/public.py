@@ -180,7 +180,7 @@ def get_fans_or_follows(html, uid, type):
             all_info = m.group(1)
             cont = json.loads(all_info).get('html', '')
             soup = BeautifulSoup(cont, 'html.parser')
-            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item'})
+            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item S_line2'})
             patternUID = re.compile(r'uid=(.*?)&')
             patternFROM = re.compile(r'通过.+?关注')
             for follow in follows:

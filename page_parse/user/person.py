@@ -158,7 +158,7 @@ def get_isFan(html, uids, current_uid):
             all_info = m.group(1)
             cont = json.loads(all_info).get('html', '')
             soup = BeautifulSoup(cont, 'html.parser')
-            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item'})
+            follows = soup.find(attrs={'class': 'follow_box'}).find_all(attrs={'class': 'follow_item S_line2'})
             patternUID = re.compile(r'uid=(.*?)&')
             for follow in follows:
                 m = re.search(patternUID, str(follow))
