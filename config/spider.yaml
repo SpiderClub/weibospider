@@ -86,7 +86,7 @@ redis:
     ###############################
     sentinel: ''
     master: ''             # redis sentinel master name, if you don't need it, just set master: ''
-    socket_timeout: 5            # sockt timeout for redis sentinel, if you don't need it, just set master: ''
+    socket_timeout: 5            # socket timeout for redis sentinel, if you don't need it, just set master: ''
 
 
 # warning by email
