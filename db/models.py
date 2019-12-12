@@ -1,3 +1,4 @@
+import time
 from .basic import Base
 from .tables import *
 
@@ -63,10 +64,11 @@ class UserRelation(Base):
         self.follow_or_fans_id = other_id
         self.type = type
         self.from_where = from_where
-        if crawl_time:
-            self.crawl_time = func.now()
-        else:
-            self.crawl_time = None
+        self.crawl_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        # if crawl_time is not:
+        #     self.crawl_time = func.now()
+        # else:
+        #     self.crawl_time = None
         
     def __repr__(self):
         return 'user_id:{},follow_or_fans_id:{},type:{},from_where:{}'.format(self.user_id, self.follow_or_fans_id, self.type, self.from_where)
