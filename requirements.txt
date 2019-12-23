@@ -11,3 +11,4 @@ urllib3==1.22
 Django==1.11.6
 django-suit==0.2.25
 gunicorn==19.7.1
+html5lib==1.0.1
