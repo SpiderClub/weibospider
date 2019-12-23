@@ -6,6 +6,7 @@ from logger import parser
 from db.models import WeiboComment
 from decorators import parse_decorator
 from utils import parse_emoji
+from page_get import get_profile
 import datetime
 import re
 @parse_decorator('')
@@ -113,6 +114,9 @@ def get_comment_list(html, wb_id):
             wb_comment.comment_id = comment['comment_id']
             # TODO 将wb_comment.user_id加入待爬队列（seed_ids）
             wb_comment.user_id = comment.find(attrs={'class': 'WB_text'}).find('a').get('usercard')[3:]
+            # 爬取新用户基本信息
+            if wb_comment.user_id:
+                get_profile(wb_comment.user_id)
             # 日期格式化
             create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
             if '分钟前' in create_time:
