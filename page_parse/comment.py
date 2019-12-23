@@ -6,6 +6,7 @@ from logger import parser
 from db.models import WeiboComment
 from decorators import parse_decorator
 from utils import parse_emoji
+from page_get import get_profile
 import datetime
 import re
 @parse_decorator('')
@@ -113,6 +114,9 @@ def get_comment_list(html, wb_id):
             wb_comment.comment_id = comment['comment_id']
             # TODO 将wb_comment.user_id加入待爬队列（seed_ids）
             wb_comment.user_id = comment.find(attrs={'class': 'WB_text'}).find('a').get('usercard')[3:]
+            # 爬取新用户基本信息
+            if wb_comment.user_id:
+                get_profile(wb_comment.user_id)
             # 日期格式化
             create_time = comment.find(attrs={'class': 'WB_from S_txt2'}).text
             if '分钟前' in create_time:
@@ -131,6 +135,21 @@ def get_comment_list(html, wb_id):
                 wb_comment.create_time = create_time
             if not wb_comment.create_time.startswith('201'):
                 wb_comment.create_time = str(datetime.datetime.now().year) + wb_comment.create_time
+            # 中文时间戳转换成标准格式 "%Y-%m-%d %H:%M"
+            create_time_copy = wb_comment.create_time
+            if '月' in create_time_copy and '日' in create_time_copy:
+                month = create_time_copy.split("年")[-1].split("月")[0]
+                day = create_time_copy.split("年")[-1].split("月")[-1].split("日")[0]
+                # 补齐0
+                if month and int(month) < 10:
+                    wb_comment.create_time = wb_comment.create_time.replace(str(month) + "月",
+                                                                            "0" + str(month) + "月")
+                if day and int(day) < 10:
+                    wb_comment.create_time = wb_comment.create_time.replace(str(day) + "日", "0" + str(day) + "日")
+                wb_comment.create_time = wb_comment.create_time.replace("月", "-")
+                wb_comment.create_time = wb_comment.create_time.replace("日", "")
+                if '年' in wb_comment.create_time:
+                    wb_comment.create_time = wb_comment.create_time.replace("年", "-")
 
             wb_comment.weibo_id = wb_id
         except Exception as e:
