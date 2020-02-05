@@ -179,23 +179,24 @@ def login_by_pincode(name, password, session, server_data, retry_count, proxy):
         raise LoginException('Login need verfication code, please set your yumdama info in config/spider.yaml')
     img_url = get_pincode_url(pcid)
     pincode_name = get_img(img_url, name, retry_count, proxy)
-    verify_code, yundama_obj, cid = code_verificate(YUMDAMA_USERNAME, YUMDAMA_PASSWORD, pincode_name)
+    verify_code, cjy_client, cid, err_no = code_verificate(YUMDAMA_USERNAME, YUMDAMA_PASSWORD, pincode_name)
     data['door'] = verify_code
     rs = get_redirect(name, data, post_url, session, proxy)
 
     os.remove(pincode_name)
-    return rs, yundama_obj, cid, session
+    return rs, cjy_client, cid, err_no, session
 
 
-def login_retry(name, password, session, ydm_obj, cid, proxy, rs='pinerror', retry_count=0):
-    while rs == 'pinerror':
-        ydm_obj.report_error(cid)
+def login_retry(name, password, session, cjy_client, cid, proxy, err_no=-1001, retry_count=0):
+    while err_no != 0:
+        cjy_client.ReportError(cid)
         retry_count += 1
         session = requests.Session()
         su = get_encodename(name)
         server_data = get_server_data(su, session, proxy)
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, retry_count, proxy)
-    return rs, ydm_obj, cid, session
+        rs, cjy_client, cid, err_no, session = login_by_pincode(name, password, session, server_data, retry_count,
+                                                                proxy)
+    return rs, cjy_client, cid, err_no, session
 
 
 def do_login(name, password, proxy):
@@ -204,9 +205,9 @@ def do_login(name, password, proxy):
     server_data = get_server_data(su, session, proxy)
 
     if server_data['showpin']:
-        rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0, proxy)
-        if rs == 'pinerror':
-            rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid, proxy)
+        rs, cjy_client, cid, err_no, session = login_by_pincode(name, password, session, server_data, 0, proxy)
+        if err_no != 0:
+            rs, cjy_client, cid, err_no, session = login_retry(name, password, session, cjy_client, cid, proxy, err_no)
 
     else:
         rs, yundama_obj, cid, session = login_no_pincode(name, password, session, server_data, proxy)
@@ -214,18 +215,19 @@ def do_login(name, password, proxy):
             session = requests.Session()
             su = get_encodename(name)
             server_data = get_server_data(su, session, proxy)
-            rs, yundama_obj, cid, session = login_by_pincode(name, password, session, server_data, 0, proxy)
+            rs, cjy_client, cid, err_no, session = login_by_pincode(name, password, session, server_data, 0, proxy)
 
-            if rs == 'pinerror':
-                rs, yundama_obj, cid, session = login_retry(name, password, session, yundama_obj, cid, proxy)
+            if err_no != 0:
+                rs, cjy_client, cid, err_no, session = login_retry(name, password, session, cjy_client, cid, proxy,
+                                                                   err_no)
 
-    return rs, yundama_obj, cid, session
+    return rs, cjy_client, cid, err_no, session
 
 
 def get_session(name, password):
     proxy = getip.getIP("")
 
-    url, yundama_obj, cid, session = do_login(name, password, proxy)
+    url, cjy_client, cid, err_no, session = do_login(name, password, proxy)
 
     if url != '':
         rs_cont = session.get(url, headers=headers, proxies=proxy)
@@ -245,6 +247,6 @@ def get_session(name, password):
             other.info('Login successful! The login account is {}'.format(name))
             Cookies.store_cookies(name, session.cookies.get_dict(), proxy['http'])
             return session
-        
+
     other.error('login failed for {}'.format(name))
     return None
